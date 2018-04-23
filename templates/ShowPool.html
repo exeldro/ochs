@@ -1,0 +1,51 @@
+﻿<h2>Pool {{currentPool.Name}}</h2>
+
+<label>Search: <input type="text" ng-model="searchMatchText"></label>
+<table>
+    <tr><th ng-click="matchSortType = 'Name'; matchSortReverse=!matchSortReverse">Match</th>
+        <th>
+            <i ng-click="matchSortType = 'PlannedDateTime'; matchSortReverse=!matchSortReverse" class="fa fa-calendar" aria-hidden="true"></i> {{currentPool.MatchesTodo}}
+            <i ng-click="matchSortType = 'StartedDateTime'; matchSortReverse=!matchSortReverse" class="fa fa-play" aria-hidden="true"></i> {{currentPool.MatchesBusy}}
+            <i ng-click="matchSortType = 'FinishedDateTime'; matchSortReverse=!matchSortReverse" class="fa fa-check" aria-hidden="true"></i> {{currentPool.MatchesFinished}}
+        </th>
+        <th class="bg-lightblue" ng-click="matchSortType = 'FighterBlue'; matchSortReverse=!matchSortReverse">Blue</th>
+        <th class="bg-lightred" ng-click="matchSortType = 'FighterRed'; matchSortReverse=!matchSortReverse">Red</th>
+    </tr>
+    <tr ng-repeat="match in currentPool.Matches | filter:searchMatchText | orderBy:matchSortType:matchSortReverse">
+        <td>{{ match.Name }}</td>
+        <td ng-show="!match.Started && !match.Finished && !match.Planned"></td>
+        <td ng-show="!match.Started && !match.Finished && match.Planned"><i class="fa fa-calendar" aria-hidden="true"></i> <time>{{ match.PlannedDateTime | date:'yyyy-MM-dd HH:mm:ss' }}</time></td>
+        <td ng-show="match.Started && !match.Finished"><i class="fa fa-play" aria-hidden="true"></i> <time>{{ match.StartedDateTime | date:'yyyy-MM-dd HH:mm:ss' }}</time></td>
+        <td ng-show="match.Finished"><i class="fa fa-check" aria-hidden="true"></i> <time>{{ match.FinishedDateTime | date:'yyyy-MM-dd HH:mm:ss' }}</time></td>
+        <td class="bg-lightblue">{{ match.FighterBlue }}</td>
+        <td class="bg-lightred">{{ match.FighterRed }}</td>
+        <td><i class="fa fa-pencil" aria-hidden="true"></i> <a ng-show="!match.Finished" href="#!ScoreKeeper/{{match.Id}}"><i class="fa fa-play" aria-hidden="true"></i></a></td>
+    </tr>
+    <!--<tr>
+        <td><input placeholder="Fight name" type="text" ng-model="newFightName" /></td>
+        <td>
+            <input placeholder="Pool" type="text" ng-model="newFightPoolName" list="pools"/>
+        </td>
+        <td><input placeholder="yyyy-MM-ddTHH:mm:ss" type="datetime-local" ng-model="newFightPlanned"/></td>
+        <td colspan="2">Select fighters in fighter list</td>
+        <td><button ng-click="competitionAddFight()">Add</button></td>
+    </tr>-->
+</table>
+
+<br/>
+<br />
+
+
+<table>
+
+    <tr><th>Blue</th><th>Red</th><th ng-click="fighterSortType = 'FirstName'; fighterSortReverse=!fighterSortReverse">Firstname</th><th></th><th ng-click="fighterSortType = 'LastName'; fighterSortReverse=!fighterSortReverse">LastName</th><th ng-click="fighterSortType = 'Organization'; fighterSortReverse=!fighterSortReverse">Organization</th></tr>
+    <tr ng-repeat="fighter in currentPool.Fighters | orderBy:fighterSortType:fighterSortReverse">
+        <td><input type="radio" name="newFightBlueFighterId" ng-model="$parent.newFightBlueFighterId" value="{{fighter.Id}}" /></td>
+        <td><input type="radio" name="newFightRedFighterId" ng-model="$parent.newFightRedFighterId" value="{{fighter.Id}}" /></td>
+        <td>{{fighter.FirstName}}</td>
+        <td style="text-align: right">{{fighter.LastNamePrefix}}</td>
+        <td>{{fighter.LastName}}</td>
+        <td>{{fighter.Organization}}</td>
+    </tr>
+</table>
+

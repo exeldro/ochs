@@ -1,0 +1,14 @@
+﻿<h2>Competitions</h2>
+<table>
+    <tr><th><a ng-click="sortType = 'Organization'; sortReverse=!sortReverse">Organization</a></th><th><a ng-click="sortType = 'Name'; sortReverse=!sortReverse">Competition</a></th><th><a ng-click="sortType = 'Start'; sortReverse=!sortReverse">Start</a></th></tr>
+    <tr ng-repeat="competition in competitions  | orderBy:sortType:sortReverse">
+        <td>{{ competition.Organization }}</td>
+        <td><a href="#!ShowCompetition/{{ competition.Id }}">{{ competition.Name }}</a></td>
+        <td>{{ competition.Start }}</td>
+    </tr>
+    <tr><td><input list="organizations" placeholder="Organization" type="text" ng-model="newOrganizationName" /><datalist id=organizations >
+        <option ng-repeat="organization in organizations">{{organization}}</option>
+    </datalist></td><td><input type="text" ng-model="newCompetitionName"/></td><td><button ng-click="createCompetition()">Create</button></td></tr>
+</table>
+
+

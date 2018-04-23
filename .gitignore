@@ -1,0 +1,21 @@
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+[Bb]in/
+[Oo]bj/
+[Ss]cripts/
+[Cc]ontent/bootstrap*
+[Cc]ontent/font-awesome*
+[Ff]onts/
+
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# NuGet Packages
+*.nupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+*.nuget.props
+*.nuget.targets

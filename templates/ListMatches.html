@@ -1,0 +1,8 @@
+﻿<h2>Matches</h2>
+<table>
+    <tr ng-repeat="match in matches">
+        <td>{{ match.Name }}</td>
+        <td>{{ match.Result }}</td>
+        <td><i class="fa fa-pencil" aria-hidden="true"></i> <a href="#!ShowMatch/{{match.Id}}"><i class="fa fa-eye" aria-hidden="true"></i></a> <a href="#!ScoreKeeper/{{match.Id}}"><i class="fa fa-play" aria-hidden="true"></i></a></td>
+    </tr>
+</table>

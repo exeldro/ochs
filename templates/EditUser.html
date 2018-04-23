@@ -1,0 +1,22 @@
+﻿<h2>User {{currentUser.Username}}</h2>
+<table>
+    <tr><th><a ng-click="sortType = 'Organization'; sortReverse=!sortReverse">Organization</a></th><th><a ng-click="sortType = 'Role'; sortReverse=!sortReverse">Role</a></th></tr>
+    <tr ng-repeat="userRole in currentUser.Roles  | orderBy:sortType:sortReverse">
+        <td>{{ userRole.Organization }}</td>
+        <td>{{ userRole.Role }}</td>
+        <td><button ng-click="deleteUserRole(userRole)"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
+    </tr>
+    <tr>
+        <td>
+            <input list="organizations" placeholder="Organization" type="text" ng-model="newOrganization" /><datalist id=organizations >
+                <option ng-repeat="organization in organizations">{{organization}}</option>
+            </datalist></td>
+        <td>
+            <select ng-model="newRole" bs-selectbox>
+                <option value="ScoreValidator">Score Validator</option>
+                <option value="ScoreKeeper">Score Keeper</option>
+            </select>
+        </td>
+        <td><button ng-click="addUserRole()">Add</button></td>
+    </tr>
+</table>

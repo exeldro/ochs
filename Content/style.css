@@ -1,0 +1,19 @@
+﻿.bg-blue {
+    background-color: #66FFFF;
+}
+
+.bg-red {
+    background-color: #FF6666;
+}
+
+.bg-lightblue {
+    background-color: #AAFFFF;
+}
+
+.bg-lightred {
+    background-color: #FFAAAA;
+}
+
+table td input {
+    width: 100%;   
+}

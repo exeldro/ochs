@@ -1,0 +1,12 @@
+﻿<h2>Users</h2>
+<table>
+    <tr ng-repeat="user in users">
+        <td>{{ user.Username }}</td>
+        <td><a href="#!EditUser/{{user.Id}}"><i class="fa fa-pencil" aria-hidden="true"></i></a></td>
+    </tr>
+    <tr>
+        <td><input type="text" placeholder="Username" ng-model="newUsername"/></td>
+        <td><input type="password" placeholder="Password" ng-model="newPassword"/></td>
+        <td><button ng-click="createUser()">Create</button></td>
+    </tr>
+</table>

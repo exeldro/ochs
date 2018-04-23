@@ -1,0 +1,20 @@
+﻿using System.Security.Cryptography.X509Certificates;
+using FluentNHibernate.Mapping;
+
+namespace Ochs
+{
+    public class PhaseMap : ClassMap<Phase>
+    {
+        public PhaseMap()
+        {
+            Id(x => x.Id);
+            References(x => x.Competition).Not.LazyLoad();
+            Map(x => x.Name);
+            HasMany(x => x.Matches).Inverse();
+            References(x => x.MatchRules);
+            HasMany(x => x.Pools).Cascade.DeleteOrphan().Inverse();
+            HasManyToMany(x => x.Fighters);
+            Map(x => x.Location);
+        }
+    }
+}

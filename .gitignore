@@ -5,10 +5,6 @@
 *.sln.docstates
 [Bb]in/
 [Oo]bj/
-[Ss]cripts/
-[Cc]ontent/bootstrap*
-[Cc]ontent/font-awesome*
-[Ff]onts/
 
 *.[Rr]e[Ss]harper
 *.DotSettings.user

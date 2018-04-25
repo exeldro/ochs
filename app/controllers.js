@@ -99,6 +99,9 @@ app.controller("CompetitionController", function ($scope, $http, $routeParams, $
     $http.get("api/Organization/All").then(function (response) {
         $scope.organizations = response.data;
     });
+    $http.get("api/Country/All").then(function (response) {
+        $scope.countries = response.data;
+    });
     $scope.$on('updateCompetition', function (event, args) {
         if ($scope.competitionId === args.Id) {
             $scope.currentCompetition = args;
@@ -141,7 +144,7 @@ app.controller("CompetitionController", function ($scope, $http, $routeParams, $
         $scope.$parent.ochsHub.invoke("CreateCompetitionPhase", $scope.competitionId, $scope.newPhaseName, $scope.newPhaseLocationName);
     };
     $scope.competitionAddFighter = function () {
-        $scope.$parent.ochsHub.invoke("CompetitionAddFighter", $scope.competitionId, $scope.newFighterFirstName, $scope.newFighterLastNamePrefix, $scope.newFighterLastName, $scope.newFighterOrganization, $scope.newFighterCountryCode);
+        $scope.$parent.ochsHub.invoke("CompetitionAddFighter", $scope.competitionId, $scope.newFighterFirstName, $scope.newFighterLastNamePrefix, $scope.newFighterLastName, $scope.newFighterOrganization, $scope.newFighterCountry);
     };
     $scope.competitionAddFight = function () {
         $scope.$parent.ochsHub.invoke("CompetitionAddFight", $scope.competitionId, $scope.newFightName, $scope.newFightPhaseName, $scope.newFightPoolName, $scope.newFightPlanned, $scope.newFightBlueFighterId, $scope.newFightRedFighterId);

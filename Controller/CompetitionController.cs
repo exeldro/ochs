@@ -99,6 +99,8 @@ namespace Ochs
                 if (competition == null)
                     return null;
 
+                var organizations = session.QueryOver<Organization>().List();
+
                 using (var parser = new TextFieldParser(Request.Content.ReadAsStreamAsync().Result))
                 {
                     parser.TextFieldType = FieldType.Delimited;
@@ -128,6 +130,24 @@ namespace Ochs
                                     LastNamePrefix = fields[1],
                                     LastName = fields[2],
                                 };
+                                if (fields.Length >= 4)
+                                {
+                                    var p = Country.Countries.SingleOrDefault(x => string.Equals(x.Key, fields[3],
+                                        StringComparison.InvariantCultureIgnoreCase));
+                                    if (!string.IsNullOrWhiteSpace(p.Key))
+                                    {
+                                        fighter.CountryCode = p.Key;
+                                    }
+                                    else
+                                    {
+                                        p = Country.Countries.SingleOrDefault(x => string.Equals(x.Value, fields[3],
+                                            StringComparison.InvariantCultureIgnoreCase));
+                                        if (!string.IsNullOrWhiteSpace(p.Key))
+                                        {
+                                            fighter.CountryCode = p.Key;
+                                        }
+                                    }
+                                }
                                 using (var transaction = session.BeginTransaction())
                                 {
                                     session.Save(fighter);
@@ -147,7 +167,7 @@ namespace Ochs
 
                             fighter.Organizations.Clear();
 
-                            var organization = session.QueryOver<Organization>().Where(x => x.Name.IsInsensitiveLike(fields[4])).SingleOrDefault();
+                            var organization = organizations.SingleOrDefault(x => string.Equals(x.Name, fields[4], StringComparison.InvariantCultureIgnoreCase));
                             if (organization == null)
                             {
                                 organization = new Organization
@@ -159,11 +179,12 @@ namespace Ochs
                                     session.Save(organization);
                                     transaction.Commit();
                                 }
+                                organizations.Add(organization);
                             }
                             fighter.Organizations.Add(organization);
                             if (fields.Length > 5 && !string.IsNullOrWhiteSpace(fields[5]))
                             {
-                                organization = session.QueryOver<Organization>().Where(x => x.Name.IsInsensitiveLike(fields[5])).SingleOrDefault();
+                                organization = organizations.SingleOrDefault(x => string.Equals(x.Name, fields[4], StringComparison.InvariantCultureIgnoreCase));
                                 if (organization == null)
                                 {
                                     organization = new Organization
@@ -175,6 +196,7 @@ namespace Ochs
                                         session.Save(organization);
                                         transaction.Commit();
                                     }
+                                    organizations.Add(organization);
                                 }
                                 fighter.Organizations.Add(organization);
                             }

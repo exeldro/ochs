@@ -347,7 +347,7 @@ namespace Ochs
             }
         }
 
-        public void CompetitionAddFighter(Guid competiotionId, string firstName, string lastNamePrefix, string lastName, string orgainzationName, string countryCode)
+        public void CompetitionAddFighter(Guid competiotionId, string firstName, string lastNamePrefix, string lastName, string orgainzationName, string country)
         {
             using (var session = NHibernateHelper.OpenSession())
             {
@@ -366,9 +366,23 @@ namespace Ochs
                         {
                             FirstName = firstName,
                             LastNamePrefix = lastNamePrefix,
-                            LastName = lastName,
-                            CountryCode = countryCode
+                            LastName = lastName
                         };
+                        var p = Country.Countries.SingleOrDefault(x => string.Equals(x.Key, country,
+                            StringComparison.InvariantCultureIgnoreCase));
+                        if (!string.IsNullOrWhiteSpace(p.Key))
+                        {
+                            person.CountryCode = p.Key;
+                        }
+                        else
+                        {
+                            p = Country.Countries.SingleOrDefault(x => string.Equals(x.Value, country,
+                                StringComparison.InvariantCultureIgnoreCase));
+                            if (!string.IsNullOrWhiteSpace(p.Key))
+                            {
+                                person.CountryCode = p.Key;
+                            }
+                        }
                         session.Save(person);
                     }
                     if(competition.Fighters.All(x => x.Id != person.Id))

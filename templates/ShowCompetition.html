@@ -67,7 +67,7 @@
         <td style="text-align: right">{{fighter.LastNamePrefix}}</td>
         <td>{{fighter.LastName}}</td>
         <td>{{fighter.Organization}}</td>
-        <td><img alt="{{fighter.CountryCode}}" title="{{fighter.CountryName}}" ng-src="Content/flags/{{fighter.CountryCode?fighter.CountryCode:'none'}}.svg" height="20"/> </td>
+        <td><img alt="{{fighter.CountryCode}}" title="{{fighter.CountryName}}" ng-src="Content/flags/{{fighter.CountryCode?fighter.CountryCode:'none'}}.svg" height="20" width="30"/> </td>
     </tr>
     <tr>
         <td colspan="2"><button ng-click="competitionAddFighter()">Add</button></td>
@@ -80,7 +80,10 @@
                 <option ng-repeat="organization in organizations">{{organization}}</option>
             </datalist>
         </td>
-        <td><input placeholder="Country" type="text" ng-model="newFighterCountryCode" /></td>
+        <td><select ng-model="newFighterCountry">
+            <option ng-repeat="(countryCode,country) in countries" data-image="Content/flags/{{countryCode}}.svg" value="{{countryCode}}">{{country}}</option>
+        </select>
+        </td>
     </tr>
 </table>
 

@@ -18,6 +18,6 @@ namespace Ochs
         public virtual int MatchesStarted => _pool.Matches.Count(x => x.Started);
         public virtual int MatchesBusy => _pool.Matches.Count(x => x.Started && !x.Finished);
 
-        public int MatchesTotal => _pool.Matches.Count;
+        public virtual int MatchesTotal => _pool.Matches.Count;
     }
 }

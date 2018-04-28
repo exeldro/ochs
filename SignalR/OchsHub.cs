@@ -400,14 +400,14 @@ namespace Ochs
                     };
                     session.Save(pool);
                     transaction.Commit();
-                    Clients.All.addPool(new PoolView(pool));
+                    Clients.All.addPool(new PhasePoolView(pool));
                 }
                 else if (!string.IsNullOrWhiteSpace(location) && pool.Location != location)
                 {
                     pool.Location = location;
                     session.Update(pool);
                     transaction.Commit();
-                    Clients.All.updatePool(new PoolView(pool));
+                    Clients.All.updatePool(new PoolDetailView(pool));
                 }
             }
         }

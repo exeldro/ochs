@@ -309,43 +309,109 @@ namespace Ochs
             }
         }
 
+        public void PhaseAddAllFighters(Guid phaseId)
+        {
+            using (var session = NHibernateHelper.OpenSession())
+            using (var transaction = session.BeginTransaction())
+            {
+                var phase = session.Get<Phase>(phaseId);
+                if (phase == null)
+                    return;
+
+                if (!HasOrganizationRights(session, phase.Competition.Organization, UserRoles.Admin))
+                    return;
+
+                if(phase.Fighters.Count > 0)
+                    return;
+
+                phase.Fighters = phase.Competition.Fighters.ToList();
+                session.Update(phase);
+                transaction.Commit();
+                Clients.All.updatePhase(new PhaseDetailView(phase));
+            }
+        }
+
+        public void PhaseDistributeFighters(Guid phaseId)
+        {
+            using (var session = NHibernateHelper.OpenSession())
+            using (var transaction = session.BeginTransaction())
+            {
+                var phase = session.Get<Phase>(phaseId);
+                if (phase == null)
+                    return;
+
+                if (!HasOrganizationRights(session, phase.Competition.Organization, UserRoles.Admin))
+                    return;
+
+                var fighters = phase.Fighters.Where(x => phase.Pools.All(y => y.Fighters.All(z => z.Id != x.Id))).ToList();
+                foreach (var fighter in fighters)
+                {
+                    var pool = phase.Pools.OrderBy(x => x.Fighters.Sum(y => y.Organizations.Count(z => fighter.Organizations.Any(a => a.Id == z.Id))))
+                        .ThenBy(x => x.Fighters.Count(y => y.CountryCode == fighter.CountryCode))
+                        .ThenBy(x => x.Fighters.Count)
+                        .FirstOrDefault();
+                    if(pool == null)
+                        continue;
+                    pool.Fighters.Add(fighter);
+                    session.Update(pool);
+                }
+
+                while (phase.Pools.Max(x => x.Fighters.Count) - phase.Pools.Min(x => x.Fighters.Count) > 1)
+                {
+                    var toPool = phase.Pools.OrderBy(x => x.Fighters.Count).First();
+                    var fromPool = phase.Pools.OrderBy(x => x.Fighters.Count).Last();
+                    var fighter = fromPool.Fighters
+                        .OrderBy(x =>x.Organizations.Sum(y => toPool.Fighters.Sum(z => z.Organizations.Count(a => a.Id == z.Id))))
+                        .ThenBy(x => toPool.Fighters.Count(y => y.CountryCode == x.CountryCode))
+                        .First();
+
+                    fromPool.Fighters.Remove(fighter);
+                    session.Update(fromPool);
+                    toPool.Fighters.Add(fighter);
+                    session.Update(toPool);
+                }
+                transaction.Commit();
+                Clients.All.updatePhase(new PhaseDetailView(phase));
+            }
+        }
+
         public void CreatePhasePool(Guid phaseId, string poolName, string location = null)
         {
-            if(string.IsNullOrWhiteSpace(poolName))
+            if (string.IsNullOrWhiteSpace(poolName))
                 return;
             using (var session = NHibernateHelper.OpenSession())
+            using (var transaction = session.BeginTransaction())
             {
-                using (var transaction = session.BeginTransaction())
+                var phase = session.Get<Phase>(phaseId);
+                if (phase == null)
+                    return;
+
+                if (!HasOrganizationRights(session, phase.Competition.Organization, UserRoles.Admin))
+                    return;
+
+                var pool = phase.Pools.SingleOrDefault(x => string.Equals(poolName, x.Name));
+                if (pool == null)
                 {
-                    var phase = session.Get<Phase>(phaseId);
-                    if (phase == null)
-                        return;
-
-                    if (!HasOrganizationRights(session, phase.Competition.Organization, UserRoles.Admin))
-                        return;
-
-                    var pool = phase.Pools.SingleOrDefault(x => string.Equals(poolName, x.Name));
-                    if (pool == null)
+                    pool = new Pool
                     {
-                        pool = new Pool
-                        {
-                            Name = poolName,
-                            Phase = phase,
-                            Location = location
-                        };
-                        session.Save(pool);
-                        transaction.Commit();
-                        Clients.All.addPool(new PoolView(pool));
-                    }else if (!string.IsNullOrWhiteSpace(location) && pool.Location != location)
-                    {
-                        pool.Location = location;
-                        session.Update(pool);
-                        transaction.Commit();
-                        Clients.All.updatePool(new PoolView(pool));
-                    }
+                        Name = poolName,
+                        Phase = phase,
+                        Location = location
+                    };
+                    session.Save(pool);
+                    transaction.Commit();
+                    Clients.All.addPool(new PoolView(pool));
+                }
+                else if (!string.IsNullOrWhiteSpace(location) && pool.Location != location)
+                {
+                    pool.Location = location;
+                    session.Update(pool);
+                    transaction.Commit();
+                    Clients.All.updatePool(new PoolView(pool));
                 }
             }
         }
+
 
         public void CompetitionAddFighter(Guid competiotionId, string firstName, string lastNamePrefix, string lastName, string orgainzationName, string country)
         {
@@ -448,6 +514,17 @@ namespace Ochs
                             session.Save(phase);
                             competition.Phases.Add(phase);
                         }
+
+                        if (phase.Fighters.All(x => x.Id != blueFighter.Id))
+                        {
+                            phase.Fighters.Add(blueFighter);
+                            session.Update(phase);
+                        }
+                        if (phase.Fighters.All(x => x.Id != redFighter.Id))
+                        {
+                            phase.Fighters.Add(redFighter);
+                            session.Update(phase);
+                        }
                     }
 
                     Pool pool = null;
@@ -464,7 +541,16 @@ namespace Ochs
                             session.Save(pool);
                             phase.Pools.Add(pool);
                         }
-                        //TODO add fighters to pool
+                        if (pool.Fighters.All(x => x.Id != blueFighter.Id))
+                        {
+                            pool.Fighters.Add(blueFighter);
+                            session.Update(pool);
+                        }
+                        if (pool.Fighters.All(x => x.Id != redFighter.Id))
+                        {
+                            pool.Fighters.Add(redFighter);
+                            session.Update(pool);
+                        }
                     }
 
                     var uniqueName = matchName;

@@ -24,11 +24,7 @@ namespace Ochs
         {
             using (var session = NHibernateHelper.OpenSession())
             {
-                return session.QueryOver<Organization>().Fetch(x => x.Aliases).Eager.TransformUsing(Transformers.DistinctRootEntity).List().Select(x=> new OrganizationDetailView
-                {
-                    Name = x.Name,
-                    Aliases = x.Aliases
-                }).ToList();
+                return session.QueryOver<Organization>().Fetch(x => x.Aliases).Eager.TransformUsing(Transformers.DistinctRootEntity).List().Select(x=> new OrganizationDetailView(x)).ToList();
             }
         }
 
@@ -115,11 +111,7 @@ namespace Ochs
                         }
                     }
                 }
-                return session.QueryOver<Organization>().Fetch(x => x.Aliases).Eager.TransformUsing(Transformers.DistinctRootEntity).List().Select(x=> new OrganizationDetailView
-                {
-                    Name = x.Name,
-                    Aliases = x.Aliases
-                }).ToList();
+                return session.QueryOver<Organization>().Fetch(x => x.Aliases).Eager.TransformUsing(Transformers.DistinctRootEntity).List().Select(x=> new OrganizationDetailView(x)).ToList();
             }
         }
     }

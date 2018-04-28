@@ -2,7 +2,8 @@
 
 <label>Search: <input type="text" ng-model="searchMatchText"></label>
 <table>
-    <tr><th ng-click="matchSortType = 'Name'; matchSortReverse=!matchSortReverse">Match</th>
+    <tr>
+        <th ng-click="matchSortType = 'Name'; matchSortReverse=!matchSortReverse">Match</th>
         <th ng-click="matchSortType = 'Pool'; matchSortReverse=!matchSortReverse">Pool</th>
         <th>
             <i ng-click="matchSortType = 'PlannedDateTime'; matchSortReverse=!matchSortReverse" class="fa fa-calendar" aria-hidden="true"></i> {{currentPhase.MatchesTodo}}
@@ -34,14 +35,20 @@
     </tr>-->
 </table>
 
-<br/>
+<br />
 <br />
 
 <table>
-    <tr><th>Pool</th><th>Location</th></tr>
+    <tr><th>Pool</th><th>Location</th><th>Fighters</th><th>Matches</th></tr>
     <tr ng-repeat="pool in currentPhase.Pools">
         <td><a href="#!ShowPool/{{pool.Id}}">{{ pool.Name }}</a></td>
         <td>{{ pool.Location }}</td>
+        <td>{{ pool.FightersTotal }}</td>
+        <td>
+            <i class="fa fa-calendar" aria-hidden="true"></i> {{pool.MatchesTodo}}
+            <i class="fa fa-play" aria-hidden="true"></i> {{pool.MatchesBusy}}
+            <i class="fa fa-check" aria-hidden="true"></i> {{pool.MatchesFinished}}
+        </td>
     </tr>
     <tr>
         <td><input type="text" ng-model="newPoolName" /></td>
@@ -49,17 +56,26 @@
         <td><button ng-click="createPhasePool()">Create</button></td>
     </tr>
 </table>
+<button ng-click="distributeFighters()">Distribute fighters over the pools</button>
+<br />
 
+<label>Search: <input type="text" ng-model="searchFighterText"></label>
 <table>
 
-    <tr><th>Blue</th><th>Red</th><th ng-click="fighterSortType = 'FirstName'; fighterSortReverse=!fighterSortReverse">Firstname</th><th></th><th ng-click="fighterSortType = 'LastName'; fighterSortReverse=!fighterSortReverse">LastName</th><th ng-click="fighterSortType = 'Organization'; fighterSortReverse=!fighterSortReverse">Organization</th></tr>
-    <tr ng-repeat="fighter in currentPhase.Fighters | orderBy:fighterSortType:fighterSortReverse">
-        <td><input type="radio" name="newFightBlueFighterId" ng-model="$parent.newFightBlueFighterId" value="{{fighter.Id}}" /></td>
-        <td><input type="radio" name="newFightRedFighterId" ng-model="$parent.newFightRedFighterId" value="{{fighter.Id}}" /></td>
-        <td>{{fighter.FirstName}}</td>
-        <td style="text-align: right">{{fighter.LastNamePrefix}}</td>
-        <td>{{fighter.LastName}}</td>
+    <tr>
+        <th ng-click="fighterSortType = 'FirstName'; fighterSortReverse=!fighterSortReverse">Firstname</th>
+        <th ng-click="fighterSortType = 'LastName'; fighterSortReverse=!fighterSortReverse">LastName</th>
+        <th ng-click="fighterSortType = 'Organization'; fighterSortReverse=!fighterSortReverse">Organization</th>
+        <th ng-click="fighterSortType = 'CountryCode'; fighterSortReverse=!fighterSortReverse">Country</th>
+        <th ng-click="fighterSortType = 'Pool'; fighterSortReverse=!fighterSortReverse">Pool</th>
+    </tr>
+    <tr ng-repeat="fighter in currentPhase.Fighters | filter:searchFighterText | orderBy:fighterSortType:fighterSortReverse">
+        <td colspan="2">{{fighter.DisplayName}}</td>
         <td>{{fighter.Organization}}</td>
+        <td><img alt="{{fighter.CountryCode}}" title="{{fighter.CountryName}}" ng-src="Content/flags/{{fighter.CountryCode?fighter.CountryCode:'none'}}.svg" height="20" width="30" /></td>
+        <td>{{fighter.Pool}}</td>
     </tr>
 </table>
-
+<button ng-click="addAllFighters()">Add all from competition</button>
+Add all from phase
+Add top (32) from phase

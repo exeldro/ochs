@@ -65,7 +65,7 @@
         <th ng-click="fighterSortType = 'LastName'; fighterSortReverse=!fighterSortReverse">LastName</th>
         <th ng-click="fighterSortType = 'Organization'; fighterSortReverse=!fighterSortReverse">Organization</th>
         <th ng-click="fighterSortType = 'CountryCode'; fighterSortReverse=!fighterSortReverse">Country</th></tr>
-    <tr ng-repeat="fighter in currentCompetition.Fighters  | filter:searchFighterText | orderBy:fighterSortType:fighterSortReverse">
+    <tr ng-repeat="fighter in currentCompetition.Fighters | filter:searchFighterText | orderBy:fighterSortType:fighterSortReverse">
         <td><input type="radio" name="newFightBlueFighterId" ng-model="$parent.newFightBlueFighterId" value="{{fighter.Id}}" /></td>
         <td><input type="radio" name="newFightRedFighterId" ng-model="$parent.newFightRedFighterId" value="{{fighter.Id}}" /></td>
         <td colspan="2">{{fighter.DisplayName}}</td>

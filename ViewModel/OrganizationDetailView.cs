@@ -4,7 +4,14 @@ namespace Ochs
 {
     public class OrganizationDetailView
     {
-        public virtual string Name { get; set; }
-        public virtual IList<string> Aliases { get; set; }
+        private readonly Organization _organization;
+
+        public OrganizationDetailView(Organization organization)
+        {
+            _organization = organization;
+        }
+
+        public virtual string Name => _organization.Name;
+        public virtual IList<string> Aliases => _organization.Aliases;
     }
 }

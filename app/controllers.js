@@ -222,6 +222,12 @@ app.controller("PhaseController", function ($scope, $http, $routeParams, $interv
     $scope.createPhasePool = function () {
         $scope.$parent.ochsHub.invoke("CreatePhasePool", $scope.phaseId, $scope.newPoolName, $scope.newPoolLocationName);
     };
+    $scope.addAllFighters = function() {
+        $scope.$parent.ochsHub.invoke("PhaseAddAllFighters", $scope.phaseId);
+    }
+    $scope.distributeFighters = function() {
+        $scope.$parent.ochsHub.invoke("PhaseDistributeFighters", $scope.phaseId);
+    }
 });
 
 

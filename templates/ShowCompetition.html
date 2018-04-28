@@ -60,13 +60,15 @@
 </table>
 <label>Search: <input type="text" ng-model="searchFighterText"></label>
 <table>
-    <tr><th>Blue</th><th>Red</th><th ng-click="fighterSortType = 'FirstName'; fighterSortReverse=!fighterSortReverse">Firstname</th><th></th><th ng-click="fighterSortType = 'LastName'; fighterSortReverse=!fighterSortReverse">LastName</th><th ng-click="fighterSortType = 'CountryCode'; fighterSortReverse=!fighterSortReverse">Organization</th><th ng-click="fighterSortType = 'CountryCode'; fighterSortReverse=!fighterSortReverse">Country</th></tr>
+    <tr><th>Blue</th><th>Red</th>
+        <th ng-click="fighterSortType = 'FirstName'; fighterSortReverse=!fighterSortReverse">Firstname</th>
+        <th ng-click="fighterSortType = 'LastName'; fighterSortReverse=!fighterSortReverse">LastName</th>
+        <th ng-click="fighterSortType = 'Organization'; fighterSortReverse=!fighterSortReverse">Organization</th>
+        <th ng-click="fighterSortType = 'CountryCode'; fighterSortReverse=!fighterSortReverse">Country</th></tr>
     <tr ng-repeat="fighter in currentCompetition.Fighters  | filter:searchFighterText | orderBy:fighterSortType:fighterSortReverse">
         <td><input type="radio" name="newFightBlueFighterId" ng-model="$parent.newFightBlueFighterId" value="{{fighter.Id}}" /></td>
         <td><input type="radio" name="newFightRedFighterId" ng-model="$parent.newFightRedFighterId" value="{{fighter.Id}}" /></td>
-        <td>{{fighter.FirstName}}</td>
-        <td style="text-align: right">{{fighter.LastNamePrefix}}</td>
-        <td>{{fighter.LastName}}</td>
+        <td colspan="2">{{fighter.DisplayName}}</td>
         <td>{{fighter.Organization}}</td>
         <td><img alt="{{fighter.CountryCode}}" title="{{fighter.CountryName}}" ng-src="Content/flags/{{fighter.CountryCode?fighter.CountryCode:'none'}}.svg" height="20" width="30" /> </td>
     </tr>

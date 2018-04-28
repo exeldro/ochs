@@ -18,9 +18,9 @@ namespace Ochs
         public virtual string Location => !string.IsNullOrWhiteSpace(_match.Location)
             ? _match.Location
             : (!string.IsNullOrWhiteSpace(_match.Pool?.Location) ? _match.Pool.Location : _match.Phase?.Location);
-        public virtual string FighterBlue => _match.FighterBlue?.FullName;
+        public virtual string FighterBlue => _match.FighterBlue?.ToString();
         public virtual Guid? FighterBlueId => _match.FighterBlue?.Id;
-        public virtual string FighterRed => _match.FighterRed?.FullName;
+        public virtual string FighterRed => _match.FighterRed?.ToString();
         public virtual Guid? FighterRedId => _match.FighterRed?.Id;
         public virtual string Result => _match.Result.ToString();
         public virtual string Organization => _match.Competition?.Organization?.Name;

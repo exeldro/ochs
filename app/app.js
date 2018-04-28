@@ -31,6 +31,10 @@ app.config(['$routeProvider',
                 templateUrl: 'templates/EditUser.html',
                 controller: 'EditUserController'
             }).
+            when('/ListOrganizations', {
+                templateUrl: 'templates/ListOrganizations.html',
+                controller: 'ListOrganizationsController'
+            }).
             when('/ListCompetitions', {
                 templateUrl: 'templates/ListCompetitions.html',
                 controller: 'ListCompetitionsController'

@@ -1,4 +1,5 @@
 ﻿using FluentNHibernate.Mapping;
+using NHibernate.Mapping;
 
 namespace Ochs
 {
@@ -7,8 +8,9 @@ namespace Ochs
         public OrganizationMap()
         {
             Id(x => x.Id);
-            Map(x => x.Name);
+            Map(x => x.Name).Unique();
             HasMany(x => x.Competitions).Cascade.DeleteOrphan().Inverse();
+            HasMany(x => x.Aliases).Element("Alias").Not.KeyNullable();
         }
     }
 }

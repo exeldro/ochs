@@ -10,6 +10,7 @@ namespace Ochs
             Map(x => x.FirstName);
             Map(x => x.LastName);
             Map(x => x.LastNamePrefix);
+            Map(x => x.FullName);
             Map(x => x.CountryCode);
             HasManyToMany(x => x.Organizations);
         }

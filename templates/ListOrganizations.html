@@ -1,0 +1,10 @@
+﻿<h2>Organizations</h2>
+<label>Search: <input type="text" ng-model="searchOrganizationText"></label>
+<table>
+    <tr><th><a ng-click="sortType = 'Name'; sortReverse=!sortReverse">Organization</a></th><th>Aliases</th></tr>
+    <tr ng-repeat="organization in organizations   | filter:searchOrganizationText | orderBy:sortType:sortReverse">
+        <td>{{ organization.Name }}</td>
+        <td ng-repeat="alias in organization.Aliases">{{ alias }}</td>
+    </tr>
+</table>
+<input type="file" onchange="angular.element(this).scope().uploadOrganizations( this.files[0] )" />

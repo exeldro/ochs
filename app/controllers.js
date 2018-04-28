@@ -79,6 +79,18 @@ app.controller("EditUserController", function ($scope, $http, $routeParams) {
     };
 });
 
+app.controller("ListOrganizationsController", function ($scope, $http) {
+    $http.get("api/Organization/AllWithDetails").then(function (response) {
+        $scope.organizations = response.data;
+    });
+    $scope.uploadOrganizations = function(organizationFile) {
+        $http.post("api/Organization/UploadOrganizations", organizationFile)
+            .then(function(response) {
+                $scope.organizations = response.data;
+            });
+    }
+});
+
 app.controller("ListCompetitionsController", function ($scope, $http) {
     $http.get("api/Competition/All")
         .then(function (response) { $scope.competitions = response.data; });

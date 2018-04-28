@@ -115,90 +115,136 @@ namespace Ochs
                             var fields = parser.ReadFields();
                             if(fields == null || fields.Length < 3)
                                 continue;
-                            if(string.IsNullOrWhiteSpace(fields[0]) || string.IsNullOrWhiteSpace(fields[2]))
-                                continue;
-                            var fighter = session.QueryOver<Person>().Where(x =>
-                                x.FirstName.IsInsensitiveLike(fields[0]) &&
-                                x.LastNamePrefix.IsInsensitiveLike(fields[1]) &&
-                                x.LastName.IsInsensitiveLike(fields[2])).SingleOrDefault();
-                            if (fighter == null)
+                            Person fighter;
+                            var countryIndex = 1;
+                            if (fields.Length > 4)
                             {
-
-                                fighter = new Person
+                                countryIndex = 3;
+                                if (string.IsNullOrWhiteSpace(fields[0]) || string.IsNullOrWhiteSpace(fields[2]))
+                                    continue;
+                                fighter = session.QueryOver<Person>().Where(x =>
+                                    x.FirstName.IsInsensitiveLike(fields[0]) &&
+                                    x.LastNamePrefix.IsInsensitiveLike(fields[1]) &&
+                                    x.LastName.IsInsensitiveLike(fields[2])).SingleOrDefault();
+                                if (fighter == null)
                                 {
-                                    FirstName = fields[0],
-                                    LastNamePrefix = fields[1],
-                                    LastName = fields[2],
-                                };
-                                if (fields.Length >= 4)
-                                {
-                                    var p = Country.Countries.SingleOrDefault(x => string.Equals(x.Key, fields[3],
-                                        StringComparison.InvariantCultureIgnoreCase));
-                                    if (!string.IsNullOrWhiteSpace(p.Key))
+                                    fighter = new Person
                                     {
-                                        fighter.CountryCode = p.Key;
-                                    }
-                                    else
+                                        FirstName = fields[0],
+                                        LastNamePrefix = fields[1],
+                                        LastName = fields[2],
+                                    };
+                                    using (var transaction = session.BeginTransaction())
                                     {
-                                        p = Country.Countries.SingleOrDefault(x => string.Equals(x.Value, fields[3],
-                                            StringComparison.InvariantCultureIgnoreCase));
-                                        if (!string.IsNullOrWhiteSpace(p.Key))
-                                        {
-                                            fighter.CountryCode = p.Key;
-                                        }
+                                        session.Save(fighter);
+                                        transaction.Commit();
                                     }
-                                }
-                                using (var transaction = session.BeginTransaction())
-                                {
-                                    session.Save(fighter);
-                                    transaction.Commit();
                                 }
                             }
                             else
                             {
-
+                                if (string.IsNullOrWhiteSpace(fields[0]))
+                                    continue;
+                                fighter = session.QueryOver<Person>().Where(x =>
+                                    x.FullName.IsInsensitiveLike(fields[0])).SingleOrDefault();
+                                if (fighter == null)
+                                {
+                                    fighter = new Person
+                                    {
+                                        FullName = fields[0]
+                                    };
+                                    using (var transaction = session.BeginTransaction())
+                                    {
+                                        session.Save(fighter);
+                                        transaction.Commit();
+                                    }
+                                }
                             }
                             if (!competition.Fighters.Contains(fighter))
                             {
                                 competition.Fighters.Add(fighter);
                             }
-                            if(fields.Length <= 4 || string.IsNullOrWhiteSpace(fields[4]))
-                                continue;
+
+                            if (fields.Length > countryIndex)
+                            {
+                                var p = Country.Countries.SingleOrDefault(x => string.Equals(x.Key,
+                                    fields[countryIndex],
+                                    StringComparison.InvariantCultureIgnoreCase));
+                                if (!string.IsNullOrWhiteSpace(p.Key))
+                                {
+                                    fighter.CountryCode = p.Key;
+                                }
+                                else
+                                {
+                                    p = Country.Countries.SingleOrDefault(x => string.Equals(x.Value,
+                                        fields[countryIndex],
+                                        StringComparison.InvariantCultureIgnoreCase));
+                                    if (!string.IsNullOrWhiteSpace(p.Key))
+                                    {
+                                        fighter.CountryCode = p.Key;
+                                    }
+                                }
+                            }
 
                             fighter.Organizations.Clear();
+                            for (int organizationIndex = countryIndex+1; organizationIndex < fields.Length; organizationIndex++)
+                            {
+                                if(string.IsNullOrWhiteSpace(fields[organizationIndex]))
+                                    continue;
 
-                            var organization = organizations.SingleOrDefault(x => string.Equals(x.Name, fields[4], StringComparison.InvariantCultureIgnoreCase));
-                            if (organization == null)
-                            {
-                                organization = new Organization
-                                {
-                                    Name = fields[4]
-                                };
-                                using (var transaction = session.BeginTransaction())
-                                {
-                                    session.Save(organization);
-                                    transaction.Commit();
-                                }
-                                organizations.Add(organization);
-                            }
-                            fighter.Organizations.Add(organization);
-                            if (fields.Length > 5 && !string.IsNullOrWhiteSpace(fields[5]))
-                            {
-                                organization = organizations.SingleOrDefault(x => string.Equals(x.Name, fields[4], StringComparison.InvariantCultureIgnoreCase));
+                                var organization = organizations.SingleOrDefault(x =>
+                                    string.Equals(x.Name, fields[organizationIndex], StringComparison.InvariantCultureIgnoreCase) ||
+                                    x.Aliases.Any(alias =>
+                                        string.Equals(alias, fields[organizationIndex], StringComparison.InvariantCultureIgnoreCase)));
                                 if (organization == null)
                                 {
-                                    organization = new Organization
+                                    var multiOrganization = fields[organizationIndex].Split('/', '\\', ',');
+                                    if (multiOrganization.Length > 1 && organizations.Any(x =>
+                                            string.Equals(x.Name, multiOrganization[0].Trim(), StringComparison.InvariantCultureIgnoreCase) ||
+                                            x.Aliases.Any(alias =>
+                                                string.Equals(alias, multiOrganization[0].Trim(), StringComparison.InvariantCultureIgnoreCase))))
                                     {
-                                        Name = fields[5]
-                                    };
-                                    using (var transaction = session.BeginTransaction())
-                                    {
-                                        session.Save(organization);
-                                        transaction.Commit();
+                                        foreach (var org in multiOrganization)
+                                        {
+                                            organization = organizations.SingleOrDefault(x =>
+                                                string.Equals(x.Name, org.Trim(), StringComparison.InvariantCultureIgnoreCase) ||
+                                                x.Aliases.Any(alias =>
+                                                    string.Equals(alias, org.Trim(), StringComparison.InvariantCultureIgnoreCase)));
+                                            if (organization == null)
+                                            {
+                                                organization = new Organization
+                                                {
+                                                    Name = fields[organizationIndex]
+                                                };
+                                                using (var transaction = session.BeginTransaction())
+                                                {
+                                                    session.Save(organization);
+                                                    transaction.Commit();
+                                                }
+                                                organizations.Add(organization);
+                                            }
+                                            fighter.Organizations.Add(organization);
+                                        }
                                     }
-                                    organizations.Add(organization);
+                                    else
+                                    {
+                                        organization = new Organization
+                                        {
+                                            Name = fields[organizationIndex]
+                                        };
+                                        using (var transaction = session.BeginTransaction())
+                                        {
+                                            session.Save(organization);
+                                            transaction.Commit();
+                                        }
+                                        organizations.Add(organization);
+                                        fighter.Organizations.Add(organization);
+                                    }
                                 }
-                                fighter.Organizations.Add(organization);
+                                else
+                                {
+                                    fighter.Organizations.Add(organization);
+                                }
                             }
                             using (var transaction = session.BeginTransaction())
                             {
@@ -229,9 +275,7 @@ namespace Ochs
                 NHibernateUtil.Initialize(competition.Phases);
                 return new CompetitionDetailView(competition);
             }
-            //using (var transaction = session.BeginTransaction())
         }
-
     }
 
     public class CompetitionCreateRequest

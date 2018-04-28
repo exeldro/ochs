@@ -15,6 +15,8 @@ namespace Ochs
         public virtual string FirstName => _person.FirstName;
         public virtual string LastNamePrefix => _person.LastNamePrefix;
         public virtual string LastName => _person.LastName;
+        public virtual string FullName => _person.FullName;
+        public virtual string DisplayName => _person.DisplayName;
         public virtual string CountryCode => _person.CountryCode;
 
         public virtual string CountryName => string.IsNullOrWhiteSpace(_person.CountryCode) || !Country.Countries.ContainsKey(_person.CountryCode)

@@ -1,4 +1,61 @@
 ﻿<h2>Competition {{currentCompetition.Name}}</h2>
+<h3>Phases {{currentCompetition.PhasesTotal}}</h3>
+<table>
+    <tr><th>Phase</th><th>Location</th></tr>
+    <tr ng-repeat="phase in currentCompetition.Phases">
+        <td><a href="#!ShowPhase/{{phase.Id}}">{{ phase.Name }}</a></td>
+        <td>{{ phase.Location }}</td>
+    </tr>
+    <tr>
+        <td><input type="text" ng-model="newPhaseName" /></td>
+        <td><input type="text" ng-model="newPhaseLocationName" /></td>
+        <td><button ng-click="createCompetitionPhase()">Create</button></td>
+    </tr>
+</table>
+<h3>Fighters {{currentCompetition.FightersTotal}}</h3>
+<label>Search: <input type="text" ng-model="searchFighterText"></label>
+<table>
+    <tr>
+        <th>Blue</th>
+        <th>Red</th>
+        <th ng-click="fighterSortType = 'FirstName'; fighterSortReverse=!fighterSortReverse">Firstname</th>
+        <th ng-click="fighterSortType = 'LastName'; fighterSortReverse=!fighterSortReverse">LastName</th>
+        <th ng-click="fighterSortType = 'Organization'; fighterSortReverse=!fighterSortReverse">Organization</th>
+        <th ng-click="fighterSortType = 'CountryCode'; fighterSortReverse=!fighterSortReverse">Country</th>
+    </tr>
+    <tr ng-repeat="fighter in currentCompetition.Fighters | filter:searchFighterText | orderBy:fighterSortType:fighterSortReverse">
+        <td><input type="radio" name="newFightBlueFighterId" ng-model="$parent.newFightBlueFighterId" value="{{fighter.Id}}" /></td>
+        <td><input type="radio" name="newFightRedFighterId" ng-model="$parent.newFightRedFighterId" value="{{fighter.Id}}" /></td>
+        <td colspan="2">{{fighter.DisplayName}}</td>
+        <td>{{fighter.Organization}}</td>
+        <td><img alt="{{fighter.CountryCode}}" title="{{fighter.CountryName}}" ng-src="Content/flags/{{fighter.CountryCode?fighter.CountryCode:'none'}}.svg" height="20" width="30" /> </td>
+    </tr>
+</table>
+
+<table>
+    <tr><td>Firstname</td><td><input placeholder="Firstname" type="text" ng-model="newFighterFirstName" /></td></tr>
+    <tr><td>Prefix</td><td><input placeholder="Prefix" type="text" ng-model="newFighterLastNamePrefix" /></td></tr>
+    <tr><td>Lastname</td><td><input placeholder="Lastname" type="text" ng-model="newFighterLastName" /></td></tr>
+    <tr>
+        <td>Organization</td>
+        <td>
+            <input list="organizations" placeholder="Organization" type="text" ng-model="newFighterOrganization" />
+            <datalist id="organizations">
+                <option ng-repeat="organization in organizations">{{organization}}</option>
+            </datalist>
+        </td>
+    </tr>
+    <tr>
+        <td>Country</td>
+        <td>
+            <select ng-model="newFighterCountry">
+                <option ng-repeat="(countryCode,country) in countries" data-image="Content/flags/{{countryCode}}.svg" value="{{countryCode}}">{{country}}</option>
+            </select>
+        </td>
+    </tr>
+    <tr><td colspan="2"><button ng-click="competitionAddFighter()">Add</button></td></tr>
+</table>
+<input type="file" onchange="angular.element(this).scope().uploadFighters( this.files[0] )" />
 
 <h3>Matches {{currentCompetition.MatchesTotal}}</h3>
 <label>Search: <input type="text" ng-model="searchMatchText"></label>
@@ -43,57 +100,3 @@
         <td><button ng-click="competitionAddFight()">Add</button></td>
     </tr>
 </table>
-
-<br />
-<br />
-<h3>Phases {{currentCompetition.PhasesTotal}}</h3>
-<table>
-    <tr><th>Phase</th><th>Location</th></tr>
-    <tr ng-repeat="phase in currentCompetition.Phases">
-        <td><a href="#!ShowPhase/{{phase.Id}}">{{ phase.Name }}</a></td>
-        <td>{{ phase.Location }}</td>
-    </tr>
-    <tr>
-        <td><input type="text" ng-model="newPhaseName" /></td>
-        <td><input type="text" ng-model="newPhaseLocationName" /></td>
-        <td><button ng-click="createCompetitionPhase()">Create</button></td>
-    </tr>
-</table>
-<h3>Fighters {{currentCompetition.FightersTotal}}</h3>
-<label>Search: <input type="text" ng-model="searchFighterText"></label>
-<table>
-    <tr><th>Blue</th><th>Red</th>
-        <th ng-click="fighterSortType = 'FirstName'; fighterSortReverse=!fighterSortReverse">Firstname</th>
-        <th ng-click="fighterSortType = 'LastName'; fighterSortReverse=!fighterSortReverse">LastName</th>
-        <th ng-click="fighterSortType = 'Organization'; fighterSortReverse=!fighterSortReverse">Organization</th>
-        <th ng-click="fighterSortType = 'CountryCode'; fighterSortReverse=!fighterSortReverse">Country</th></tr>
-    <tr ng-repeat="fighter in currentCompetition.Fighters | filter:searchFighterText | orderBy:fighterSortType:fighterSortReverse">
-        <td><input type="radio" name="newFightBlueFighterId" ng-model="$parent.newFightBlueFighterId" value="{{fighter.Id}}" /></td>
-        <td><input type="radio" name="newFightRedFighterId" ng-model="$parent.newFightRedFighterId" value="{{fighter.Id}}" /></td>
-        <td colspan="2">{{fighter.DisplayName}}</td>
-        <td>{{fighter.Organization}}</td>
-        <td><img alt="{{fighter.CountryCode}}" title="{{fighter.CountryName}}" ng-src="Content/flags/{{fighter.CountryCode?fighter.CountryCode:'none'}}.svg" height="20" width="30" /> </td>
-    </tr>
-</table>
-
-<table>
-    <tr><td>Firstname</td><td><input placeholder="Firstname" type="text" ng-model="newFighterFirstName" /></td></tr>
-    <tr><td>Prefix</td><td><input placeholder="Prefix" type="text" ng-model="newFighterLastNamePrefix" /></td></tr>
-    <tr><td>Lastname</td><td><input placeholder="Lastname" type="text" ng-model="newFighterLastName" /></td></tr>
-    <tr><td>Organization</td><td>
-        <input list="organizations" placeholder="Organization" type="text" ng-model="newFighterOrganization" />
-        <datalist id="organizations">
-            <option ng-repeat="organization in organizations">{{organization}}</option>
-        </datalist>
-    </td></tr>
-    <tr><td>Country</td><td>
-        <select ng-model="newFighterCountry">
-            <option ng-repeat="(countryCode,country) in countries" data-image="Content/flags/{{countryCode}}.svg" value="{{countryCode}}">{{country}}</option>
-        </select>
-    </td></tr>
-    <tr><td colspan="2"><button ng-click="competitionAddFighter()">Add</button></td></tr>
-</table>
-
-
-<input type="file" onchange="angular.element(this).scope().uploadFighters( this.files[0] )" />
-

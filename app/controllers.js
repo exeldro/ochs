@@ -10,6 +10,9 @@ app.controller('OchsController',
         $scope.ochsHub.client.addMatch = function (data) {
             $scope.$broadcast('addMatch', data);
         };
+        $scope.ochsHub.client.removeMatch = function (data) {
+            $scope.$broadcast('removeMatch', data);
+        };
         $scope.ochsHub.client.updateCompetition = function (data) {
             $scope.$broadcast('updateCompetition', data);
         };
@@ -133,7 +136,19 @@ app.controller("CompetitionController", function ($scope, $http, $routeParams, $
     $scope.$on('addMatch', function (event, args) {
         if ($scope.currentCompetition && $scope.currentCompetition.Id === args.CompetitionId) {
             $scope.currentCompetition.Matches.push(args);
+            $scope.currentCompetition.MatchesTotal++;
             $scope.$apply();
+        }
+    });
+    $scope.$on('removeMatch', function (event, args) {
+        if ($scope.currentCompetition && $scope.currentCompetition.Matches) {
+            for (var i = 0; i < $scope.currentCompetition.Matches.length; i++) {
+                if ($scope.currentCompetition.Matches[i].Id === args) {
+                    $scope.currentCompetition.Matches.splice(i, 1);
+                    $scope.currentCompetition.MatchesTotal--;
+                    $scope.$apply();
+                }
+            }
         }
     });
     $scope.$on('updatePhase', function (event, args) {
@@ -149,6 +164,7 @@ app.controller("CompetitionController", function ($scope, $http, $routeParams, $
     $scope.$on('addPhase', function (event, args) {
         if ($scope.currentCompetition && $scope.currentCompetition.Id === args.CompetitionId) {
             $scope.currentCompetition.Phases.push(args);
+            $scope.currentCompetition.PhasesTotal++;
             $scope.$apply();
         }
     });
@@ -200,7 +216,19 @@ app.controller("PhaseController", function ($scope, $http, $routeParams, $interv
     $scope.$on('addMatch', function (event, args) {
         if ($scope.currentPhase && $scope.currentPhase.Id === args.PhaseId) {
             $scope.currentPhase.Matches.push(args);
+            $scope.currentPhase.MatchesTotal++;
             $scope.$apply();
+        }
+    });
+    $scope.$on('removeMatch', function (event, args) {
+        if ($scope.currentPhase && $scope.currentPhase.Matches) {
+            for (var i = 0; i < $scope.currentPhase.Matches.length; i++) {
+                if ($scope.currentPhase.Matches[i].Id === args) {
+                    $scope.currentPhase.Matches.splice(i, 1);
+                    $scope.currentPhase.MatchesTotal--;
+                    $scope.$apply();
+                }
+            }
         }
     });
     $scope.$on('updatePool', function (event, args) {
@@ -216,6 +244,7 @@ app.controller("PhaseController", function ($scope, $http, $routeParams, $interv
     $scope.$on('addPool', function (event, args) {
         if ($scope.currentPhase && $scope.currentPhase.Id === args.PhaseId) {
             $scope.currentPhase.Pools.push(args);
+            $scope.currentPhase.PoolsTotal++;
             $scope.$apply();
         }
     });
@@ -255,9 +284,24 @@ app.controller("PoolController", function ($scope, $http, $routeParams, $interva
     $scope.$on('addMatch', function (event, args) {
         if ($scope.currentPool && $scope.currentPool.Id === args.PoolId) {
             $scope.currentPool.Matches.push(args);
+            $scope.currentPool.MatchesTotal++;
             $scope.$apply();
         }
     });
+    $scope.$on('removeMatch', function (event, args) {
+        if ($scope.currentPool && $scope.currentPool.Matches) {
+            for (var i = 0; i < $scope.currentPool.Matches.length; i++) {
+                if ($scope.currentPool.Matches[i].Id === args) {
+                    $scope.currentPool.Matches.splice(i, 1);
+                    $scope.currentPool.MatchesTotal--;
+                    $scope.$apply();
+                }
+            }
+        }
+    });
+    $scope.generateMatches = function() {
+        $scope.$parent.ochsHub.invoke("PoolGenerateMatches", $scope.poolId);
+    }
 });
 
 app.controller("ListMatchesController", function ($scope, $http) {

@@ -82,7 +82,7 @@ namespace Ochs
                         return;
 
                     var lastEvent = match.Events.OrderBy(x => x.CreatedDateTime).Last();
-                    if(lastEvent.CreatedDateTime < DateTime.Now.AddSeconds(-30))
+                    if(lastEvent.CreatedDateTime < DateTime.Now.AddSeconds(-300))
                         return;
 
                     if (!HasMatchRights(session, match, UserRoles.Scorekeeper))
@@ -476,113 +476,189 @@ namespace Ochs
                 }
             }
         }
-        public void CompetitionAddFight(Guid competiotionId, string matchName, string phaseName, string poolName, DateTime? plannedDateTime, Guid blueFighterId, Guid redFighterId)
+
+        public void CompetitionAddFight(Guid competiotionId, string matchName, string phaseName, string poolName,
+            DateTime? plannedDateTime, Guid blueFighterId, Guid redFighterId)
+        {
+            using (var session = NHibernateHelper.OpenSession())
+            using (var transaction = session.BeginTransaction())
+            {
+                var competition = session.Get<Competition>(competiotionId);
+                if (competition == null)
+                    return;
+
+                if (!HasOrganizationRights(session, competition.Organization, UserRoles.Admin))
+                    return;
+
+                var blueFighter = session.Get<Person>(blueFighterId);
+                if (blueFighter == null)
+                    return;
+
+                var redFighter = session.Get<Person>(redFighterId);
+                if (redFighter == null)
+                    return;
+
+                if (blueFighter == redFighter)
+                    return;
+
+                Phase phase = null;
+                if (!string.IsNullOrWhiteSpace(phaseName))
+                {
+                    phase = session.QueryOver<Phase>()
+                        .Where(x => x.Competition == competition && x.Name.IsInsensitiveLike(phaseName))
+                        .SingleOrDefault();
+                    if (phase == null)
+                    {
+                        phase = new Phase
+                        {
+                            Name = phaseName,
+                            Competition = competition
+                        };
+                        session.Save(phase);
+                        competition.Phases.Add(phase);
+                    }
+
+                    if (phase.Fighters.All(x => x.Id != blueFighter.Id))
+                    {
+                        phase.Fighters.Add(blueFighter);
+                        session.Update(phase);
+                    }
+
+                    if (phase.Fighters.All(x => x.Id != redFighter.Id))
+                    {
+                        phase.Fighters.Add(redFighter);
+                        session.Update(phase);
+                    }
+                }
+
+                Pool pool = null;
+                if (!string.IsNullOrWhiteSpace(poolName) && phase != null)
+                {
+                    pool = session.QueryOver<Pool>().Where(x => x.Phase == phase && x.Name.IsInsensitiveLike(poolName))
+                        .SingleOrDefault();
+                    if (pool == null)
+                    {
+                        pool = new Pool
+                        {
+                            Name = poolName,
+                            Phase = phase
+                        };
+                        session.Save(pool);
+                        phase.Pools.Add(pool);
+                    }
+
+                    if (pool.Fighters.All(x => x.Id != blueFighter.Id))
+                    {
+                        pool.Fighters.Add(blueFighter);
+                        session.Update(pool);
+                    }
+
+                    if (pool.Fighters.All(x => x.Id != redFighter.Id))
+                    {
+                        pool.Fighters.Add(redFighter);
+                        session.Update(pool);
+                    }
+                }
+
+                var uniqueName = matchName;
+                if (string.IsNullOrWhiteSpace(matchName))
+                {
+                    matchName = "Match";
+                    uniqueName = matchName + " 1";
+                }
+
+                var i = 1;
+                while (competition.Matches.Any(x =>
+                    string.Equals(x.Name, uniqueName, StringComparison.InvariantCultureIgnoreCase)))
+                {
+                    uniqueName = matchName + " " + i;
+                    i++;
+                }
+
+                var match = new Match
+                {
+                    Name = uniqueName,
+                    FighterRed = redFighter,
+                    FighterBlue = blueFighter,
+                    Competition = competition,
+                    Phase = phase,
+                    Pool = pool,
+                    PlannedDateTime = plannedDateTime
+                };
+                session.Save(match);
+                competition.Matches.Add(match);
+                transaction.Commit();
+                Clients.All.addMatch(new MatchView(match));
+            }
+        }
+
+
+        public void PoolGenerateMatches(Guid poolId)
         {
             using (var session = NHibernateHelper.OpenSession())
             {
-                using (var transaction = session.BeginTransaction())
+                var pool = session.Get<Pool>(poolId);
+                if (pool == null)
+                    return;
+
+                if(pool.Fighters.Count <= 1)
+                    return;
+
+                if (!HasOrganizationRights(session, pool.Phase.Competition.Organization, UserRoles.Admin))
+                    return;
+
+                if (!pool.Matches.Any(x => x.Started))
                 {
-                    var competition = session.Get<Competition>(competiotionId);
-                    if (competition == null)
-                        return;
-
-                    if (!HasOrganizationRights(session, competition.Organization, UserRoles.Admin))
-                        return;
-
-                    var blueFighter = session.Get<Person>(blueFighterId);
-                    if (blueFighter == null)
-                        return;
-
-                    var redFighter = session.Get<Person>(redFighterId);
-                    if(redFighter==null)
-                        return;
-
-                    if(blueFighter==redFighter)
-                        return;
-
-                    Phase phase = null;
-                    if (!string.IsNullOrWhiteSpace(phaseName))
+                    while (pool.Matches.Count > 0)
                     {
-                        phase = session.QueryOver<Phase>().Where(x => x.Competition == competition && x.Name.IsInsensitiveLike(phaseName)).SingleOrDefault();
-                        if (phase == null)
+                        var match = pool.Matches.First();
+                        Clients.All.removeMatch(match.Id);
+                        pool.Matches.Remove(match);
+                        using (var transaction = session.BeginTransaction())
                         {
-                            phase = new Phase
-                            {
-                                Name = phaseName,
-                                Competition = competition
-                            };
-                            session.Save(phase);
-                            competition.Phases.Add(phase);
-                        }
-
-                        if (phase.Fighters.All(x => x.Id != blueFighter.Id))
-                        {
-                            phase.Fighters.Add(blueFighter);
-                            session.Update(phase);
-                        }
-                        if (phase.Fighters.All(x => x.Id != redFighter.Id))
-                        {
-                            phase.Fighters.Add(redFighter);
-                            session.Update(phase);
+                            session.Delete(match);
+                            transaction.Commit();
                         }
                     }
+                }
 
-                    Pool pool = null;
-                    if (!string.IsNullOrWhiteSpace(poolName) && phase != null)
-                    {
-                        pool = session.QueryOver<Pool>().Where(x => x.Phase == phase && x.Name.IsInsensitiveLike(poolName)).SingleOrDefault();
-                        if (pool == null)
-                        {
-                            pool = new Pool
-                            {
-                                Name = poolName,
-                                Phase = phase
-                            };
-                            session.Save(pool);
-                            phase.Pools.Add(pool);
-                        }
-                        if (pool.Fighters.All(x => x.Id != blueFighter.Id))
-                        {
-                            pool.Fighters.Add(blueFighter);
-                            session.Update(pool);
-                        }
-                        if (pool.Fighters.All(x => x.Id != redFighter.Id))
-                        {
-                            pool.Fighters.Add(redFighter);
-                            session.Update(pool);
-                        }
-                    }
+                var matchCounter = 1;
+                while (true)
+                {
+                    var fighterBlue = pool.Fighters
+                        .OrderBy(x => pool.Matches.Count(y => y.FighterBlue?.Id == x.Id || y.FighterRed?.Id == x.Id))
+                        .First();
+                    var fighterRed = pool.Fighters.Where(x =>
+                            x.Id != fighterBlue.Id && !pool.Matches.Any(y =>
+                                (y.FighterBlue.Id == fighterBlue.Id && y.FighterRed.Id == x.Id) ||
+                                (y.FighterRed.Id == fighterBlue.Id && y.FighterBlue.Id == x.Id)))
+                        .OrderBy(x => pool.Matches.Count(y => y.FighterBlue?.Id == x.Id || y.FighterRed?.Id == x.Id))
+                        .FirstOrDefault();
+                    if (fighterRed == null)
+                        break;
 
-                    var uniqueName = matchName;
-                    if (string.IsNullOrWhiteSpace(matchName))
-                    {
-                        matchName = "Match";
-                        uniqueName = matchName + " 1";
-                    }
-
-                    var i = 1;
-                    while (competition.Matches.Any(x => string.Equals(x.Name, uniqueName, StringComparison.InvariantCultureIgnoreCase)))
-                    {
-                        uniqueName = matchName + " "+i;
-                        i++;
-                    }
 
                     var match = new Match
                     {
-                        Name = uniqueName,
-                        FighterRed = redFighter,
-                        FighterBlue = blueFighter,
-                        Competition = competition,
-                        Phase = phase,
-                        Pool = pool,
-                        PlannedDateTime = plannedDateTime
+                        Name = "Match " + matchCounter.ToString().PadLeft(4),
+                        FighterBlue = fighterBlue,
+                        FighterRed = fighterRed,
+                        Competition = pool.Phase.Competition,
+                        Phase = pool.Phase,
+                        Pool = pool
                     };
-                    session.Save(match);
-                    competition.Matches.Add(match);
-                    transaction.Commit();
+                    pool.Matches.Add(match);
+                    using (var transaction = session.BeginTransaction())
+                    {
+                        session.Save(match);
+                        transaction.Commit();
+                    }
                     Clients.All.addMatch(new MatchView(match));
+                    matchCounter++;
                 }
+
             }
+
         }
     }
 }

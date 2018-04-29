@@ -20,8 +20,10 @@ namespace Ochs
             : (!string.IsNullOrWhiteSpace(_match.Pool?.Location) ? _match.Pool.Location : _match.Phase?.Location);
         public virtual string FighterBlue => _match.FighterBlue?.ToString();
         public virtual Guid? FighterBlueId => _match.FighterBlue?.Id;
+        public virtual string FighterBlueCountryCode => _match.FighterBlue?.CountryCode;
         public virtual string FighterRed => _match.FighterRed?.ToString();
         public virtual Guid? FighterRedId => _match.FighterRed?.Id;
+        public virtual string FighterRedCountryCode => _match.FighterRed?.CountryCode;
         public virtual string Result => _match.Result.ToString();
         public virtual string Organization => _match.Competition?.Organization?.Name;
         public virtual Guid? OrganizationId => _match.Competition?.Organization?.Id;

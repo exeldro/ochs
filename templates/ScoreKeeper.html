@@ -7,6 +7,14 @@
             {{currentMatch.FighterRed}}
         </div>
     </div>
+    <div class="row d-none d-sm-flex">
+        <div class="col-6 bg-blue" align="left">
+            {{currentMatch.FighterBlueOrganization}}
+        </div>
+        <div class="col-6 bg-red" align="right">
+            {{currentMatch.FighterRedOrganization}}
+        </div>
+    </div>
     <div class="row">
         <div class="col-12" align="center">
             {{currentMatch.LiveTime | timespan}}<br/>

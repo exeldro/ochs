@@ -113,11 +113,11 @@ namespace Ochs
                         try
                         {
                             var fields = parser.ReadFields();
-                            if(fields == null || fields.Length < 3)
+                            if(fields == null || fields.Length < 2)
                                 continue;
                             Person fighter;
                             var countryIndex = 1;
-                            if (fields.Length > 4)
+                            if (fields.Length >= 4)
                             {
                                 countryIndex = 3;
                                 if (string.IsNullOrWhiteSpace(fields[0]) || string.IsNullOrWhiteSpace(fields[2]))
@@ -198,7 +198,7 @@ namespace Ochs
                                         string.Equals(alias, fields[organizationIndex], StringComparison.InvariantCultureIgnoreCase)));
                                 if (organization == null)
                                 {
-                                    var multiOrganization = fields[organizationIndex].Split('/', '\\', ',');
+                                    var multiOrganization = fields[organizationIndex].Split('/', '\\', ',', '+');
                                     if (multiOrganization.Length > 1 && organizations.Any(x =>
                                             string.Equals(x.Name, multiOrganization[0].Trim(), StringComparison.InvariantCultureIgnoreCase) ||
                                             x.Aliases.Any(alias =>

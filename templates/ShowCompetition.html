@@ -1,5 +1,6 @@
 ﻿<h2>Competition {{currentCompetition.Name}}</h2>
 
+<h3>Matches {{currentCompetition.MatchesTotal}}</h3>
 <label>Search: <input type="text" ng-model="searchMatchText"></label>
 <table>
     <tr>
@@ -45,7 +46,7 @@
 
 <br />
 <br />
-
+<h3>Phases {{currentCompetition.PhasesTotal}}</h3>
 <table>
     <tr><th>Phase</th><th>Location</th></tr>
     <tr ng-repeat="phase in currentCompetition.Phases">
@@ -58,6 +59,7 @@
         <td><button ng-click="createCompetitionPhase()">Create</button></td>
     </tr>
 </table>
+<h3>Fighters {{currentCompetition.FightersTotal}}</h3>
 <label>Search: <input type="text" ng-model="searchFighterText"></label>
 <table>
     <tr><th>Blue</th><th>Red</th>

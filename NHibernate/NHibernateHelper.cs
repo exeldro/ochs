@@ -18,12 +18,10 @@ namespace Ochs
             get
             {
                 if (_sessionFactory != null) return _sessionFactory;
-                _sessionFactory = Fluently.Configure().Database(
-                    SQLiteConfiguration.Standard
-                        .UsingFile("ochs.db"))
-                        .Mappings(m =>m.FluentMappings.AddFromAssemblyOf<Program>())
-                        .ExposeConfiguration(c => new SchemaUpdate(c).Execute(true,true))
-                        .BuildSessionFactory();
+                _sessionFactory = Fluently.Configure(new Configuration().Configure())
+                    .Mappings(m =>m.FluentMappings.AddFromAssemblyOf<Program>())
+                    .ExposeConfiguration(c => new SchemaUpdate(c).Execute(true,true))
+                    .BuildSessionFactory();
                 using (var session = _sessionFactory.OpenSession())
                 {
                     if (session.QueryOver<User>().RowCount() == 0)

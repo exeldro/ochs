@@ -17,6 +17,7 @@ namespace Ochs
         public Guid? PhaseId => _pool.Phase?.Id;
         public string Competition => _pool.Phase?.Competition?.Name;
         public Guid? CompetitionId => _pool.Phase?.Competition?.Id;
+        public DateTime? PlannedDateTime => _pool.PlannedDateTime;
 
     }
 }

@@ -9,6 +9,8 @@ namespace Ochs
         public virtual Competition Competition { get; set; }
         public virtual int PhaseOrder { get; set; }
         public virtual PhaseType PhaseType { get; set; }
+
+        public virtual bool Elimination => PhaseType == PhaseType.SingleElimination || PhaseType == PhaseType.DoubleElimination;
         public virtual string Name { get; set; }
         public virtual string Location { get; set; }
         public virtual IList<Match> Matches { get; set; } = new List<Match>();

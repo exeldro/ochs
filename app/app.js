@@ -67,9 +67,21 @@ app.config(['$routeProvider',
                 templateUrl: 'templates/ScoreKeeper.html',
                 controller: 'MatchController'
             }).
-            when('/ShowSingleElimination/:id', {
-                templateUrl: 'templates/ShowSingleElimination.html',
+            when('/ShowPhaseElimination/:phaseId', {
+                templateUrl: 'templates/ShowElimination.html',
                 controller: 'EliminationController'
+            }).
+            when('/ShowPoolElimination/:poolId', {
+                templateUrl: 'templates/ShowElimination.html',
+                controller: 'EliminationController'
+            }).
+            when('/ShowPhaseRanking/:phaseId', {
+                templateUrl: 'templates/ShowRanking.html',
+                controller: 'RankingController'
+            }).
+            when('/ShowPoolRanking/:poolId', {
+                templateUrl: 'templates/ShowRanking.html',
+                controller: 'RankingController'
             }).
             otherwise({
                 redirectTo: '/Welcome'

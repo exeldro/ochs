@@ -107,7 +107,6 @@ app.controller("ListCompetitionsController", function ($scope, $http) {
 });
 app.controller("CompetitionController", function ($scope, $http, $routeParams, $interval) {
     $scope.competitionId = $routeParams.competitionId;
-    //$scope.newFightPlanned = Date();
     $http.get("api/Competition/Get/" + $routeParams.competitionId).then(function (response) {
         $scope.currentCompetition = response.data;
     });
@@ -249,7 +248,7 @@ app.controller("PhaseController", function ($scope, $http, $routeParams, $interv
         }
     });
     $scope.createPhasePool = function () {
-        $scope.$parent.ochsHub.invoke("CreatePhasePool", $scope.phaseId, $scope.newPoolName, $scope.newPoolLocationName);
+        $scope.$parent.ochsHub.invoke("CreatePhasePool", $scope.phaseId, $scope.newPoolName, $scope.newPoolLocationName, $scope.newPoolPlanned);
     };
     $scope.addAllFighters = function() {
         $scope.$parent.ochsHub.invoke("PhaseAddAllFighters", $scope.phaseId);
@@ -308,8 +307,15 @@ app.controller("PoolController", function ($scope, $http, $routeParams, $interva
 });
 
 app.controller("EliminationController", function ($scope, $http, $routeParams, $interval) {
-    $scope.id = $routeParams.id;
-    $http.get("api/Phase/GetElimination/" + $routeParams.id).then(function (response) {
+    var url = "";
+    if ($routeParams.poolId) {
+        url = "api/Pool/GetElimination/" + $routeParams.poolId;
+    }else if ($routeParams.phaseId) {
+            url = "api/Phase/GetElimination/" + $routeParams.phaseId;
+        } else {
+            return;
+        }
+    $http.get(url).then(function (response) {
         $scope.currentElimination = response.data;
         var bracketdata = {
             teams: [],
@@ -363,6 +369,20 @@ app.controller("EliminationController", function ($scope, $http, $routeParams, $
         }
     });
 });
+app.controller("RankingController",
+    function($scope, $http, $routeParams, $interval) {
+        var url = "";
+        if ($routeParams.poolId) {
+            url = "api/Pool/GetRanking/" + $routeParams.poolId;
+        } else if ($routeParams.phaseId) {
+            url = "api/Phase/GetRanking/" + $routeParams.phaseId;
+        } else {
+            return;
+        }
+        $http.get(url).then(function(response) {
+            $scope.rankings = response.data;
+        });
+    });
 
 app.controller("ListMatchesController", function ($scope, $http) {
     $http.get("api/Match/All")
@@ -375,7 +395,7 @@ app.controller("LoginController", function ($scope, $location, $http) {
             if (result) {
                 $scope.$parent.username = $scope.username;
                 $scope.$parent.reconnectSignalR();
-                $location.path("ListCompetitions");
+                $location.path("Welcome");
             }
         });
     };

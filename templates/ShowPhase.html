@@ -1,11 +1,17 @@
 ﻿<h2><a href="#!ShowCompetition/{{currentPhase.CompetitionId}}">{{currentPhase.Competition}}</a> - {{currentPhase.Name}}</h2>
 
+<a ng-show="currentPhase.Elimination && currentPhase.MatchesTotal > 0" href="#!ShowPhaseElimination/{{currentPhase.Id}}">Eliminations</a><br />
+<a ng-show="currentPhase.MatchesFinished > 0" href="#!ShowPhaseRanking/{{currentPhase.Id}}">Rankings</a><br />
+
+
+
 <h3>Pools {{currentPhase.PoolsTotal}}</h3>
 <table>
-    <tr><th>Pool</th><th>Location</th><th>Fighters</th><th>Matches</th></tr>
+    <tr><th>Pool</th><th>Location</th><th>Planned</th><th>Fighters</th><th>Matches</th></tr>
     <tr ng-repeat="pool in currentPhase.Pools">
         <td><a href="#!ShowPool/{{pool.Id}}">{{ pool.Name }}</a></td>
         <td>{{ pool.Location }}</td>
+        <td>{{ pool.PlannedDateTime | date:'yyyy-MM-dd HH:mm:ss'}}</td>
         <td>{{ pool.FightersTotal }}</td>
         <td>
             <i class="fa fa-calendar" aria-hidden="true"></i> {{pool.MatchesTodo}}
@@ -16,10 +22,11 @@
     <tr>
         <td><input type="text" ng-model="newPoolName" /></td>
         <td><input type="text" ng-model="newPoolLocationName" /></td>
+        <td><input placeholder="yyyy-MM-ddTHH:mm:ss" type="datetime-local" ng-model="newPoolPlanned" /></td>
         <td><button ng-click="createPhasePool()">Create</button></td>
     </tr>
 </table>
-<button ng-show="currentPhase.PoolsTotal > 0" ng-click="distributeFighters()">Distribute fighters over the pools</button>
+<button ng-show="currentPhase.PoolsTotal > 0 && currentPhase.FightersTotal > 0" ng-click="distributeFighters()">Distribute fighters over the pools</button>
 <br />
 <h3>Fighters {{currentPhase.FightersTotal}}</h3>
 <label>Search: <input type="text" ng-model="searchFighterText"></label>

@@ -141,8 +141,7 @@ namespace Ochs
             //TODO check matchrules for CountUnclearExchange
             match.ExchangeCount = match.Events.Count(x => x.Type != MatchEventType.WarningBlue &&
                                                           x.Type != MatchEventType.WarningRed &&
-                                                          x.Type != MatchEventType.PenaltyBlue &&
-                                                          x.Type != MatchEventType.PenaltyRed);
+                                                          x.Type != MatchEventType.Penalty);
             match.DoubleCount = match.Events.Count(x => x.Type == MatchEventType.DoubleHit);
             match.ScoreRed = match.Events.Sum(x => x.PointsRed < 0 ? x.PointsRed : (x.PointsRed > x.PointsBlue ? x.PointsRed - x.PointsBlue : 0));
             match.ScoreBlue = match.Events.Sum(x => x.PointsBlue < 0 ? x.PointsBlue : (x.PointsBlue > x.PointsRed ? x.PointsBlue - x.PointsRed : 0));
@@ -274,12 +273,274 @@ namespace Ochs
                     transaction.Commit();
                 }
                 Clients.All.updateMatch(new MatchWithEventsView(match));
-                //TODO update rankings 
-                if (matchResult != MatchResult.None)
+                UpdateRankings(session, match);
+
+            }
+        }
+
+        private void UpdateRankings(ISession session, Match match)
+        {
+            if (match.Pool != null)
+            {
+                var rankings = session.QueryOver<PoolRanking>().Where(x => x.Pool == match.Pool).List().Cast<Ranking>().ToList();
+                UpdateRankingsInternal(session, rankings, match.Pool.Matches, () => new PoolRanking {Pool = match.Pool});
+            }
+
+            if (match.Phase != null)
+            {
+                var rankings = session.QueryOver<PhaseRanking>().Where(x => x.Phase == match.Phase).List().Cast<Ranking>().ToList();
+                UpdateRankingsInternal(session, rankings, match.Phase.Matches, () => new PhaseRanking {Phase = match.Phase});
+            }
+        }
+
+        private void UpdateRankingsInternal(ISession session, IList<Ranking> rankings, IList<Match> matches, Func<Ranking> createRanking)
+        {
+            var rankingRules = new RankingRules();
+            // clear ranking stats
+            foreach (var ranking in rankings)
+            {
+                ranking.Rank = null;
+                ranking.Matches = 0;
+                ranking.DoubleHits = 0;
+                ranking.Exchanges = 0;
+                ranking.HitsGiven = 0;
+                ranking.HitsReceived = 0;
+                ranking.Losses = 0;
+                ranking.Draws = 0;
+                ranking.Wins = 0;
+                ranking.Warnings = 0;
+                ranking.Penalties = 0;
+                ranking.MatchPoints = 0;
+            }
+            //calc ranking stats
+            foreach (var match in matches)
+            {
+                if(!match.Finished)
+                    continue;
+                var rankingBlue = rankings.SingleOrDefault(x => x.Person == match.FighterBlue);
+                if (rankingBlue == null)
                 {
-                    //TODO asign winner to next match
+                    rankingBlue = createRanking();
+                    rankingBlue.Person = match.FighterBlue;
+                    rankings.Add(rankingBlue);
                 }
 
+                UpdateRankingMatch(rankingBlue, rankingRules, match, true);
+                var rankingRed = rankings.SingleOrDefault(x => x.Person == match.FighterRed);
+                if (rankingRed == null)
+                {
+                    rankingRed = createRanking();
+                    rankingRed.Person = match.FighterRed;
+                    rankings.Add(rankingRed);
+                }
+                UpdateRankingMatch(rankingRed, rankingRules, match, false);
+                
+            }
+            //calc ranking
+            var order = rankings.OrderBy(x => x.Disqualified);
+            foreach (var rankingStat in rankingRules.Sorting)
+            {
+                if (rankingStat == RankingStat.MatchPoints)
+                {
+                    order = order.ThenByDescending(x=>x.MatchPointsPerMatch);
+                }else if (rankingStat == RankingStat.DoubleHits)
+                {
+                    order = order.ThenBy(x => x.DoubleHitsPerMatch);
+                }else if (rankingStat == RankingStat.HitRatio)
+                {
+                    order = order.ThenByDescending(x => x.HitRatio);
+                }else if (rankingStat == RankingStat.WinRatio)
+                {
+                    order = order.ThenByDescending(x => x.WinRatio);
+                }else if (rankingStat == RankingStat.Penalties)
+                {
+                    order = order.ThenBy(x => x.Penalties);
+                }else if (rankingStat == RankingStat.Warnings)
+                {
+                    order = order.ThenBy(x => x.Warnings);
+                }
+            }
+
+            using (var transaction = session.BeginTransaction())
+            {
+                var orderedRankings = order.ToList();
+                orderedRankings[0].Rank = 1;
+                session.SaveOrUpdate(orderedRankings[0]);
+                for (var rankingIndex = 1; rankingIndex < orderedRankings.Count; rankingIndex++)
+                {
+                    if (orderedRankings[rankingIndex].Disqualified)
+                        continue;
+                    var same = true;
+                    foreach (var rankingStat in rankingRules.Sorting)
+                    {
+                        if (rankingStat == RankingStat.MatchPoints)
+                        {
+                            same = same && (orderedRankings[rankingIndex].MatchPointsPerMatch !=
+                                            orderedRankings[rankingIndex - 1].MatchPointsPerMatch);
+                        }
+                        else if (rankingStat == RankingStat.DoubleHits)
+                        {
+                            same = same && (orderedRankings[rankingIndex].DoubleHitsPerMatch !=
+                                            orderedRankings[rankingIndex - 1].DoubleHitsPerMatch);
+                        }
+                        else if (rankingStat == RankingStat.HitRatio)
+                        {
+                            same = same && (orderedRankings[rankingIndex].HitRatio !=
+                                            orderedRankings[rankingIndex - 1].HitRatio);
+                        }
+                        else if (rankingStat == RankingStat.WinRatio)
+                        {
+                            same = same && (orderedRankings[rankingIndex].WinRatio !=
+                                            orderedRankings[rankingIndex - 1].WinRatio);
+                        }
+                        else if (rankingStat == RankingStat.Penalties)
+                        {
+                            same = same && (orderedRankings[rankingIndex].Penalties !=
+                                            orderedRankings[rankingIndex - 1].Penalties);
+                        }
+                        else if (rankingStat == RankingStat.Warnings)
+                        {
+                            same = same && (orderedRankings[rankingIndex].Warnings !=
+                                            orderedRankings[rankingIndex - 1].Warnings);
+                        }
+                    }
+
+                    if (same)
+                    {
+                        orderedRankings[rankingIndex].Rank = orderedRankings[rankingIndex - 1].Rank;
+                    }
+                    else
+                    {
+                        orderedRankings[rankingIndex].Rank = rankingIndex + 1;
+                    }
+                    session.SaveOrUpdate(orderedRankings[rankingIndex]);
+                }
+                transaction.Commit();
+            }
+        }
+
+        private void UpdateRankingMatch(Ranking ranking, RankingRules rankingRules, Match match, bool blue)
+        {
+            ranking.Matches++;
+            if (match.Result == MatchResult.Draw)
+            {
+                ranking.Draws++;
+                ranking.MatchPoints += rankingRules.DrawPoints;
+            }
+            else if (match.Result == MatchResult.WinBlue)
+            {
+                if (blue)
+                {
+                    ranking.Wins++;
+                    ranking.MatchPoints += rankingRules.WinPoints;
+                }
+                else
+                {
+                    ranking.Losses++;
+                    ranking.MatchPoints += rankingRules.LossPoints;
+                }
+            }
+            else if (match.Result == MatchResult.WinRed)
+            {
+                if (blue)
+                {
+                    ranking.Losses++;
+                    ranking.MatchPoints += rankingRules.LossPoints;
+                }
+                else
+                {
+                    ranking.Wins++;
+                    ranking.MatchPoints += rankingRules.WinPoints;
+                }
+            }
+            else if (match.Result == MatchResult.ForfeitBlue)
+            {
+                if (!blue)
+                    ranking.MatchPoints += rankingRules.ForfeitPoints;
+            }
+            else if (match.Result == MatchResult.ForfeitRed)
+            {
+                if (blue)
+                    ranking.MatchPoints += rankingRules.ForfeitPoints;
+            }
+            else if (match.Result == MatchResult.DisqualificationBlue)
+            {
+                if (blue)
+                {
+                    ranking.Disqualified = true;
+                }
+                else
+                {
+                    ranking.MatchPoints += rankingRules.DisqualificationPoints;
+                }
+            }
+            else if (match.Result == MatchResult.DisqualificationRed)
+            {
+                if (blue)
+                {
+                    ranking.MatchPoints += rankingRules.DisqualificationPoints;
+                }
+                else
+                {
+                    ranking.Disqualified = true;
+                }
+            }
+
+            if (rankingRules.DoubleReduction > 0 && match.DoubleCount> rankingRules.DoubleReduction)
+            {
+                ranking.MatchPoints -= match.DoubleCount - rankingRules.DoubleReduction;
+            }
+
+            foreach (var matchEvent in match.Events)
+            {
+                if (matchEvent.Type == MatchEventType.Score)
+                {
+                    if (blue)
+                    {
+                        ranking.HitsGiven += matchEvent.PointsBlue;
+                        ranking.HitsReceived += matchEvent.PointsRed;
+                    }
+                    else
+                    {
+                        ranking.HitsGiven += matchEvent.PointsRed;
+                        ranking.HitsReceived += matchEvent.PointsBlue;
+                    }
+                    ranking.Exchanges++;
+                }
+                else if (matchEvent.Type == MatchEventType.Penalty)
+                {
+                    if (blue)
+                    {
+                        ranking.Penalties += Math.Abs(matchEvent.PointsBlue);
+                    }
+                    else
+                    {
+                        ranking.Penalties += Math.Abs(matchEvent.PointsRed);
+                    }
+                }
+                else if (matchEvent.Type == MatchEventType.WarningBlue)
+                {
+                    if (blue)
+                    {
+                        ranking.Warnings++;
+                    }
+                }
+                else if (matchEvent.Type == MatchEventType.WarningRed)
+                {
+                    if (!blue)
+                    {
+                        ranking.Warnings++;
+                    }
+                }
+                else if (matchEvent.Type == MatchEventType.DoubleHit)
+                {
+                    ranking.DoubleHits++;
+                    ranking.Exchanges++;
+                }
+                else if (matchEvent.Type == MatchEventType.UnclearExchange)
+                {
+                    ranking.Exchanges++;
+                }
             }
         }
 

@@ -1,9 +1,12 @@
-﻿namespace Ochs
+﻿using System;
+
+namespace Ochs
 {
     public class Ranking
     {
+        public virtual Guid Id { get; set; }
         public virtual Person Person { get; set; }
-        public virtual int Rank { get; set; }
+        public virtual int? Rank { get; set; }
         public virtual bool Disqualified { get; set; }
         public virtual int MatchPoints { get; set; }
         public virtual int Matches { get; set; }

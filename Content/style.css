@@ -21,3 +21,20 @@ table td input {
 tbody tr:nth-child(odd){
     background-color: #DDDDDD;
 }
+
+div.jQBracket .team:nth-child(1) {
+    background-color: #AAFFFF;
+}
+div.jQBracket .team:nth-child(2) {
+    background-color: #FFAAAA;
+}
+div.jQBracket .team.bye {
+    background-color: #999;
+    color: #000;
+}
+div.jQBracket .team.highlight {
+    background-color: #3c0;
+}
+div.jQBracket .team.na {
+    color: #000;
+}

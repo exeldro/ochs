@@ -32,5 +32,68 @@ namespace Ochs
                 return new PhaseDetailView(phase);
             }
         }
+
+        public BracketView GetElimination(Guid id)
+        {
+            using (var session = NHibernateHelper.OpenSession())
+            {
+                var phase = session.QueryOver<Phase>().Where(x => x.Id == id).SingleOrDefault();
+                if (phase == null)
+                    return null;
+
+                var fighters = phase.Fighters;
+                var roundCount = 0;
+                while (2<<roundCount < fighters.Count)
+                    roundCount++;
+
+                var fighterViews = new List<PersonView>();
+                NHibernateUtil.Initialize(fighters[0].Organizations);
+                fighterViews.Add(new PersonView(fighters[0]));
+                NHibernateUtil.Initialize(fighters[1].Organizations);
+                fighterViews.Add(new PersonView(fighters[1]));
+                for (var round = 1; round <= roundCount; round++)
+                {
+
+                    var fightersToAdd = 1 << round;
+                    var index =  1;
+                    var back = false;
+                    var front = false;
+                    for (var addIndex = 0; addIndex < fightersToAdd; addIndex++)
+                    {
+                        var fighterIndex = fightersToAdd + (addIndex>>1);
+                        if (addIndex % 2 == (front?0:1))
+                        {
+                            fighterIndex = fightersToAdd + fightersToAdd - ((addIndex>>1) + 1);
+                        }
+                        PersonView fighter = null;
+                        if (fighters.Count > fighterIndex)
+                        {
+                            NHibernateUtil.Initialize(fighters[fighterIndex].Organizations);
+                            fighter = new PersonView(fighters[fighterIndex]);
+                        }
+                        if (back)
+                        {
+                            fighterViews.Insert(fighterViews.Count-index, fighter);
+                        }
+                        else
+                        {
+                            fighterViews.Insert(index, fighter);
+                        }
+
+                        if (addIndex % 4 == 1)
+                        {
+                            back = !back;
+                        }
+                        if (addIndex % 4 == 3)
+                        {
+                            index += 4;
+                            front = !front;
+                        }
+                    }
+                }
+                //phase.Fighters
+                return new BracketView{Fighters = fighterViews};
+            }
+        }
     }
 }

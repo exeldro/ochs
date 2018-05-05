@@ -1,4 +1,5 @@
 ﻿<h2><a href="#!ShowCompetition/{{currentPhase.CompetitionId}}">{{currentPhase.Competition}}</a> - {{currentPhase.Name}}</h2>
+
 <h3>Pools {{currentPhase.PoolsTotal}}</h3>
 <table>
     <tr><th>Pool</th><th>Location</th><th>Fighters</th><th>Matches</th></tr>
@@ -18,7 +19,7 @@
         <td><button ng-click="createPhasePool()">Create</button></td>
     </tr>
 </table>
-<button ng-click="distributeFighters()">Distribute fighters over the pools</button>
+<button ng-show="currentPhase.PoolsTotal > 0" ng-click="distributeFighters()">Distribute fighters over the pools</button>
 <br />
 <h3>Fighters {{currentPhase.FightersTotal}}</h3>
 <label>Search: <input type="text" ng-model="searchFighterText"></label>
@@ -39,14 +40,13 @@
     </tr>
 </table>
 <button ng-click="addAllFighters()">Add all from competition</button>
-Add all from phase
-Add top (32) from phase
+
 <h3>Matches {{currentPhase.MatchesTotal}}</h3>
 <label>Search: <input type="text" ng-model="searchMatchText"></label>
 <table>
     <tr>
         <th ng-click="matchSortType = 'Name'; matchSortReverse=!matchSortReverse">Match</th>
-        <th ng-click="matchSortType = 'Pool'; matchSortReverse=!matchSortReverse">Pool</th>
+        <th ng-show="currentPhase.PoolsTotal > 0" ng-click="matchSortType = 'Pool'; matchSortReverse=!matchSortReverse">Pool</th>
         <th>
             <i ng-click="matchSortType = 'PlannedDateTime'; matchSortReverse=!matchSortReverse" class="fa fa-calendar" aria-hidden="true"></i> {{currentPhase.MatchesTodo}}
             <i ng-click="matchSortType = 'StartedDateTime'; matchSortReverse=!matchSortReverse" class="fa fa-play" aria-hidden="true"></i> {{currentPhase.MatchesBusy}}
@@ -57,7 +57,7 @@ Add top (32) from phase
     </tr>
     <tr ng-repeat="match in currentPhase.Matches | filter:searchMatchText | orderBy:matchSortType:matchSortReverse">
         <td>{{ match.Name }}</td>
-        <td><a href="#!ShowPool/{{match.PoolId}}">{{ match.Pool }}</a></td>
+        <td ng-show="currentPhase.PoolsTotal > 0"><a href="#!ShowPool/{{match.PoolId}}">{{ match.Pool }}</a></td>
         <td ng-show="!match.Started && !match.Finished && !match.Planned"></td>
         <td ng-show="!match.Started && !match.Finished && match.Planned"><i class="fa fa-calendar" aria-hidden="true"></i> <time>{{ match.PlannedDateTime | date:'yyyy-MM-dd HH:mm:ss' }}</time></td>
         <td ng-show="match.Started && !match.Finished"><i class="fa fa-play" aria-hidden="true"></i> <time>{{ match.StartedDateTime | date:'yyyy-MM-dd HH:mm:ss' }}</time></td>
@@ -67,3 +67,5 @@ Add top (32) from phase
         <td><i class="fa fa-pencil" aria-hidden="true"></i> <a ng-show="!match.Finished" href="#!ScoreKeeper/{{match.Id}}"><i class="fa fa-play" aria-hidden="true"></i></a></td>
     </tr>
 </table>
+<button ng-show="currentPhase.PoolsTotal == 0 && currentPhase.FightersTotal > 1" ng-click="generateMatches()">Generate Matches</button>
+<button ng-show="currentPhase.MatchesTotal > 0 && currentPhase.FightersTotal > 1" ng-click="generateMatches()">Generate Matches</button>

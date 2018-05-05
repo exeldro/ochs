@@ -28,6 +28,7 @@ namespace Ochs
         public virtual bool CountUnclearExchange { get; set; }
 
         public virtual bool RecordPenalties { get; set; }
+        public virtual int PenaltyScore { get; set; }
 
     }
 

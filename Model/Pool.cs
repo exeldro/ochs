@@ -11,5 +11,6 @@ namespace Ochs
         public virtual IList<Match> Matches { get; set; } = new List<Match>();
         public virtual IList<Person> Fighters { get; set; } = new List<Person>();
         public virtual Phase Phase { get; set; }
+        public virtual DateTime? PlannedDateTime { get; set; }
     }
 }

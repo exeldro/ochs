@@ -9,7 +9,9 @@ namespace Ochs
         {
             Id(x => x.Id);
             References(x => x.Competition).Not.LazyLoad();
+            Map(x => x.PhaseOrder);
             Map(x => x.Name);
+            Map(x => x.PhaseType);
             HasMany(x => x.Matches).Inverse();
             References(x => x.MatchRules);
             HasMany(x => x.Pools).Cascade.DeleteOrphan().Inverse();

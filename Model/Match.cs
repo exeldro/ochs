@@ -43,7 +43,7 @@ namespace Ochs
         Draw,
         ForfeitRed,
         ForfeitBlue,
-        //DisqualificationBlue,
-        //DisqualificationRed
+        DisqualificationBlue,
+        DisqualificationRed
     }
 }

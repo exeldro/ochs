@@ -140,7 +140,9 @@
     <Compile Include="Model\Match.cs" />
     <Compile Include="Model\Organization.cs" />
     <Compile Include="Model\Phase.cs" />
+    <Compile Include="Model\PhaseRanking.cs" />
     <Compile Include="Model\Pool.cs" />
+    <Compile Include="Model\Ranking.cs" />
     <Compile Include="Model\RankingRules.cs" />
     <Compile Include="Model\UserRole.cs" />
     <Compile Include="NHibernate\CompetitionMap.cs" />
@@ -165,6 +167,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Model\User.cs" />
+    <Compile Include="ViewModel\BracketView.cs" />
     <Compile Include="ViewModel\PhaseFighterView.cs" />
     <Compile Include="ViewModel\OrganizationDetailView.cs" />
     <Compile Include="ViewModel\PhasePoolView.cs" />
@@ -971,6 +974,9 @@
     <Content Include="Content\flags\zw.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\jquery.bracket.min.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\style.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -1015,6 +1021,9 @@
     </Content>
     <Content Include="Scripts\jquery-3.3.1.slim.js" />
     <Content Include="Scripts\jquery-3.3.1.slim.min.js" />
+    <Content Include="Scripts\jquery.bracket.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\jquery.signalR-2.2.3.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -1036,6 +1045,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="templates\EditUser.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="templates\ShowSingleElimination.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="templates\ListUsers.html">

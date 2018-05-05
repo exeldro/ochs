@@ -79,6 +79,7 @@ namespace Ochs
                                 {
                                     Name = fields[0]
                                 };
+                                organizations.Add(organization);
                                 using (var transaction = session.BeginTransaction())
                                 {
                                     session.Save(organization);

@@ -67,6 +67,10 @@ app.config(['$routeProvider',
                 templateUrl: 'templates/ScoreKeeper.html',
                 controller: 'MatchController'
             }).
+            when('/ShowSingleElimination/:id', {
+                templateUrl: 'templates/ShowSingleElimination.html',
+                controller: 'EliminationController'
+            }).
             otherwise({
                 redirectTo: '/Welcome'
             });

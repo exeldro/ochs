@@ -169,13 +169,13 @@ app.controller("CompetitionController", function ($scope, $http, $routeParams, $
         }
     });
     $scope.createCompetitionPhase = function () {
-        $scope.$parent.ochsHub.invoke("CreateCompetitionPhase", $scope.competitionId, $scope.newPhaseName, $scope.newPhaseLocationName);
+        $scope.$parent.ochsHub.invoke("CreateCompetitionPhase", $scope.competitionId, $scope.newPhaseName, $scope.newPhaseType, $scope.newPhaseLocationName);
     };
     $scope.competitionAddFighter = function () {
         $scope.$parent.ochsHub.invoke("CompetitionAddFighter", $scope.competitionId, $scope.newFighterFirstName, $scope.newFighterLastNamePrefix, $scope.newFighterLastName, $scope.newFighterOrganization, $scope.newFighterCountry);
     };
     $scope.competitionAddFight = function () {
-        $scope.$parent.ochsHub.invoke("CompetitionAddFight", $scope.competitionId, $scope.newFightName, $scope.newFightPhaseName, $scope.newFightPoolName, $scope.newFightPlanned, $scope.newFightBlueFighterId, $scope.newFightRedFighterId);
+        $scope.$parent.ochsHub.invoke("CompetitionAddFight", $scope.competitionId, $scope.newFightName, $scope.newFightPlanned, $scope.newFightBlueFighterId, $scope.newFightRedFighterId);
     };
     $scope.uploadFighters = function(fighterFile) {
         $http.post("api/Competition/UploadFighters/"+$scope.competitionId, fighterFile)
@@ -257,6 +257,9 @@ app.controller("PhaseController", function ($scope, $http, $routeParams, $interv
     $scope.distributeFighters = function() {
         $scope.$parent.ochsHub.invoke("PhaseDistributeFighters", $scope.phaseId);
     }
+    $scope.generateMatches = function() {
+        $scope.$parent.ochsHub.invoke("PhaseGenerateMatches", $scope.phaseId);
+    }
 });
 
 
@@ -302,6 +305,63 @@ app.controller("PoolController", function ($scope, $http, $routeParams, $interva
     $scope.generateMatches = function() {
         $scope.$parent.ochsHub.invoke("PoolGenerateMatches", $scope.poolId);
     }
+});
+
+app.controller("EliminationController", function ($scope, $http, $routeParams, $interval) {
+    $scope.id = $routeParams.id;
+    $http.get("api/Phase/GetElimination/" + $routeParams.id).then(function (response) {
+        $scope.currentElimination = response.data;
+        var bracketdata = {
+            teams: [],
+            results: [[]]
+        };
+        for (var i = 0; i < response.data.Fighters.length; i += 2) {
+            bracketdata.teams.push([response.data.Fighters[i], response.data.Fighters[i+1]]);
+        }
+        $('#bracket').bracket({
+            init: bracketdata, 
+            onMatchClick: function(data) {
+                $('#matchCallback').text("onclick(data: '" + data + "')");
+            },
+            decorator: {
+                edit: function () { }, render: function(container, data, score, state) {
+                    switch(state) {
+                    case "empty-bye":
+                        container.append("No fighter");
+                        container.parent().addClass("bye");
+                        return;
+                    case "empty-tbd":
+                        container.append("Upcoming");
+                        container.parent().addClass("tbd");
+                        return;
+ 
+                    case "entry-default-win":
+                        container.parent().addClass("bye");
+                    case "entry-no-score":
+                    case "entry-complete":
+                        if (data.CountryCode) {
+                            container.append('<img src="Content/flags/' + data.CountryCode + '.svg" width="27" height="18" /> ');
+                        } else {
+                            container.append('<img src="Content/flags/none.svg" width="27" height="18" /> ');
+                        }
+                        container.append(data.DisplayName);
+                        //container.append(data);
+                        return;
+                    }
+                }},
+            teamWidth: 200
+        });
+    });
+    $scope.$on('updateMatch', function (event, args) {
+        if ($scope.currentPhase && $scope.currentPhase.Matches) {
+            for (var i = 0; i < $scope.currentPhase.Matches.length; i++) {
+                if ($scope.currentPhase.Matches[i].Id === args.Id) {
+                    $scope.currentPhase.Matches[i] = args;
+                    $scope.$apply();
+                }
+            }
+        }
+    });
 });
 
 app.controller("ListMatchesController", function ($scope, $http) {

@@ -12,6 +12,7 @@ namespace Ochs
             HasManyToMany(x => x.Fighters);
             References(x => x.Phase).Not.LazyLoad();
             Map(x => x.Location);
+            Map(x => x.PlannedDateTime);
         }
     }
 }

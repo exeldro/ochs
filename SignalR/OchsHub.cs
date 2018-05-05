@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -139,7 +140,9 @@ namespace Ochs
         {
             //TODO check matchrules for CountUnclearExchange
             match.ExchangeCount = match.Events.Count(x => x.Type != MatchEventType.WarningBlue &&
-                                                          x.Type != MatchEventType.WarningRed);
+                                                          x.Type != MatchEventType.WarningRed &&
+                                                          x.Type != MatchEventType.PenaltyBlue &&
+                                                          x.Type != MatchEventType.PenaltyRed);
             match.DoubleCount = match.Events.Count(x => x.Type == MatchEventType.DoubleHit);
             match.ScoreRed = match.Events.Sum(x => x.PointsRed < 0 ? x.PointsRed : (x.PointsRed > x.PointsBlue ? x.PointsRed - x.PointsBlue : 0));
             match.ScoreBlue = match.Events.Sum(x => x.PointsBlue < 0 ? x.PointsBlue : (x.PointsBlue > x.PointsRed ? x.PointsBlue - x.PointsRed : 0));
@@ -224,53 +227,63 @@ namespace Ochs
         {
             using (var session = NHibernateHelper.OpenSession())
             {
-                using (var transaction = session.BeginTransaction())
+                var match = session.Get<Match>(matchGuid);
+                if (!HasMatchRights(session, match, UserRoles.Scorekeeper))
+                    return;
+
+                if (match.Finished && !HasMatchRights(session, match, UserRoles.ScoreValidator))
+                    return;
+
+                if (match.Validated && !HasMatchRights(session, match, UserRoles.Admin))
+                    return;
+
+                if (matchResult == MatchResult.None)
                 {
-                    var match = session.Get<Match>(matchGuid);
-                    if (!HasMatchRights(session, match, UserRoles.Scorekeeper))
+                    if (!HasMatchRights(session, match, UserRoles.Admin))
                         return;
-
-                    if (match.Finished && !HasMatchRights(session, match, UserRoles.ScoreValidator))
-                        return;
-
-                    if (match.Validated && !HasMatchRights(session, match, UserRoles.Admin))
-                        return;
-
                     match.Result = matchResult;
-                    if (matchResult == MatchResult.None)
+                    if (match.FinishedDateTime.HasValue)
+                    {
+                        match.FinishedDateTime = null;
+                    }
+                }
+                else
+                {
+                    if (!match.StartedDateTime.HasValue)
                     {
                         if (!HasMatchRights(session, match, UserRoles.Admin))
                             return;
-                        if (match.FinishedDateTime.HasValue)
-                        {
-                            match.FinishedDateTime = null;
-                        }
+                        match.StartedDateTime = DateTime.Now;
                     }
-                    else
+
+                    match.Result = matchResult;
+                    if (!match.FinishedDateTime.HasValue)
                     {
-                        if (!match.StartedDateTime.HasValue)
-                        {
-                            if (!HasMatchRights(session, match, UserRoles.Admin))
-                                return;
-                            match.StartedDateTime = DateTime.Now;
-                        }
-                        if (!match.FinishedDateTime.HasValue)
-                        {
-                            match.FinishedDateTime = DateTime.Now;
-                        }
-                        if (match.TimeRunningSince.HasValue)
-                        {
-                            match.Time = match.LiveTime;
-                            match.TimeRunningSince = null;
-                        }
+                        match.FinishedDateTime = DateTime.Now;
                     }
-                    transaction.Commit();
-                    Clients.All.updateMatch(new MatchWithEventsView(match));
+
+                    if (match.TimeRunningSince.HasValue)
+                    {
+                        match.Time = match.LiveTime;
+                        match.TimeRunningSince = null;
+                    }
                 }
+                using (var transaction = session.BeginTransaction())
+                {
+                    session.Update(match);
+                    transaction.Commit();
+                }
+                Clients.All.updateMatch(new MatchWithEventsView(match));
+                //TODO update rankings 
+                if (matchResult != MatchResult.None)
+                {
+                    //TODO asign winner to next match
+                }
+
             }
         }
 
-        public void CreateCompetitionPhase(Guid competiotionId, string phaseName, string location = null)
+        public void CreateCompetitionPhase(Guid competiotionId, string phaseName, PhaseType phaseType, string location = null)
         {
             if(string.IsNullOrWhiteSpace(phaseName))
                 return;
@@ -293,14 +306,17 @@ namespace Ochs
                         {
                             Name = phaseName,
                             Competition = competition,
-                            Location = location
+                            Location = location,
+                            PhaseType = phaseType,
+                            PhaseOrder = (competition.Phases.Max(x => x.PhaseOrder as int?) ?? 0) + 1
                         };
                         session.Save(phase);
                         transaction.Commit();
                         Clients.All.addPhase(new PhaseView(phase));
-                    }else if (!string.IsNullOrWhiteSpace(location) && phase.Location != location)
+                    }else if (phase.Location != location || phase.PhaseType != phaseType)
                     {
                         phase.Location = location;
+                        phase.PhaseType = phaseType;
                         session.Update(phase);
                         transaction.Commit();
                         Clients.All.updatePhase(new PhaseView(phase));
@@ -375,7 +391,7 @@ namespace Ochs
             }
         }
 
-        public void CreatePhasePool(Guid phaseId, string poolName, string location = null)
+        public void CreatePhasePool(Guid phaseId, string poolName, string location = null, DateTime? plannedDateTime = null)
         {
             if (string.IsNullOrWhiteSpace(poolName))
                 return;
@@ -396,15 +412,17 @@ namespace Ochs
                     {
                         Name = poolName,
                         Phase = phase,
-                        Location = location
+                        Location = location,
+                        PlannedDateTime = plannedDateTime
                     };
                     session.Save(pool);
                     transaction.Commit();
                     Clients.All.addPool(new PhasePoolView(pool));
                 }
-                else if (!string.IsNullOrWhiteSpace(location) && pool.Location != location)
+                else if (pool.Location != location || pool.PlannedDateTime != plannedDateTime)
                 {
                     pool.Location = location;
+                    pool.PlannedDateTime = plannedDateTime;
                     session.Update(pool);
                     transaction.Commit();
                     Clients.All.updatePool(new PoolDetailView(pool));
@@ -477,8 +495,7 @@ namespace Ochs
             }
         }
 
-        public void CompetitionAddFight(Guid competiotionId, string matchName, string phaseName, string poolName,
-            DateTime? plannedDateTime, Guid blueFighterId, Guid redFighterId)
+        public void CompetitionAddFight(Guid competiotionId, string matchName, DateTime? plannedDateTime, Guid blueFighterId, Guid redFighterId)
         {
             using (var session = NHibernateHelper.OpenSession())
             using (var transaction = session.BeginTransaction())
@@ -501,65 +518,6 @@ namespace Ochs
                 if (blueFighter == redFighter)
                     return;
 
-                Phase phase = null;
-                if (!string.IsNullOrWhiteSpace(phaseName))
-                {
-                    phase = session.QueryOver<Phase>()
-                        .Where(x => x.Competition == competition && x.Name.IsInsensitiveLike(phaseName))
-                        .SingleOrDefault();
-                    if (phase == null)
-                    {
-                        phase = new Phase
-                        {
-                            Name = phaseName,
-                            Competition = competition
-                        };
-                        session.Save(phase);
-                        competition.Phases.Add(phase);
-                    }
-
-                    if (phase.Fighters.All(x => x.Id != blueFighter.Id))
-                    {
-                        phase.Fighters.Add(blueFighter);
-                        session.Update(phase);
-                    }
-
-                    if (phase.Fighters.All(x => x.Id != redFighter.Id))
-                    {
-                        phase.Fighters.Add(redFighter);
-                        session.Update(phase);
-                    }
-                }
-
-                Pool pool = null;
-                if (!string.IsNullOrWhiteSpace(poolName) && phase != null)
-                {
-                    pool = session.QueryOver<Pool>().Where(x => x.Phase == phase && x.Name.IsInsensitiveLike(poolName))
-                        .SingleOrDefault();
-                    if (pool == null)
-                    {
-                        pool = new Pool
-                        {
-                            Name = poolName,
-                            Phase = phase
-                        };
-                        session.Save(pool);
-                        phase.Pools.Add(pool);
-                    }
-
-                    if (pool.Fighters.All(x => x.Id != blueFighter.Id))
-                    {
-                        pool.Fighters.Add(blueFighter);
-                        session.Update(pool);
-                    }
-
-                    if (pool.Fighters.All(x => x.Id != redFighter.Id))
-                    {
-                        pool.Fighters.Add(redFighter);
-                        session.Update(pool);
-                    }
-                }
-
                 var uniqueName = matchName;
                 if (string.IsNullOrWhiteSpace(matchName))
                 {
@@ -581,8 +539,6 @@ namespace Ochs
                     FighterRed = redFighter,
                     FighterBlue = blueFighter,
                     Competition = competition,
-                    Phase = phase,
-                    Pool = pool,
                     PlannedDateTime = plannedDateTime
                 };
                 session.Save(match);
@@ -592,6 +548,20 @@ namespace Ochs
             }
         }
 
+        public void PhaseGenerateMatches(Guid phaseId)
+        {
+            using (var session = NHibernateHelper.OpenSession())
+            {
+                var phase = session.Get<Phase>(phaseId);
+                if (phase == null)
+                    return;
+
+                if (!HasOrganizationRights(session, phase.Competition.Organization, UserRoles.Admin))
+                    return;
+
+                GenerateMatches(session, phase.PhaseType, phase.Matches, phase.Fighters, phase);
+            }
+        }
 
         public void PoolGenerateMatches(Guid poolId)
         {
@@ -607,58 +577,154 @@ namespace Ochs
                 if (!HasOrganizationRights(session, pool.Phase.Competition.Organization, UserRoles.Admin))
                     return;
 
-                if (!pool.Matches.Any(x => x.Started))
+                GenerateMatches(session, pool.Phase.PhaseType, pool.Matches, pool.Fighters, pool.Phase, pool);
+            }
+        }
+
+
+
+        private void GenerateMatches(ISession session, PhaseType phaseType, IList<Match> matches, IList<Person> fighters, Phase phase, Pool pool = null)
+        {
+            if(fighters.Count <= 1)
+                return;
+
+            if (!matches.Any(x => x.Started))
+            {
+                while (matches.Count > 0)
                 {
-                    while (pool.Matches.Count > 0)
+                    var match = matches.First();
+                    Clients.All.removeMatch(match.Id);
+                    matches.Remove(match);
+                    using (var transaction = session.BeginTransaction())
                     {
-                        var match = pool.Matches.First();
-                        Clients.All.removeMatch(match.Id);
-                        pool.Matches.Remove(match);
-                        using (var transaction = session.BeginTransaction())
-                        {
-                            session.Delete(match);
-                            transaction.Commit();
-                        }
+                        session.Delete(match);
+                        transaction.Commit();
                     }
                 }
+            }
 
-                var matchCounter = 1;
-                while (true)
+            if (phaseType == PhaseType.SingleRoundRobin)
+            {
+                GenerateSingleRoundRobinMatches(session, matches, fighters, phase, pool);
+            }
+            else if (phaseType == PhaseType.SingleElimination)
+            {
+                GenerateSingleEliminationMatches(session, matches, fighters.Count, phase, pool);
+                AssignFightersToSingleEliminationMatches(session, matches, fighters);
+            }
+        }
+
+        private void AssignFightersToSingleEliminationMatches(ISession session, IList<Match> matches, IList<Person> fighters)
+        {
+            var roundCount = 0;
+            while (2<<roundCount < fighters.Count)
+                roundCount++;
+
+            var maxFighters = 2 << roundCount;
+
+            //for(var fighterNumber = fighters.Max())
+
+        }
+
+        private void GenerateSingleEliminationMatches(ISession session, IList<Match> matches, int fighterCount, Phase phase, Pool pool)
+        {
+            var roundNames = new[]{"Final","Semifinals","Quarterfinals","Eighth-finals","16th-finals","32nd-finals", "64th-finals"};
+            var roundCount = 0;
+            while (2<<roundCount < fighterCount)
+                roundCount++;
+
+            for (var round = roundCount; round > 0; round--)
+            {
+                for (var matchNumber = 1; matchNumber <= (1 << round); matchNumber++)
                 {
-                    var fighterBlue = pool.Fighters
-                        .OrderBy(x => pool.Matches.Count(y => y.FighterBlue?.Id == x.Id || y.FighterRed?.Id == x.Id))
-                        .First();
-                    var fighterRed = pool.Fighters.Where(x =>
-                            x.Id != fighterBlue.Id && !pool.Matches.Any(y =>
-                                (y.FighterBlue.Id == fighterBlue.Id && y.FighterRed.Id == x.Id) ||
-                                (y.FighterRed.Id == fighterBlue.Id && y.FighterBlue.Id == x.Id)))
-                        .OrderBy(x => pool.Matches.Count(y => y.FighterBlue?.Id == x.Id || y.FighterRed?.Id == x.Id))
-                        .FirstOrDefault();
-                    if (fighterRed == null)
-                        break;
-
-
+                    if((matchNumber << 1) > fighterCount)
+                        continue;
                     var match = new Match
                     {
-                        Name = "Match " + matchCounter.ToString().PadLeft(4),
-                        FighterBlue = fighterBlue,
-                        FighterRed = fighterRed,
-                        Competition = pool.Phase.Competition,
-                        Phase = pool.Phase,
+                        Name = roundNames[round] + " match " + matchNumber.ToString().PadLeft(3),
+                        Competition = phase.Competition,
+                        Phase = phase,
                         Pool = pool
                     };
-                    pool.Matches.Add(match);
+                    matches.Add(match);
                     using (var transaction = session.BeginTransaction())
                     {
                         session.Save(match);
                         transaction.Commit();
                     }
                     Clients.All.addMatch(new MatchView(match));
-                    matchCounter++;
                 }
-
             }
 
+            var finalmatch = new Match
+            {
+                Name = "Third place match",
+                Competition = phase.Competition,
+                Phase = phase,
+                Pool = pool
+            };
+            matches.Add(finalmatch);
+            using (var transaction = session.BeginTransaction())
+            {
+                session.Save(finalmatch);
+                transaction.Commit();
+            }
+            Clients.All.addMatch(new MatchView(finalmatch));
+            finalmatch = new Match
+            {
+                Name = roundNames[0],
+                Competition = phase.Competition,
+                Phase = phase,
+                Pool = pool
+            };
+            matches.Add(finalmatch);
+            using (var transaction = session.BeginTransaction())
+            {
+                session.Save(finalmatch);
+                transaction.Commit();
+            }
+            Clients.All.addMatch(new MatchView(finalmatch));
+        }
+
+        private void GenerateSingleRoundRobinMatches(ISession session, IList<Match> matches, IList<Person> fighters,
+            Phase phase, Pool pool)
+        {
+
+            var matchCounter = 1;
+            while (true)
+            {
+                var fighterBlue = fighters
+                    .OrderBy(x => matches.Count(y => y.FighterBlue?.Id == x.Id || y.FighterRed?.Id == x.Id))
+                    .First();
+                var fighterRed = fighters.Where(x =>
+                        x.Id != fighterBlue.Id && !matches.Any(y =>
+                            (y.FighterBlue.Id == fighterBlue.Id && y.FighterRed.Id == x.Id) ||
+                            (y.FighterRed.Id == fighterBlue.Id && y.FighterBlue.Id == x.Id)))
+                    .OrderBy(x => matches.Count(y => y.FighterBlue?.Id == x.Id || y.FighterRed?.Id == x.Id))
+                    .FirstOrDefault();
+                if (fighterRed == null)
+                    break;
+
+
+                var match = new Match
+                {
+                    Name = "Match " + matchCounter.ToString().PadLeft(4),
+                    FighterBlue = fighterBlue,
+                    FighterRed = fighterRed,
+                    Competition = phase.Competition,
+                    Phase = phase,
+                    Pool = pool
+                };
+                matches.Add(match);
+                using (var transaction = session.BeginTransaction())
+                {
+                    session.Save(match);
+                    transaction.Commit();
+                }
+
+                Clients.All.addMatch(new MatchView(match));
+                matchCounter++;
+            }
         }
     }
 }

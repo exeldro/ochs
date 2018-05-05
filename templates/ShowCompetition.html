@@ -5,10 +5,20 @@
     <tr ng-repeat="phase in currentCompetition.Phases">
         <td><a href="#!ShowPhase/{{phase.Id}}">{{ phase.Name }}</a></td>
         <td>{{ phase.Location }}</td>
+        <td>{{ phase.PhaseType }}</td>
     </tr>
     <tr>
         <td><input type="text" ng-model="newPhaseName" /></td>
         <td><input type="text" ng-model="newPhaseLocationName" /></td>
+        <td>
+            <select ng-model="newPhaseType">
+                <option value="SingleRoundRobin">Single round-robin</option>
+                <option value="DoubleRoundRobin">Double round-robin</option>
+                <option value="Swiss">Swiss</option>
+                <option value="SingleElimination">Single-elimination</option>
+                <option value="DoubleElimination">Double-elimination</option>
+            </select>
+        </td>
         <td><button ng-click="createCompetitionPhase()">Create</button></td>
     </tr>
 </table>
@@ -55,7 +65,10 @@
     </tr>
     <tr><td colspan="2"><button ng-click="competitionAddFighter()">Add</button></td></tr>
 </table>
+
 <input type="file" onchange="angular.element(this).scope().uploadFighters( this.files[0] )" />
+
+
 
 <h3>Matches {{currentCompetition.MatchesTotal}}</h3>
 <label>Search: <input type="text" ng-model="searchMatchText"></label>
@@ -84,18 +97,12 @@
         <td class="bg-lightred">{{ match.FighterRed }}</td>
         <td><i class="fa fa-pencil" aria-hidden="true"></i> <a ng-show="!match.Finished" href="#!ScoreKeeper/{{match.Id}}"><i class="fa fa-play" aria-hidden="true"></i></a></td>
     </tr>
+</table>
+
+<table>
     <tr>
-        <td><input placeholder="Fight name" type="text" ng-model="newFightName" /></td>
-        <td>
-            <input placeholder="Phase" type="text" ng-model="newFightPhaseName" list="phases" />
-            <datalist id="phases">
-                <option ng-repeat="phase in currentCompetition.Phases">{{phase.Name}}</option>
-            </datalist>
-        </td>
-        <td>
-            <input placeholder="Pool" type="text" ng-model="newFightPoolName" list="pools" />
-        </td>
-        <td><input placeholder="yyyy-MM-ddTHH:mm:ss" type="datetime-local" ng-model="newFightPlanned" /></td>
+        <td>Fight name</td><td><input placeholder="Fight name" type="text" ng-model="newFightName" /></td>
+        <td>Planned</td><td><input placeholder="yyyy-MM-ddTHH:mm:ss" type="datetime-local" ng-model="newFightPlanned" /></td>
         <td colspan="2">Select fighters in fighter list</td>
         <td><button ng-click="competitionAddFight()">Add</button></td>
     </tr>

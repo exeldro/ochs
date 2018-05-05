@@ -13,6 +13,7 @@ namespace Ochs
         public Guid Id => _phase.Id;
         public string Name => _phase.Name;
         public string Location => _phase.Location;
+        public string PhaseType => _phase.PhaseType.ToString();
 
         public string Competition => _phase.Competition?.Name;
         public Guid? CompetitionId => _phase.Competition?.Id;

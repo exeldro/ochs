@@ -22,8 +22,12 @@ namespace Ochs
         Score,
         WarningRed,
         WarningBlue,
+        PenaltyRed,
+        PenaltyBlue,
         DoubleHit,
         AfterBlow,
-        UnclearExchange
+        UnclearExchange,
+        ProtestBlue,
+        ProtestRed
     }
 }

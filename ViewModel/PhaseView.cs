@@ -15,6 +15,7 @@ namespace Ochs
         public string Location => _phase.Location;
         public string PhaseType => _phase.PhaseType.ToString();
         public bool Elimination => _phase.Elimination;
+        public int PhaseOrder => _phase.PhaseOrder;
 
         public string Competition => _phase.Competition?.Name;
         public Guid? CompetitionId => _phase.Competition?.Id;

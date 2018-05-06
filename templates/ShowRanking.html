@@ -1,40 +1,40 @@
-﻿<table >
+﻿<table class="table-header-rotated" >
     <tr>
         <th>#</th>
         <th>Fighter</th>
-        <th>M</th>
-        <th>W</th>
-        <th>D</th>
-        <th>L</th>
-        <th>R</th>
-        <th>MP</th>
-        <th>MPPM</th>
-        <th>D</th>
-        <th>DPM</th>
-        <th>P</th>
-        <th>W</th>
-        <th>E</th>
-        <th>HG</th>
-        <th>HR</th>
-        <th>R</th>
+        <th class="rotate-45"><div><span>Matches</span></div></th>
+        <th class="rotate-45"><div><span>Wins</span></div></th>
+        <th class="rotate-45"><div><span>Draws</span></div></th>
+        <th class="rotate-45"><div><span>Losses</span></div></th>
+        <th class="rotate-45"><div><span>Win ratio</span></div></th>
+        <th class="rotate-45"><div><span>Match points</span></div></th>
+        <th class="rotate-45"><div><span>Match points per match</span></div></th>
+        <th class="rotate-45"><div><span>Double hits</span></div></th>
+        <th class="rotate-45"><div><span>Double hits per match</span></div></th>
+        <th class="rotate-45"><div><span>Penalties</span></div></th>
+        <th class="rotate-45"><div><span>Warnings</span></div></th>
+        <th class="rotate-45"><div><span>Exchanges</span></div></th>
+        <th class="rotate-45"><div><span>Hits given</span></div></th>
+        <th class="rotate-45"><div><span>Hits recieved</span></div></th>
+        <th class="rotate-45"><div><span>Hit ratio</span></div></th>
     </tr>
     <tr ng-repeat="ranking in rankings">
         <td>{{ranking.Rank}}</td>
         <td>{{ranking.Fighter.DisplayName}}</td>
-        <td>{{ranking.Matches}}</td>
-        <td>{{ranking.Wins}}</td>
-        <td>{{ranking.Draws}}</td>
-        <td>{{ranking.Losses}}</td>
-        <td>{{ranking.WinRatio}}</td>
-        <td>{{ranking.MatchPoints}}</td>
-        <td>{{ranking.MatchPointsPerMatch}}</td>
-        <td>{{ranking.DoubleHits}}</td>
-        <td>{{ranking.DoubleHitsPerMatch}}</td>
-        <td>{{ranking.Penalties}}</td>
-        <td>{{ranking.Warnings}}</td>
-        <td>{{ranking.Exchanges}}</td>
-        <td>{{ranking.HitsGiven}}</td>
-        <td>{{ranking.HitsReceived}}</td>
-        <td>{{ranking.HitRatio}}</td>
+        <td class="rotate-45">{{ranking.Matches}}</td>
+        <td class="rotate-45">{{ranking.Wins}}</td>
+        <td class="rotate-45">{{ranking.Draws}}</td>
+        <td class="rotate-45">{{ranking.Losses}}</td>
+        <td class="rotate-45">{{ranking.WinRatio}}</td>
+        <td class="rotate-45">{{ranking.MatchPoints}}</td>
+        <td class="rotate-45">{{ranking.MatchPointsPerMatch}}</td>
+        <td class="rotate-45">{{ranking.DoubleHits}}</td>
+        <td class="rotate-45">{{ranking.DoubleHitsPerMatch}}</td>
+        <td class="rotate-45">{{ranking.Penalties}}</td>
+        <td class="rotate-45">{{ranking.Warnings}}</td>
+        <td class="rotate-45">{{ranking.Exchanges}}</td>
+        <td class="rotate-45">{{ranking.HitsGiven}}</td>
+        <td class="rotate-45">{{ranking.HitsReceived}}</td>
+        <td class="rotate-45">{{ranking.HitRatio}}</td>
     </tr>
 </table>

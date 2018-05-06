@@ -26,5 +26,18 @@ namespace Ochs
                 return new PoolDetailView(pool);
             }
         }
+        public IList<RankingView> GetRanking(Guid id)
+        {
+            using (var session = NHibernateHelper.OpenSession())
+            {
+                var rankings = session.QueryOver<PoolRanking>().Where(x => x.Pool.Id == id).List();
+                foreach (var ranking in rankings)
+                {
+                    if(ranking.Person != null)
+                        NHibernateUtil.Initialize(ranking.Person.Organizations);
+                }
+                return rankings.Select(x => new RankingView(x)).OrderBy(x=>x.Disqualified).ThenBy(x=>x.Rank).ToList();
+            }
+        }
     }
 }

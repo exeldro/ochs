@@ -13,6 +13,7 @@ namespace Ochs
 {
     public class OchsHub : Hub
     {
+        private static readonly string[] roundNames = {"Final","Semifinals","Quarterfinals","Eighth-finals","16th-finals","32nd-finals", "64th-finals"};
         public void GetCurrentUser()
         {
             var i = Context.Request.User?.Identity as ClaimsIdentity;
@@ -283,17 +284,17 @@ namespace Ochs
             if (match.Pool != null)
             {
                 var rankings = session.QueryOver<PoolRanking>().Where(x => x.Pool == match.Pool).List().Cast<Ranking>().ToList();
-                UpdateRankingsInternal(session, rankings, match.Pool.Matches, () => new PoolRanking {Pool = match.Pool});
+                UpdateRankingsInternal(session, rankings, match.Pool.Matches, () => new PoolRanking {Pool = match.Pool}, match.Phase.Elimination);
             }
 
             if (match.Phase != null)
             {
                 var rankings = session.QueryOver<PhaseRanking>().Where(x => x.Phase == match.Phase).List().Cast<Ranking>().ToList();
-                UpdateRankingsInternal(session, rankings, match.Phase.Matches, () => new PhaseRanking {Phase = match.Phase});
+                UpdateRankingsInternal(session, rankings, match.Phase.Matches, () => new PhaseRanking {Phase = match.Phase}, match.Phase.Elimination);
             }
         }
 
-        private void UpdateRankingsInternal(ISession session, IList<Ranking> rankings, IList<Match> matches, Func<Ranking> createRanking)
+        private void UpdateRankingsInternal(ISession session, IList<Ranking> rankings, IList<Match> matches, Func<Ranking> createRanking, bool elimination)
         {
             var rankingRules = new RankingRules();
             // clear ranking stats
@@ -334,9 +335,9 @@ namespace Ochs
                     rankings.Add(rankingRed);
                 }
                 UpdateRankingMatch(rankingRed, rankingRules, match, false);
-                
             }
             //calc ranking
+            //TODO for elimination don't use rankingRules.Sorting
             var order = rankings.OrderBy(x => x.Disqualified);
             foreach (var rankingStat in rankingRules.Sorting)
             {
@@ -889,7 +890,6 @@ namespace Ochs
 
         private void GenerateSingleEliminationMatches(ISession session, IList<Match> matches, int fighterCount, Phase phase, Pool pool)
         {
-            var roundNames = new[]{"Final","Semifinals","Quarterfinals","Eighth-finals","16th-finals","32nd-finals", "64th-finals"};
             var roundCount = 0;
             while (2<<roundCount < fighterCount)
                 roundCount++;

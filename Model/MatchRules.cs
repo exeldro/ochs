@@ -25,7 +25,6 @@ namespace Ochs
         public virtual bool DoubleHitScores { get; set; }
 
         public virtual bool RecordUnclearExchanges { get; set; }
-        public virtual bool CountUnclearExchange { get; set; }
 
         public virtual bool RecordPenalties { get; set; }
         public virtual int PenaltyScore { get; set; }

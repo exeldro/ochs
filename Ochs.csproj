@@ -126,6 +126,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Service.cs" />
     <Compile Include="Controller\CompetitionController.cs" />
     <Compile Include="Controller\AuthController.cs" />
     <Compile Include="Controller\CountryController.cs" />

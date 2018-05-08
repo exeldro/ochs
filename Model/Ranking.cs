@@ -13,7 +13,7 @@ namespace Ochs
         public virtual int Wins { get; set; }
         public virtual int Draws { get; set; }
         public virtual int Losses { get; set; }
-        public virtual double WinRatio => Matches == 0 ? 0 : (double) DoubleHits / Matches;
+        public virtual double WinRatio => Matches == 0 ? 0 : (double) Wins / Matches;
         public virtual double MatchPointsPerMatch => Matches == 0 ? 0 : (double)MatchPoints / Matches;
         public virtual int DoubleHits { get; set; }
         public virtual double DoubleHitsPerMatch => Matches == 0 ? 0 : (double) DoubleHits / Matches;

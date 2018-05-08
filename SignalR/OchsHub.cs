@@ -13,7 +13,6 @@ namespace Ochs
 {
     public class OchsHub : Hub
     {
-        private static readonly string[] roundNames = {"Final","Semifinals","Quarterfinals","Eighth-finals","16th-finals","32nd-finals", "64th-finals"};
         public void GetCurrentUser()
         {
             var i = Context.Request.User?.Identity as ClaimsIdentity;
@@ -139,7 +138,6 @@ namespace Ochs
 
         private void UpdateMatchData(Match match)
         {
-            //TODO check matchrules for CountUnclearExchange
             match.ExchangeCount = match.Events.Count(x => x.Type != MatchEventType.WarningBlue &&
                                                           x.Type != MatchEventType.WarningRed &&
                                                           x.Type != MatchEventType.Penalty);
@@ -201,7 +199,6 @@ namespace Ochs
             {
                 using (var transaction = session.BeginTransaction())
                 {
-                    //TODO check rights
                     var match = session.Get<Match>(matchGuid);
                     if (match.TimeRunningSince.HasValue)
                         return;
@@ -274,6 +271,95 @@ namespace Ochs
                     transaction.Commit();
                 }
                 Clients.All.updateMatch(new MatchWithEventsView(match));
+                if (match.Phase?.Elimination ?? false)
+                {
+                    Person winner = null;
+                    Person loser = null;
+                    if (match.Result == MatchResult.WinBlue || match.Result == MatchResult.DisqualificationRed || match.Result == MatchResult.ForfeitRed)
+                    {
+                        winner = match.FighterBlue;
+                        if(match.Result == MatchResult.WinBlue)
+                            loser = match.FighterRed;
+                    }
+                    else if(match.Result == MatchResult.WinRed || match.Result == MatchResult.DisqualificationBlue || match.Result == MatchResult.ForfeitBlue)
+                    {
+                        winner = match.FighterRed;
+                        if(match.Result == MatchResult.WinRed)
+                            loser = match.FighterBlue;
+                    }
+
+                    var round = Service.GetRound(match.Name);
+                    if (round > 0 && winner != null)
+                    {
+                        var matchNumber = Service.GetMatchNumber(match.Name, round);
+                        var nextRound = round-1;
+                        var nextMatchNumber = ((matchNumber - 1) >> 1) + 1;
+                        var nextMatchName = Service.GetMatchName(nextRound, nextMatchNumber);
+                        Match nextMatch = null;
+                        if (match.Pool != null)
+                        {
+                            nextMatch = match.Pool.Matches.SingleOrDefault(x => x.Name == nextMatchName);
+                        }
+                        else if (match.Phase != null)
+                        {
+                            nextMatch = match.Phase.Matches.SingleOrDefault(x => x.Name == nextMatchName);
+                        }
+
+                        if (nextMatch != null)
+                        {
+                            if (matchNumber % 2 == 1)
+                            {
+                                nextMatch.FighterBlue = winner;
+                            }
+                            else
+                            {
+                                nextMatch.FighterRed = winner;
+                            }
+
+                            using (var transaction = session.BeginTransaction())
+                            {
+                                session.Update(nextMatch);
+                                transaction.Commit();
+                            }
+
+                            Clients.All.updateMatch(new MatchView(nextMatch));
+                        }
+
+                        if (round == 1 && loser != null)
+                        {
+                            nextMatchName = Service.GetMatchName(0, 2);
+                            nextMatch = null;
+                            if (match.Pool != null)
+                            {
+                                nextMatch = match.Pool.Matches.SingleOrDefault(x => x.Name == nextMatchName);
+                            }
+                            else if (match.Phase != null)
+                            {
+                                nextMatch = match.Phase.Matches.SingleOrDefault(x => x.Name == nextMatchName);
+                            }
+
+                            if (nextMatch != null)
+                            {
+                                if (matchNumber % 2 == 1)
+                                {
+                                    nextMatch.FighterBlue = loser;
+                                }
+                                else
+                                {
+                                    nextMatch.FighterRed = loser;
+                                }
+
+                                using (var transaction = session.BeginTransaction())
+                                {
+                                    session.Update(nextMatch);
+                                    transaction.Commit();
+                                }
+
+                                Clients.All.updateMatch(new MatchView(nextMatch));
+                            }
+                        }
+                    }
+                }
                 UpdateRankings(session, match);
 
             }
@@ -609,6 +695,38 @@ namespace Ochs
             }
         }
 
+        public void PhaseAddTopFighters(Guid phaseId, int number)
+        {
+            using (var session = NHibernateHelper.OpenSession())
+            using (var transaction = session.BeginTransaction())
+            {
+                var phase = session.Get<Phase>(phaseId);
+                if (phase == null)
+                    return;
+
+                if (!HasOrganizationRights(session, phase.Competition.Organization, UserRoles.Admin))
+                    return;
+
+                var previousPhase = Service.GetPreviousPhase(phase);
+                if(previousPhase == null)
+                    return;
+
+                var rankings = session.QueryOver<PhaseRanking>().Where(x => x.Phase == previousPhase).List();
+                foreach (var phaseRanking in rankings)
+                {
+                    if (phaseRanking.Rank == null || phaseRanking.Rank > number)
+                        continue;
+                    if (phase.Fighters.All(x => x.Id != phaseRanking.Person.Id))
+                    {
+                        phase.Fighters.Add(phaseRanking.Person);
+                    }
+                }
+                session.Update(phase);
+                transaction.Commit();
+                Clients.All.updatePhase(new PhaseDetailView(phase));
+            }
+        }
+
         public void PhaseDistributeFighters(Guid phaseId)
         {
             using (var session = NHibernateHelper.OpenSession())
@@ -821,9 +939,14 @@ namespace Ochs
                 if (!HasOrganizationRights(session, phase.Competition.Organization, UserRoles.Admin))
                     return;
 
-                GenerateMatches(session, phase.PhaseType, phase.Matches, phase.Fighters, phase);
+                var fighters = Service.SortFightersByRanking(session, phase.Fighters, Service.GetPreviousPhase(phase));
+
+                GenerateMatches(session, phase.PhaseType, phase.Matches, fighters, phase);
             }
         }
+
+
+
 
         public void PoolGenerateMatches(Guid poolId)
         {
@@ -839,7 +962,8 @@ namespace Ochs
                 if (!HasOrganizationRights(session, pool.Phase.Competition.Organization, UserRoles.Admin))
                     return;
 
-                GenerateMatches(session, pool.Phase.PhaseType, pool.Matches, pool.Fighters, pool.Phase, pool);
+                var fighters = Service.SortFightersByRanking(session, pool.Fighters, Service.GetPreviousPhase(pool.Phase));
+                GenerateMatches(session, pool.Phase.PhaseType, pool.Matches, fighters, pool.Phase, pool);
             }
         }
 
@@ -878,14 +1002,37 @@ namespace Ochs
 
         private void AssignFightersToSingleEliminationMatches(ISession session, IList<Match> matches, IList<Person> fighters)
         {
+            var sortedFighters = Service.SortFightersByRanking(session, fighters, Service.GetPreviousPhase(matches[0].Phase));
+            var matchedFighters = Service.SingleEliminationMatchedFighters(sortedFighters);
+            var skippedMatches = 0;
+            
             var roundCount = 0;
             while (2<<roundCount < fighters.Count)
                 roundCount++;
 
-            var maxFighters = 2 << roundCount;
 
-            //for(var fighterNumber = fighters.Max())
+            for (var i = 0; i < matchedFighters.Count - 1; i += 2)
+            {
+                
+                if (matchedFighters[i] == null || matchedFighters[i + 1] == null)
+                {
+                    skippedMatches++;
+                }
 
+                var matchNumber = (i >> 1) - skippedMatches+1;
+                var matchName = Service.GetMatchName(roundCount, matchNumber);
+                var match = matches.SingleOrDefault(x => x.Name == matchName);
+                if(match == null)
+                    continue;
+                match.FighterBlue = matchedFighters[i];
+                match.FighterRed = matchedFighters[i + 1];
+                using (var transaction = session.BeginTransaction())
+                {
+                    session.Update(match);
+                    transaction.Commit();
+                }
+                Clients.All.updateMatch(new MatchView(match));
+            }
         }
 
         private void GenerateSingleEliminationMatches(ISession session, IList<Match> matches, int fighterCount, Phase phase, Pool pool)
@@ -902,7 +1049,7 @@ namespace Ochs
                         continue;
                     var match = new Match
                     {
-                        Name = roundNames[round] + " match " + matchNumber.ToString().PadLeft(3),
+                        Name = Service.GetMatchName(round, matchNumber),
                         Competition = phase.Competition,
                         Phase = phase,
                         Pool = pool
@@ -916,10 +1063,9 @@ namespace Ochs
                     Clients.All.addMatch(new MatchView(match));
                 }
             }
-
             var finalmatch = new Match
             {
-                Name = "Third place match",
+                Name = Service.GetMatchName(0, 2),
                 Competition = phase.Competition,
                 Phase = phase,
                 Pool = pool
@@ -933,7 +1079,7 @@ namespace Ochs
             Clients.All.addMatch(new MatchView(finalmatch));
             finalmatch = new Match
             {
-                Name = roundNames[0],
+                Name = Service.GetMatchName(0, 1),
                 Competition = phase.Competition,
                 Phase = phase,
                 Pool = pool

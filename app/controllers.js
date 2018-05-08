@@ -253,6 +253,9 @@ app.controller("PhaseController", function ($scope, $http, $routeParams, $interv
     $scope.addAllFighters = function() {
         $scope.$parent.ochsHub.invoke("PhaseAddAllFighters", $scope.phaseId);
     }
+    $scope.addTopFighters = function() {
+        $scope.$parent.ochsHub.invoke("PhaseAddTopFighters", $scope.phaseId, $scope.topfighters);
+    }
     $scope.distributeFighters = function() {
         $scope.$parent.ochsHub.invoke("PhaseDistributeFighters", $scope.phaseId);
     }

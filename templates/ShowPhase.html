@@ -46,8 +46,8 @@
         <td>{{fighter.Pool}}</td>
     </tr>
 </table>
-<button ng-show="currentPhase.PhaseOrder <= 1" ng-click="addAllFighters()">Add all from competition</button>
-<button ng-show="currentPhase.PhaseOrder > 1" ng-click="addTopFighters()">Add top from previous phase</button>
+<button ng-show="currentPhase.PhaseOrder <= 1" ng-click="addAllFighters()">Add all from competition</button><br/>
+<div ng-show="currentPhase.PhaseOrder > 1"><input type="number" min="2" ng-model="topfighters" max="128"/><button ng-click="addTopFighters()">Add top from previous phase</button></div>
 
 <h3>Matches {{currentPhase.MatchesTotal}}</h3>
 <label>Search: <input type="text" ng-model="searchMatchText"></label>
@@ -76,4 +76,4 @@
     </tr>
 </table>
 <button ng-show="currentPhase.PoolsTotal == 0 && currentPhase.FightersTotal > 1" ng-click="generateMatches()">Generate Matches</button>
-<button ng-show="currentPhase.MatchesTotal > 0 && currentPhase.FightersTotal > 1" ng-click="generateMatches()">Generate Matches</button>
+<button ng-show="currentPhase.MatchesTotal > 0 && currentPhase.FightersTotal > 1" ng-click="fillMatches()">Fill Matches</button>

@@ -1004,7 +1004,6 @@ namespace Ochs
         {
             var sortedFighters = Service.SortFightersByRanking(session, fighters, Service.GetPreviousPhase(matches[0].Phase));
             var matchedFighters = Service.SingleEliminationMatchedFighters(sortedFighters);
-            var skippedMatches = 0;
             
             var roundCount = 0;
             while (2<<roundCount < fighters.Count)
@@ -1013,15 +1012,34 @@ namespace Ochs
 
             for (var i = 0; i < matchedFighters.Count - 1; i += 2)
             {
-                
-                if (matchedFighters[i] == null || matchedFighters[i + 1] == null)
-                {
-                    skippedMatches++;
-                }
-
-                var matchNumber = (i >> 1) - skippedMatches+1;
+                var matchNumber = (i >> 1) +1;
                 var matchName = Service.GetMatchName(roundCount, matchNumber);
                 var match = matches.SingleOrDefault(x => x.Name == matchName);
+                if (matchedFighters[i] == null || matchedFighters[i + 1] == null)
+                {
+                    var fighter = matchedFighters[i] ?? matchedFighters[i + 1];
+                    if(fighter == null)
+                        continue;
+                    matchName = Service.GetMatchName(roundCount-1, (i>>2)+1);
+                    match = matches.SingleOrDefault(x => x.Name == matchName);
+                    if(match == null)
+                        continue;
+                    if (matchNumber % 2 == 1)
+                    {
+                        match.FighterBlue = fighter;
+                    }
+                    else
+                    {
+                        match.FighterRed = fighter;
+                    }
+                    using (var transaction = session.BeginTransaction())
+                    {
+                        session.Update(match);
+                        transaction.Commit();
+                    }
+                    Clients.All.updateMatch(new MatchView(match));
+                    continue;
+                }
                 if(match == null)
                     continue;
                 match.FighterBlue = matchedFighters[i];
@@ -1040,6 +1058,8 @@ namespace Ochs
             var roundCount = 0;
             while (2<<roundCount < fighterCount)
                 roundCount++;
+
+            //TODO fix match numbering in first round
 
             for (var round = roundCount; round > 0; round--)
             {

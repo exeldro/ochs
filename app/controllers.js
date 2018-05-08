@@ -309,15 +309,15 @@ app.controller("PoolController", function ($scope, $http, $routeParams, $interva
     }
 });
 
-app.controller("EliminationController", function ($scope, $http, $routeParams, $interval) {
+app.controller("EliminationController", function ($scope, $http, $routeParams, $interval, $location) {
     var url = "";
     if ($routeParams.poolId) {
         url = "api/Pool/GetElimination/" + $routeParams.poolId;
     }else if ($routeParams.phaseId) {
-            url = "api/Phase/GetElimination/" + $routeParams.phaseId;
-        } else {
-            return;
-        }
+        url = "api/Phase/GetElimination/" + $routeParams.phaseId;
+    } else {
+        return;
+    }
     $http.get(url).then(function (response) {
         $scope.currentElimination = response.data;
         var bracketdata = {
@@ -327,10 +327,41 @@ app.controller("EliminationController", function ($scope, $http, $routeParams, $
         for (var i = 0; i < response.data.Fighters.length; i += 2) {
             bracketdata.teams.push([response.data.Fighters[i], response.data.Fighters[i+1]]);
         }
+        for (var i = 0; i < response.data.Matches.length; i++) {
+            bracketdata.results[0].push([]);
+            for (var j = 0; j < response.data.Matches[i].length; j++) {
+                if (response.data.Matches[i][j]){
+                    if (response.data.Matches[i][j].Finished) {
+                        bracketdata.results[0][i].push([
+                            response.data.Matches[i][j].ScoreBlue, response.data.Matches[i][j].ScoreRed,
+                            response.data.Matches[i][j]
+                        ]);
+                    } else {
+                        bracketdata.results[0][i].push([
+                            null, null,
+                            response.data.Matches[i][j]
+                        ]);
+                    }
+                } else {
+                    bracketdata.results[0][i].push([
+                        null, null, null
+                    ]);
+                }
+            }
+        }
         $('#bracket').bracket({
             init: bracketdata, 
             onMatchClick: function(data) {
-                $('#matchCallback').text("onclick(data: '" + data + "')");
+                if (data) {
+                    if (data.Finished) {
+
+                    } else {
+                        $location.path("ScoreKeeper/"+data.Id);
+                    }
+                    $scope.$apply();
+                } else {
+
+                }
             },
             decorator: {
                 edit: function () { }, render: function(container, data, score, state) {
@@ -413,9 +444,9 @@ app.controller("MatchController", function ($scope, $http, $routeParams, $interv
     $scope.$on('updateMatch', function (event, args) {
         if ($scope.matchId === args.Id) {
             if (!$scope.currentMatch.Finished && args.Finished) {
-                /*if (args.PoolId) {
+                if (args.PoolId) {
                     $location.path("ShowPool/" + args.PoolId);
-                } else */if (args.PhaseId) {
+                } else if (args.PhaseId) {
                     $location.path("ShowPhase/" + args.PhaseId);
                 } else if (args.CompetitionId) {
                     $location.path("ShowCompetition/"+args.CompetitionId);

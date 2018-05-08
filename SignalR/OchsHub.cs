@@ -1059,14 +1059,10 @@ namespace Ochs
             while (2<<roundCount < fighterCount)
                 roundCount++;
 
-            //TODO fix match numbering in first round
-
             for (var round = roundCount; round > 0; round--)
             {
                 for (var matchNumber = 1; matchNumber <= (1 << round); matchNumber++)
                 {
-                    if((matchNumber << 1) > fighterCount)
-                        continue;
                     var match = new Match
                     {
                         Name = Service.GetMatchName(round, matchNumber),

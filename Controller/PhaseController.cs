@@ -61,9 +61,32 @@ namespace Ochs
                     return new PersonView(x);
                 }).ToList();
 
-                //TODO set BracketView.Matches
-                
-                return new BracketView{Fighters = fighterViews};
+                var matchesPerRound = new List<IList<MatchView>>();
+                var roundCount = 0;
+                while (2<<roundCount < fighters.Count)
+                    roundCount++;
+                for (var round = roundCount; round >= 0; round--)
+                {
+                    var matches = new List<MatchView>();
+                    matchesPerRound.Add(matches);
+                    var matchCount = 1 << round;
+                    if (round == 0)
+                        matchCount = 2;
+                    for (var matchNumber = 1; matchNumber <= matchCount; matchNumber++)
+                    {
+                        var matchName = Service.GetMatchName(round, matchNumber);
+                        var match = phase.Matches.SingleOrDefault(x => x.Name == matchName);
+                        if (match == null)
+                        {
+                            matches.Add(null);
+                        }
+                        else
+                        {
+                            matches.Add(new MatchView(match));
+                        }
+                    }
+                }
+                return new BracketView{Fighters = fighterViews, Matches = matchesPerRound};
             }
         }
     }

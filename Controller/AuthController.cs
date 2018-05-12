@@ -102,9 +102,6 @@ namespace Ochs
         [Authorize(Roles = "Admin")]
         public UserRoleView AddRole([FromBody] AddRoleRequest request)
         {
-            if (request.Role == UserRoles.Admin)
-                return null;
-
             if (string.IsNullOrWhiteSpace(request.OrganizationName))
                 return null;
 
@@ -119,20 +116,26 @@ namespace Ochs
                     .SingleOrDefault();
                 if (organization == null)
                 {
-                    organization = new Organization
-                    {
-                        Name = request.OrganizationName
-                    };
-                    session.Save(organization);
+                    return null;
                 }
 
+                //check rights
+                var i = Request.GetOwinContext().Authentication?.User?.Identity as ClaimsIdentity;
+                var idstring = i?.Claims.SingleOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrWhiteSpace(idstring))
+                    return null;
+                var id = new Guid(idstring);
+                var authUser = session.QueryOver<User>().Where(x => x.Id == id).SingleOrDefault();
+                if (authUser == null)
+                    return null;
+
+                if(!authUser.Roles.Any(x=>x.Role == UserRoles.Admin && (x.Organization == null || x.Organization.Id == organization.Id)))
+                    return null;
 
                 var userRole = user.Roles.SingleOrDefault(x => x.Organization == organization && x.Role == request.Role);
                 if (userRole != null)
-                {
-                    transaction.Commit();
                     return null;
-                }
+
                 userRole = new UserRole{Organization = organization, User = user, Role = request.Role};
                 session.Save(userRole);
                 transaction.Commit();

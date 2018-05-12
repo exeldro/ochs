@@ -1,4 +1,5 @@
 ﻿<h2><a href="#!ShowCompetition/{{currentPool.CompetitionId}}">{{currentPool.Competition}}</a> - <a href="#!ShowPhase/{{currentPool.PhaseId}}">{{currentPool.Phase}}</a> - {{currentPool.Name}}</h2>
+<a ng-show="currentPool.Elimination && currentPhase.MatchesTotal > 0" href="#!ShowPoolElimination/{{currentPool.Id}}"><i class="fa fa-sitemap fa-rotate-90"></i> Eliminations</a><br />
 <a ng-show="currentPool.MatchesFinished > 0" href="#!ShowPoolRanking/{{currentPool.Id}}"><i class="fa fa-list-ol"></i> Rankings</a><br />
 <h3>Fighters {{currentPool.FightersTotal}}</h3>
 <table>

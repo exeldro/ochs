@@ -310,15 +310,21 @@ app.controller("PoolController", function ($scope, $http, $routeParams, $interva
 });
 
 app.controller("EliminationController", function ($scope, $http, $routeParams, $interval, $location) {
+    var eliminationUrl = "";
     var url = "";
     if ($routeParams.poolId) {
-        url = "api/Pool/GetElimination/" + $routeParams.poolId;
+        eliminationUrl = "api/Pool/GetElimination/" + $routeParams.poolId;
+        url = "api/Pool/Get/" + $routeParams.poolId;
     }else if ($routeParams.phaseId) {
-        url = "api/Phase/GetElimination/" + $routeParams.phaseId;
+        eliminationUrl = "api/Phase/GetElimination/" + $routeParams.phaseId;
+        url = "api/Phase/Get/" + $routeParams.phaseId;
     } else {
         return;
     }
-    $http.get(url).then(function (response) {
+    $http.get(url).then(function(response) {
+        $scope.current = response.data;
+    });
+    $http.get(eliminationUrl).then(function (response) {
         $scope.currentElimination = response.data;
         var bracketdata = {
             teams: [],

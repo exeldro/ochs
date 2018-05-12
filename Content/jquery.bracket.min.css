@@ -94,10 +94,6 @@ div.jQBracket .team div.label input.error,div.jQBracket .team div.score input.er
 div.jQBracket .team.np {
     background-color:#666;color:#eee
 }
-div.jQBracket .team.na {
-    background-color:#999;
-    color: #000
-}
 div.jQBracket .team.win {
     color:#333
 }

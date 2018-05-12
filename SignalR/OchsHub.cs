@@ -412,7 +412,7 @@ namespace Ochs
                     rankings.Add(rankingBlue);
                 }
 
-                UpdateRankingMatch(rankingBlue, rankingRules, match, true);
+                UpdateRankingMatch(rankingBlue, rankingRules, match, true, elimination);
                 var rankingRed = rankings.SingleOrDefault(x => x.Person == match.FighterRed);
                 if (rankingRed == null)
                 {
@@ -420,10 +420,23 @@ namespace Ochs
                     rankingRed.Person = match.FighterRed;
                     rankings.Add(rankingRed);
                 }
-                UpdateRankingMatch(rankingRed, rankingRules, match, false);
+                UpdateRankingMatch(rankingRed, rankingRules, match, false, elimination);
             }
             //calc ranking
             //TODO for elimination don't use rankingRules.Sorting
+            if (elimination)
+            {
+                using (var transaction = session.BeginTransaction())
+                {
+                    foreach (var ranking in rankings)
+                    {
+                        session.SaveOrUpdate(ranking);
+                    }
+                    transaction.Commit();
+                }
+                return;
+            }
+
             var order = rankings.OrderBy(x => x.Disqualified);
             foreach (var rankingStat in rankingRules.Sorting)
             {
@@ -506,8 +519,9 @@ namespace Ochs
             }
         }
 
-        private void UpdateRankingMatch(Ranking ranking, RankingRules rankingRules, Match match, bool blue)
+        private void UpdateRankingMatch(Ranking ranking, RankingRules rankingRules, Match match, bool blue, bool elimination)
         {
+            var win = false;
             ranking.Matches++;
             if (match.Result == MatchResult.Draw)
             {
@@ -520,6 +534,7 @@ namespace Ochs
                 {
                     ranking.Wins++;
                     ranking.MatchPoints += rankingRules.WinPoints;
+                    win = true;
                 }
                 else
                 {
@@ -538,17 +553,24 @@ namespace Ochs
                 {
                     ranking.Wins++;
                     ranking.MatchPoints += rankingRules.WinPoints;
+                    win = true;
                 }
             }
             else if (match.Result == MatchResult.ForfeitBlue)
             {
                 if (!blue)
+                {
                     ranking.MatchPoints += rankingRules.ForfeitPoints;
+                    win = true;
+                }
             }
             else if (match.Result == MatchResult.ForfeitRed)
             {
                 if (blue)
+                {
                     ranking.MatchPoints += rankingRules.ForfeitPoints;
+                    win = true;
+                }
             }
             else if (match.Result == MatchResult.DisqualificationBlue)
             {
@@ -559,6 +581,7 @@ namespace Ochs
                 else
                 {
                     ranking.MatchPoints += rankingRules.DisqualificationPoints;
+                    win = true;
                 }
             }
             else if (match.Result == MatchResult.DisqualificationRed)
@@ -566,10 +589,40 @@ namespace Ochs
                 if (blue)
                 {
                     ranking.MatchPoints += rankingRules.DisqualificationPoints;
+                    win = true;
                 }
                 else
                 {
                     ranking.Disqualified = true;
+                }
+            }
+            if (elimination && match.Finished)
+            {
+                var round = Service.GetRound(match.Name);
+                if (round == 0)
+                {
+                    if (match.Name == Service.GetMatchName(round, 2))
+                    {
+                        ranking.Rank = win ? 3 : 4;
+                    }
+                    else
+                    {
+                        ranking.Rank = win ? 1 : 2;
+                    }
+                }
+                else if(win)
+                {
+                    if (ranking.Rank == null || ranking.Rank > 1 << round)
+                    {
+                        ranking.Rank = 1 << round;
+                    }
+                }
+                else
+                {
+                    if (ranking.Rank == null || ranking.Rank > (1 << round) + 1)
+                    {
+                        ranking.Rank = (1 << round) + 1;
+                    }
                 }
             }
 

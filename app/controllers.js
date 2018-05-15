@@ -446,6 +446,7 @@ app.controller("MatchController", function ($scope, $http, $routeParams, $interv
     $http.get("api/Match/Get/" + $routeParams.matchId).then(function (response) {
         $scope.currentMatch = response.data;
         $scope.matchResult = response.data.Result;
+        $scope.editTime = new Date(1970, 1, 1, 0, 0, response.data.LiveTime);
     });
     $scope.$on('updateMatch', function (event, args) {
         if ($scope.matchId === args.Id) {
@@ -461,11 +462,13 @@ app.controller("MatchController", function ($scope, $http, $routeParams, $interv
                 }
             }
             $scope.currentMatch = args;
+            $scope.editTime = new Date(1970, 1, 1, 0, 0, args.LiveTime);
         }
     });
     $interval(function () {
         if ($scope.currentMatch && $scope.currentMatch.TimeRunning) {
             $scope.currentMatch.LiveTime += 0.01;
+            $scope.editingTime = false;
         }
     }, 10);
     $scope.addMatchEvent = function($pointsBlue,$pointsRed,$eventtype) {
@@ -475,10 +478,21 @@ app.controller("MatchController", function ($scope, $http, $routeParams, $interv
         $scope.$parent.ochsHub.invoke("UndoLastMatchEvent", $scope.matchId);
     }
     $scope.startTime = function() {
+        if ($scope.editingTime) {
+            $scope.changeEditTime();
+        }
         $scope.$parent.ochsHub.invoke("StartTime", $scope.matchId);
     }
     $scope.stopTime = function() {
         $scope.$parent.ochsHub.invoke("StopTime", $scope.matchId);
+    }
+    $scope.changeEditTime = function() {
+        if ($scope.editingTime) {
+            $scope.$parent.ochsHub.invoke("SetTimeMilliSeconds", $scope.matchId,  $scope.editTime - new Date(1970, 1, 1, 0, 0, 0));
+            $scope.editingTime = false;
+        } else if(!$scope.currentMatch.TimeRunning){
+            $scope.editingTime = true;
+        }
     }
     $scope.setMatchResult = function() {
         if ($scope.matchResult)

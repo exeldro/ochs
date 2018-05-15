@@ -83,8 +83,8 @@ namespace Ochs
                         return;
 
                     var lastEvent = match.Events.OrderBy(x => x.CreatedDateTime).Last();
-                    if(lastEvent.CreatedDateTime < DateTime.Now.AddSeconds(-300))
-                        return;
+                    //if(lastEvent.CreatedDateTime < DateTime.Now.AddSeconds(-300))
+                    //    return;
 
                     if (!HasMatchRights(session, match, UserRoles.Scorekeeper))
                         return;
@@ -193,7 +193,12 @@ namespace Ochs
             }
         }
 
-        public void ChangeTime(Guid matchGuid, TimeSpan time)
+        public void SetTimeMilliSeconds(Guid matchGuid, long milliSeconds)
+        {
+            SetTime(matchGuid, new TimeSpan(milliSeconds * 10000));
+        }
+
+        public void SetTime(Guid matchGuid, TimeSpan time)
         {
             using (var session = NHibernateHelper.OpenSession())
             {

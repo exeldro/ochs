@@ -17,9 +17,12 @@
     </div>
     <div class="row">
         <div class="col-12" align="center">
-            {{currentMatch.LiveTime | timespan}}<br/>
-            <button type="button" class="btn" ng-click="startTime()">Start</button>
-            <button type="button" class="btn" ng-click="stopTime()">Stop</button>
+            <span ng-show="!editingTime">{{currentMatch.LiveTime | timespan}}</span>
+            <input type="time" ng-show="editingTime" id="exampleInput" name="input" ng-model="editTime" step="1" required="required" />
+            <br />
+            <button type="button" class="btn" ng-click="startTime()"><i class="fa fa-play" aria-hidden="true"></i></button>
+            <button type="button" class="btn" ng-click="changeEditTime()"><i class="fa fa-pencil" aria-hidden="true"></i></button>
+            <button type="button" class="btn" ng-click="stopTime()"><i class="fa fa-pause" aria-hidden="true"></i></button>
         </div>
     </div>
     <div class="row">
@@ -45,24 +48,23 @@
     <div class="row">
         <div class="col-12" align="center">
             <button type="button" class="btn" ng-click="addMatchEvent(0,0,'DoubleHit')">Double</button>
-            <button type="button" class="btn" ng-click="addMatchEvent(0,0,'AfterBlow')">AfterBlow</button>
+            <button type="button" class="btn" ng-click="addMatchEvent(0,0,'AfterBlow')">After blow</button>
             <button type="button" class="btn" ng-click="addMatchEvent(0,0,'UnclearExchange')">Unclear exchange</button>
             <br />
             {{currentMatch.ExchangeCount}} Exchanges<br />
             {{currentMatch.DoubleCount}} Doubles<br />
-            <button type="button" class="btn" ng-click="undoLastMatchEvent()">Undo Exchange</button>
-            <br/>
             <table>
-                <tr><th> </th><th>Time</th><th>Event</th><th>Blue</th><th>Red</th></tr>
+                <tr><th>Time</th><th>Event</th><th>Blue</th><th>Red</th></tr>
                 <tr ng-repeat="event in currentMatch.Events">
-                    <td>{{ event.Round }}</td>
                     <td>{{ event.Time | timespan }}</td>
                     <td>{{ event.Type }}</td>
                     <td class="bg-blue" align="center">{{ event.PointsBlue }}</td>
                     <td class="bg-red" align="center">{{ event.PointsRed }}</td>
+                    <td ng-show="$last"><button type="button" class="btn" ng-click="undoLastMatchEvent()"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
                 </tr>
             </table>
             <br/>
+            Result:
             <select ng-model="matchResult" bs-selectbox>
                 <option value="None">None</option>
                 <option value="Draw">Draw</option>
@@ -70,6 +72,8 @@
                 <option value="WinRed" class="bg-red">{{currentMatch.FighterRed}} (Red) wins</option>
                 <option value="ForfeitBlue">{{currentMatch.FighterBlue}} (Blue) forfeits</option>
                 <option value="ForfeitRed">{{currentMatch.FighterRed}} (Red) forfeits</option>
+                <option value="DisqualificationBlue">{{currentMatch.FighterBlue}} (Blue) disqualified</option>
+                <option value="DisqualificationRed">{{currentMatch.FighterRed}} (Red) disqualified</option>
             </select> 
             <button type="button" class="btn" ng-click="setMatchResult()">Submit</button>
         </div>

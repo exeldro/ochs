@@ -19,7 +19,7 @@ table td input {
 }
 
 tbody tr:nth-child(odd){
-    background-color: #DDD;
+    background-color: #EEE;
 }
 
 .table-header-rotated th.row-header{
@@ -28,7 +28,7 @@ tbody tr:nth-child(odd){
 
 .table-header-rotated td.rotate-45{
     width: 40px;
-    border-left: 1px solid #ddd;
+    border-left: 1px solid #eee;
     vertical-align: middle;
     text-align: center;
 }
@@ -60,7 +60,7 @@ tbody tr:nth-child(odd){
     transform:skew(-45deg,0deg);
     overflow: hidden;
     border-left: 1px solid #FFF;
-    background-color: #DDDDDD;
+    background-color: #EEE;
 }
 
 .table-header-rotated th.rotate-45 span {

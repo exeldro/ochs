@@ -18,7 +18,7 @@ namespace Ochs
 
         public IList<MatchView> Matches => _phase.Matches.Select(x => new MatchView(x)).ToList();
         public IList<PhasePoolView> Pools => _phase.Pools.Select(x => new PhasePoolView(x)).ToList();
-        public IList<PhaseFighterView> Fighters => _phase.Fighters.Select(x => new PhaseFighterView(x,_phase.Pools)).ToList();
+        public IList<PhaseFighterView> Fighters => _phase.Fighters.Select(x => new PhaseFighterView(x, _phase.Matches, _phase.Pools)).ToList();
         public virtual int MatchesTotal => _phase.Matches.Count;
         public virtual int FightersTotal => _phase.Fighters.Count;
         public virtual int PoolsTotal => _phase.Pools.Count;

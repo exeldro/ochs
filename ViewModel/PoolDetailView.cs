@@ -17,7 +17,7 @@ namespace Ochs
         public virtual int MatchesBusy => _pool.Matches.Count(x => x.Started && !x.Finished);
 
         public virtual IList<MatchView> Matches => _pool.Matches.Select(x => new MatchView(x)).ToList();
-        public virtual IList<PersonView> Fighters => _pool.Fighters.Select(x => new PersonView(x)).ToList();
+        public virtual IList<PersonMatchesView> Fighters => _pool.Fighters.Select(x => new PersonMatchesView(x, _pool.Matches)).ToList();
 
         public virtual int MatchesTotal => _pool.Matches.Count;
         public virtual int FightersTotal => _pool.Fighters.Count;

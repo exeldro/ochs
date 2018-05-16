@@ -32,13 +32,19 @@
         <th ng-click="fighterSortType = 'LastName'; fighterSortReverse=!fighterSortReverse">LastName</th>
         <th ng-click="fighterSortType = 'Organization'; fighterSortReverse=!fighterSortReverse">Organization</th>
         <th ng-click="fighterSortType = 'CountryCode'; fighterSortReverse=!fighterSortReverse">Country</th>
+        <th><i ng-click="fighterSortType = 'MatchesTodo'; fighterSortReverse=!fighterSortReverse" class="fa fa-calendar" aria-hidden="true"></i> {{currentCompetition.MatchesTodo}}</th>
+        <th><i ng-click="fighterSortType = 'MatchesBusy'; fighterSortReverse=!fighterSortReverse" class="fa fa-play" aria-hidden="true"></i> {{currentCompetition.MatchesBusy}}</th>
+        <th><i ng-click="fighterSortType = 'MatchesFinished'; fighterSortReverse=!fighterSortReverse" class="fa fa-check" aria-hidden="true"></i> {{currentCompetition.MatchesFinished}}</th>
     </tr>
     <tr ng-repeat="fighter in currentCompetition.Fighters | filter:searchFighterText | orderBy:fighterSortType:fighterSortReverse">
         <td><input type="radio" name="newFightBlueFighterId" ng-model="$parent.newFightBlueFighterId" value="{{fighter.Id}}" /></td>
         <td><input type="radio" name="newFightRedFighterId" ng-model="$parent.newFightRedFighterId" value="{{fighter.Id}}" /></td>
         <td colspan="2">{{fighter.DisplayName}}</td>
         <td>{{fighter.Organization}}</td>
-        <td><img alt="{{fighter.CountryCode}}" title="{{fighter.CountryName}}" ng-src="Content/flags/{{fighter.CountryCode?fighter.CountryCode:'none'}}.svg" height="20" width="30" /> </td>
+        <td align="center"><img alt="{{fighter.CountryCode}}" title="{{fighter.CountryName}}" ng-src="Content/flags/{{fighter.CountryCode?fighter.CountryCode:'none'}}.svg" height="20" width="30" /> </td>
+        <td><i class="fa fa-calendar" aria-hidden="true"></i> {{fighter.MatchesTodo}}</td>
+        <td><i class="fa fa-play" aria-hidden="true"></i> {{fighter.MatchesBusy}}</td>
+        <td><i class="fa fa-check" aria-hidden="true"></i> {{fighter.MatchesFinished}}</td>
     </tr>
 </table>
 

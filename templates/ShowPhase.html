@@ -38,12 +38,19 @@
         <th ng-click="fighterSortType = 'Organization'; fighterSortReverse=!fighterSortReverse">Organization</th>
         <th ng-click="fighterSortType = 'CountryCode'; fighterSortReverse=!fighterSortReverse">Country</th>
         <th ng-click="fighterSortType = 'Pool'; fighterSortReverse=!fighterSortReverse">Pool</th>
+        <th><i ng-click="fighterSortType = 'MatchesTodo'; fighterSortReverse=!fighterSortReverse" class="fa fa-calendar" aria-hidden="true"></i> {{currentPhase.MatchesTodo}}</th>
+        <th><i ng-click="fighterSortType = 'MatchesBusy'; fighterSortReverse=!fighterSortReverse" class="fa fa-play" aria-hidden="true"></i> {{currentPhase.MatchesBusy}}</th>
+        <th><i ng-click="fighterSortType = 'MatchesFinished'; fighterSortReverse=!fighterSortReverse" class="fa fa-check" aria-hidden="true"></i> {{currentPhase.MatchesFinished}}</th>
+
     </tr>
     <tr ng-repeat="fighter in currentPhase.Fighters | filter:searchFighterText | orderBy:fighterSortType:fighterSortReverse">
         <td colspan="2">{{fighter.DisplayName}}</td>
         <td>{{fighter.Organization}}</td>
         <td><img alt="{{fighter.CountryCode}}" title="{{fighter.CountryName}}" ng-src="Content/flags/{{fighter.CountryCode?fighter.CountryCode:'none'}}.svg" height="20" width="30" /></td>
         <td>{{fighter.Pool}}</td>
+        <td><i class="fa fa-calendar" aria-hidden="true"></i> {{fighter.MatchesTodo}}</td>
+        <td><i class="fa fa-play" aria-hidden="true"></i> {{fighter.MatchesBusy}}</td>
+        <td><i class="fa fa-check" aria-hidden="true"></i> {{fighter.MatchesFinished}}</td>
     </tr>
 </table>
 <button ng-show="currentPhase.PhaseOrder <= 1" ng-click="addAllFighters()">Add all from competition</button><br/>

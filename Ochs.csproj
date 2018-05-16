@@ -173,6 +173,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Model\User.cs" />
     <Compile Include="ViewModel\BracketView.cs" />
+    <Compile Include="ViewModel\PersonMatchesView.cs" />
     <Compile Include="ViewModel\PhaseFighterView.cs" />
     <Compile Include="ViewModel\OrganizationDetailView.cs" />
     <Compile Include="ViewModel\PhasePoolView.cs" />

@@ -182,6 +182,22 @@ app.controller("CompetitionController", function ($scope, $http, $routeParams, $
                 $scope.currentCompetition = response.data;
             });
     }
+    $scope.checkAll = function () {
+        angular.forEach($scope.currentCompetition.Fighters, function (obj) {
+            obj.Selected = $scope.select;
+        });
+    };
+    $scope.competitionRemoveFighters = function() {
+        var fighterIds = [];
+        angular.forEach($scope.currentCompetition.Fighters, function (fighter) {
+            if (fighter.Selected && fighter.MatchesTotal === 0) {
+                fighterIds.push(fighter.Id);
+            }
+        });
+        if (fighterIds.length > 0) {
+            $scope.$parent.ochsHub.invoke("CompetitionRemoveFighters", $scope.competitionId, fighterIds);
+        }
+    }
 });
 
 app.controller("CompetitionRulesController", function ($scope, $http, $routeParams, $interval) {

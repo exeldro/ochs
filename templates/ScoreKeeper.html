@@ -46,13 +46,28 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-12" align="center">
+        <div class="col-4" align="right">
             <button type="button" class="btn" ng-click="addMatchEvent(0,0,'DoubleHit')">Double</button>
-            <button type="button" class="btn" ng-click="addMatchEvent(0,0,'AfterBlow')">After blow</button>
+        </div>
+        <div class="col-4" align="center">
             <button type="button" class="btn" ng-click="addMatchEvent(0,0,'UnclearExchange')">Unclear exchange</button>
-            <br />
-            {{currentMatch.ExchangeCount}} Exchanges<br />
-            {{currentMatch.DoubleCount}} Doubles<br />
+        </div>
+        <div class="col-4" align="left">
+            <button type="button" class="btn" ng-click="addMatchEvent(0,0,'AfterBlow')">After blow</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6" align="right">
+            <button type="button" class="btn" ng-click="addMatchEvent(0,0,'WarningBlue')">Warning blue</button>
+        </div>
+        <div class="col-6" align="left">
+            <button type="button" class="btn" ng-click="addMatchEvent(0,0,'WarningRed')">Warning red</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12" align="center">
+            {{currentMatch.ExchangeCount}} Exchanges<br/>
+            {{currentMatch.DoubleCount}} Doubles<br/>
             <table>
                 <tr><th>Time</th><th>Event</th><th>Blue</th><th>Red</th></tr>
                 <tr ng-repeat="event in currentMatch.Events">
@@ -74,7 +89,7 @@
                 <option value="ForfeitRed">{{currentMatch.FighterRed}} (Red) forfeits</option>
                 <option value="DisqualificationBlue">{{currentMatch.FighterBlue}} (Blue) disqualified</option>
                 <option value="DisqualificationRed">{{currentMatch.FighterRed}} (Red) disqualified</option>
-            </select> 
+            </select>
             <button type="button" class="btn" ng-click="setMatchResult()">Submit</button>
         </div>
     </div>

@@ -745,11 +745,11 @@ namespace Ochs
                 var added = 0;
                 foreach (var fighterId in fighterIds)
                 {
-                    if(phase.Fighters.Any(x=>x.Id == fighterId))
+                    if (phase.Fighters.Any(x => x.Id == fighterId))
                         continue;
 
                     var fighter = phase.Competition.Fighters.SingleOrDefault(x => x.Id == fighterId);
-                    if(fighter == null)
+                    if (fighter == null)
                         continue;
 
                     added++;
@@ -758,15 +758,19 @@ namespace Ochs
 
                 }
 
-                if (added > 0)
+                if (added <= 0)
                 {
-                    using (var transaction = session.BeginTransaction())
-                    {
-                        session.Update(phase);
-                        transaction.Commit();
-                    }
-                    Clients.All.updatePhase(new PhaseDetailView(phase));
+                    Clients.Caller.displayMessage("No fighters found to be added to " + phase.Name, "warning");
+                    return;
                 }
+
+                using (var transaction = session.BeginTransaction())
+                {
+                    session.Update(phase);
+                    transaction.Commit();
+                }
+                Clients.Caller.displayMessage("Added " + added + " fighter" + (added > 1 ? "s" : "") + " to " + phase.Name, "success");
+                Clients.All.updatePhase(new PhaseDetailView(phase));
             }
         }
         public void PhaseAddAllFighters(Guid phaseId)
@@ -955,7 +959,10 @@ namespace Ochs
                 }
 
                 if (deleted <= 0)
+                {
+                    Clients.Caller.displayMessage("No fighters found to be removed from " + competition.Name, "warning");
                     return;
+                }
 
                 using (var transaction = session.BeginTransaction())
                 {
@@ -970,6 +977,7 @@ namespace Ochs
                     }
                     transaction.Commit();
                 }
+                Clients.Caller.displayMessage("Removed " + deleted + " fighter" + (deleted > 1 ? "s" : "") + " from " + competition.Name, "success");
                 Clients.All.updateCompetition(new CompetitionDetailView(competition));
                 foreach (var phase in phasesToUpdate)
                 {
@@ -1020,7 +1028,10 @@ namespace Ochs
                 }
 
                 if (deleted <= 0)
+                {
+                    Clients.Caller.displayMessage("No fighters found to be removed from " + phase.Name, "warning");
                     return;
+                }
 
                 using (var transaction = session.BeginTransaction())
                 {
@@ -1031,12 +1042,59 @@ namespace Ochs
                     }
                     transaction.Commit();
                 }
+                Clients.Caller.displayMessage("Removed " + deleted + " fighter" + (deleted > 1 ? "s" : "") + " from " + phase.Name, "success");
+
                 Clients.All.updatePhase(new PhaseDetailView(phase));
                 foreach (var pool in poolsToUpdate)
                 {
                     Clients.All.updatePool(new PoolDetailView(pool));
                 }
             }
+        }
+
+        public void PoolAddFighters(Guid poolId, IList<Guid> fighterIds)
+        {
+            using (var session = NHibernateHelper.OpenSession())
+            {
+                var pool = session.Get<Pool>(poolId);
+                if (pool == null)
+                    return;
+
+                if (!HasOrganizationRights(session, pool.Phase.Competition.Organization, UserRoles.Admin))
+                    return;
+
+                var added = 0;
+                foreach (var fighterId in fighterIds)
+                {
+                    if (pool.Phase.Pools.Any(x => x.Fighters.Any(y => y.Id == fighterId)))
+                        continue;
+
+                    var fighter = pool.Phase.Fighters.SingleOrDefault(x => x.Id == fighterId);
+                    if (fighter == null)
+                        continue;
+
+                    added++;
+                    pool.Fighters.Add(fighter);
+                }
+
+                if (added <= 0)
+                {
+                    Clients.Caller.displayMessage("No fighters found to be added to " + pool.Name, "warning");
+                    return;
+                }
+
+                using (var transaction = session.BeginTransaction())
+                {
+                    session.Update(pool);
+                    transaction.Commit();
+                }
+
+                Clients.Caller.displayMessage("Added " + added + " fighter" + (added > 1 ? "s" : "") + " to " + pool.Name, "success");
+                Clients.All.updatePool(new PoolDetailView(pool));
+                Clients.All.updatePhase(new PhaseDetailView(pool.Phase));
+
+            }
+        
         }
         public void PoolRemoveFighters(Guid poolId, IList<Guid> fighterIds)
         {
@@ -1064,14 +1122,20 @@ namespace Ochs
                 }
 
                 if (deleted <= 0)
+                {
+                    Clients.Caller.displayMessage("No fighters found to be removed from " + pool.Name, "warning");
                     return;
+                }
 
                 using (var transaction = session.BeginTransaction())
                 {
                     session.Update(pool);
                     transaction.Commit();
                 }
+                Clients.Caller.displayMessage("Removed " + deleted + " fighter" + (deleted > 1 ? "s" : "") + " from " + pool.Name, "success");
+
                 Clients.All.updatePool(new PoolDetailView(pool));
+                Clients.All.updatePhase(new PhaseDetailView(pool.Phase));
             }
         }
         public void CompetitionAddFighter(Guid competiotionId, string firstName, string lastNamePrefix, string lastName, string orgainzationName, string country)

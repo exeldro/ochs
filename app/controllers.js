@@ -32,6 +32,17 @@ app.controller('OchsController',
             //$scope.
             $('#authorizationExceptionModal').modal('show');
         }
+        $scope.ochsHub.client.displayMessage = function(message, messageType) {
+            $('#messagePopupMessage').text(message);
+            var popup = $('#messagePopup');
+            popup.removeClass('alert-success');
+            popup.removeClass('alert-warning');
+            popup.removeClass('alert-danger');
+            popup.removeClass('alert-info');
+            popup.addClass('alert-' + messageType);
+            // add the message element to the body, fadein, wait 3secs, fadeout
+            popup.fadeIn(300).delay(3000).fadeOut(500);
+        }
         $.connection.hub.start()
             .done(function () { console.log('Now connected, connection ID=' + $.connection.hub.id); })
             .fail(function () { console.log('Could not Connect!'); });
@@ -305,6 +316,19 @@ app.controller("PhaseController", function ($scope, $http, $routeParams, $interv
         });
         if (fighterIds.length > 0) {
             $scope.$parent.ochsHub.invoke("PhaseRemoveFighters", $scope.phaseId, fighterIds);
+        }
+    }
+    $scope.poolAddFighters = function() {
+        if ($scope.addFightersPool) {
+            var fighterIds = [];
+            angular.forEach($scope.currentPhase.Fighters, function (fighter) {
+                if (fighter.Selected && fighter.MatchesTotal === 0) {
+                    fighterIds.push(fighter.Id);
+                }
+            });
+            if (fighterIds.length > 0) {
+                $scope.$parent.ochsHub.invoke("PoolAddFighters", $scope.addFightersPool, fighterIds);
+            }
         }
     }
 });

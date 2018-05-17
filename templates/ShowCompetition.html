@@ -49,7 +49,7 @@
         <td><i class="fa fa-check" aria-hidden="true"></i> {{fighter.MatchesFinished}}</td>
     </tr>
 </table>
-<button ng-click="competitionRemoveFighters()">Remove</button>
+<button ng-click="competitionRemoveFighters()">Remove selected</button>
 <table>
     <tr><td>Firstname</td><td><input placeholder="Firstname" type="text" ng-model="newFighterFirstName" /></td></tr>
     <tr><td>Prefix</td><td><input placeholder="Prefix" type="text" ng-model="newFighterLastNamePrefix" /></td></tr>
@@ -79,34 +79,7 @@
 
 
 <h3>Matches {{currentCompetition.MatchesTotal}}</h3>
-<label>Search: <input type="text" ng-model="searchMatchText"></label>
-<table>
-    <tr>
-        <th ng-click="matchSortType = 'Name'; matchSortReverse=!matchSortReverse">Match</th>
-        <th ng-click="matchSortType = 'Phase'; matchSortReverse=!matchSortReverse">Phase</th>
-        <th ng-click="matchSortType = 'Pool'; matchSortReverse=!matchSortReverse">Pool</th>
-        <th>
-            <i ng-click="matchSortType = 'PlannedDateTime'; matchSortReverse=!matchSortReverse" class="fa fa-calendar" aria-hidden="true"></i> {{currentCompetition.MatchesTodo}}
-            <i ng-click="matchSortType = 'StartedDateTime'; matchSortReverse=!matchSortReverse" class="fa fa-play" aria-hidden="true"></i> {{currentCompetition.MatchesBusy}}
-            <i ng-click="matchSortType = 'FinishedDateTime'; matchSortReverse=!matchSortReverse" class="fa fa-check" aria-hidden="true"></i> {{currentCompetition.MatchesFinished}}
-        </th>
-        <th class="bg-lightblue" ng-click="matchSortType = 'FighterBlue'; matchSortReverse=!matchSortReverse">Blue</th>
-        <th class="bg-lightred" ng-click="matchSortType = 'FighterRed'; matchSortReverse=!matchSortReverse">Red</th>
-    </tr>
-    <tr ng-repeat="match in currentCompetition.Matches | filter:searchMatchText | orderBy:matchSortType:matchSortReverse">
-        <td>{{ match.Name }}</td>
-        <td><a href="#!ShowPhase/{{match.PhaseId}}">{{ match.Phase }}</a></td>
-        <td><a href="#!ShowPool/{{match.PoolId}}">{{ match.Pool }}</a></td>
-        <td ng-show="!match.Started && !match.Finished && !match.Planned"></td>
-        <td ng-show="!match.Started && !match.Finished && match.Planned"><i class="fa fa-calendar" aria-hidden="true"></i> <time>{{ match.PlannedDateTime | date:'yyyy-MM-dd HH:mm:ss' }}</time></td>
-        <td ng-show="match.Started && !match.Finished"><i class="fa fa-play" aria-hidden="true"></i> <time>{{ match.StartedDateTime | date:'yyyy-MM-dd HH:mm:ss' }}</time></td>
-        <td ng-show="match.Finished"><i class="fa fa-check" aria-hidden="true"></i> <time>{{ match.FinishedDateTime | date:'yyyy-MM-dd HH:mm:ss' }}</time></td>
-        <td class="bg-lightblue">{{ match.FighterBlue }}</td>
-        <td class="bg-lightred">{{ match.FighterRed }}</td>
-        <td><i class="fa fa-pencil" aria-hidden="true"></i> <a ng-show="!match.Finished" href="#!ScoreKeeper/{{match.Id}}"><i class="fa fa-play" aria-hidden="true"></i></a></td>
-    </tr>
-</table>
-
+<matches-table context="currentCompetition"></matches-table>
 <table>
     <tr>
         <td>Fight name</td><td><input placeholder="Fight name" type="text" ng-model="newFightName" /></td>

@@ -943,7 +943,99 @@ namespace Ochs
                 }
             }
         }
+        
+        public void PhaseRemoveFighters(Guid phaseId, IList<Guid> fighterIds)
+        {
+            using (var session = NHibernateHelper.OpenSession())
+            {
+                var phase = session.Get<Phase>(phaseId);
+                if(phase == null)
+                    return;
 
+                if (!HasOrganizationRights(session, phase.Competition.Organization, UserRoles.Admin))
+                    return;
+
+                var deleted = 0;
+                var poolsToUpdate = new List<Pool>();
+
+                foreach (var fighterId in fighterIds)
+                {
+                    var fighter = phase.Fighters.SingleOrDefault(x => x.Id == fighterId);
+                    if (fighter == null)
+                        continue;
+
+                    if (phase.Matches.Any(x => x.FighterBlue?.Id == fighterId || x.FighterRed?.Id == fighterId))
+                        continue;
+                    deleted++;
+                    phase.Fighters.Remove(fighter);
+
+                    foreach (var pool in phase.Pools)
+                    {
+                        if (!pool.Fighters.Contains(fighter))
+                            continue;
+                        pool.Fighters.Remove(fighter);
+                        if (!poolsToUpdate.Contains(pool))
+                        {
+                            poolsToUpdate.Add(pool);
+                        }
+                    }
+                }
+
+                if (deleted <= 0)
+                    return;
+
+                using (var transaction = session.BeginTransaction())
+                {
+                    session.Update(phase);
+                    foreach (var pool in poolsToUpdate)
+                    {
+                        session.Update(pool);
+                    }
+                    transaction.Commit();
+                }
+                Clients.All.updatePhase(new PhaseDetailView(phase));
+                foreach (var pool in poolsToUpdate)
+                {
+                    Clients.All.updatePool(new PoolDetailView(pool));
+                }
+            }
+        }
+        public void PoolRemoveFighters(Guid poolId, IList<Guid> fighterIds)
+        {
+            using (var session = NHibernateHelper.OpenSession())
+            {
+                var pool = session.Get<Pool>(poolId);
+                if(pool == null)
+                    return;
+
+                if (!HasOrganizationRights(session, pool.Phase.Competition.Organization, UserRoles.Admin))
+                    return;
+
+                var deleted = 0;
+
+                foreach (var fighterId in fighterIds)
+                {
+                    var fighter = pool.Fighters.SingleOrDefault(x => x.Id == fighterId);
+                    if (fighter == null)
+                        continue;
+
+                    if (pool.Matches.Any(x => x.FighterBlue?.Id == fighterId || x.FighterRed?.Id == fighterId))
+                        continue;
+                    deleted++;
+                    pool.Fighters.Remove(fighter);
+                }
+
+                if (deleted <= 0)
+                    return;
+
+                using (var transaction = session.BeginTransaction())
+                {
+                    session.Update(pool);
+                    transaction.Commit();
+                }
+                Clients.All.updatePool(new PoolDetailView(pool));
+            }
+        }
         public void CompetitionAddFighter(Guid competiotionId, string firstName, string lastNamePrefix, string lastName, string orgainzationName, string country)
         {
             using (var session = NHibernateHelper.OpenSession())

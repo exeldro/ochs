@@ -4,6 +4,7 @@
 <h3>Fighters {{currentPool.FightersTotal}}</h3>
 <table>
     <tr>
+        <th><input type="checkbox" ng-model="select" ng-click="checkAll()" /></th>
         <th ng-click="fighterSortType = 'FirstName'; fighterSortReverse=!fighterSortReverse">Firstname</th>
         <th ng-click="fighterSortType = 'LastName'; fighterSortReverse=!fighterSortReverse">LastName</th>
         <th ng-click="fighterSortType = 'Organization'; fighterSortReverse=!fighterSortReverse">Organization</th>
@@ -13,37 +14,17 @@
         <th><i ng-click="fighterSortType = 'MatchesFinished'; fighterSortReverse=!fighterSortReverse" class="fa fa-check" aria-hidden="true"></i> {{currentPool.MatchesFinished}}</th>
     </tr>
     <tr ng-repeat="fighter in currentPool.Fighters | orderBy:fighterSortType:fighterSortReverse">
+        <td><input type="checkbox" name="fightersSelected[]" ng-model="fighter.Selected" value="{{fighter.Id}}"/></td>
         <td colspan="2">{{fighter.DisplayName}}</td>
         <td>{{fighter.Organization}}</td>
-        <td><img alt="{{fighter.CountryCode}}" title="{{fighter.CountryName}}" ng-src="Content/flags/{{fighter.CountryCode?fighter.CountryCode:'none'}}.svg" height="20" width="30" /></td>
+        <td><img alt="{{fighter.CountryCode}}" title="{{fighter.CountryName}}" ng-src="Content/flags/{{fighter.CountryCode?fighter.CountryCode:'none'}}.svg" height="20" width="30"/></td>
         <td><i class="fa fa-calendar" aria-hidden="true"></i> {{fighter.MatchesTodo}}</td>
         <td><i class="fa fa-play" aria-hidden="true"></i> {{fighter.MatchesBusy}}</td>
         <td><i class="fa fa-check" aria-hidden="true"></i> {{fighter.MatchesFinished}}</td>
     </tr>
 </table>
+<button ng-click="poolRemoveFighters()">Remove selected</button>
 <h3>Matches {{currentPool.MatchesTotal}}</h3>
-<label>Search: <input type="text" ng-model="searchMatchText"></label>
-<table>
-    <tr>
-        <th ng-click="matchSortType = 'Name'; matchSortReverse=!matchSortReverse">Match</th>
-        <th>
-            <i ng-click="matchSortType = 'PlannedDateTime'; matchSortReverse=!matchSortReverse" class="fa fa-calendar" aria-hidden="true"></i> {{currentPool.MatchesTodo}}
-            <i ng-click="matchSortType = 'StartedDateTime'; matchSortReverse=!matchSortReverse" class="fa fa-play" aria-hidden="true"></i> {{currentPool.MatchesBusy}}
-            <i ng-click="matchSortType = 'FinishedDateTime'; matchSortReverse=!matchSortReverse" class="fa fa-check" aria-hidden="true"></i> {{currentPool.MatchesFinished}}
-        </th>
-        <th class="bg-lightblue" ng-click="matchSortType = 'FighterBlue'; matchSortReverse=!matchSortReverse">Blue</th>
-        <th class="bg-lightred" ng-click="matchSortType = 'FighterRed'; matchSortReverse=!matchSortReverse">Red</th>
-    </tr>
-    <tr ng-repeat="match in currentPool.Matches | filter:searchMatchText | orderBy:matchSortType:matchSortReverse">
-        <td>{{ match.Name }}</td>
-        <td ng-show="!match.Started && !match.Finished && !match.Planned"></td>
-        <td ng-show="!match.Started && !match.Finished && match.Planned"><i class="fa fa-calendar" aria-hidden="true"></i> <time>{{ match.PlannedDateTime | date:'yyyy-MM-dd HH:mm:ss' }}</time></td>
-        <td ng-show="match.Started && !match.Finished"><i class="fa fa-play" aria-hidden="true"></i> <time>{{ match.StartedDateTime | date:'yyyy-MM-dd HH:mm:ss' }}</time></td>
-        <td ng-show="match.Finished"><i class="fa fa-check" aria-hidden="true"></i> <time>{{ match.FinishedDateTime | date:'yyyy-MM-dd HH:mm:ss' }}</time></td>
-        <td class="bg-lightblue">{{ match.FighterBlue }}</td>
-        <td class="bg-lightred">{{ match.FighterRed }}</td>
-        <td><i class="fa fa-pencil" aria-hidden="true"></i> <a ng-show="!match.Finished" href="#!ScoreKeeper/{{match.Id}}"><i class="fa fa-play" aria-hidden="true"></i></a></td>
-    </tr>
-</table>
+<matches-table context="currentPool"></matches-table>
 <button ng-click="generateMatches()">Generate Matches</button>
 

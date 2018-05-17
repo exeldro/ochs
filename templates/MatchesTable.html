@@ -1,0 +1,26 @@
+﻿<label>Search: <input type="text" ng-model="searchMatchText"></label>
+<table>
+    <tr>
+        <th><input type="checkbox" ng-model="select" ng-click="checkAll()" /></th>
+        <th ng-click="matchSortType = 'Name'; matchSortReverse=!matchSortReverse">Match</th>
+        <th>
+            <i ng-click="matchSortType = 'PlannedDateTime'; matchSortReverse=!matchSortReverse" class="fa fa-calendar" aria-hidden="true"></i> {{context.MatchesTodo}}
+            <i ng-click="matchSortType = 'StartedDateTime'; matchSortReverse=!matchSortReverse" class="fa fa-play" aria-hidden="true"></i> {{context.MatchesBusy}}
+            <i ng-click="matchSortType = 'FinishedDateTime'; matchSortReverse=!matchSortReverse" class="fa fa-check" aria-hidden="true"></i> {{context.MatchesFinished}}
+        </th>
+        <th class="bg-lightblue" ng-click="matchSortType = 'FighterBlue'; matchSortReverse=!matchSortReverse">Blue</th>
+        <th class="bg-lightred" ng-click="matchSortType = 'FighterRed'; matchSortReverse=!matchSortReverse">Red</th>
+    </tr>
+    <tr ng-repeat="match in context.Matches | filter:searchMatchText | orderBy:matchSortType:matchSortReverse">
+        <td><input type="checkbox" name="matchesSelected[]" ng-model="match.Selected" value="{{match.Id}}" /></td>
+        <td>{{ match.Name }}</td>
+        <td ng-show="!match.Started && !match.Finished && !match.Planned"></td>
+        <td ng-show="!match.Started && !match.Finished && match.Planned"><i class="fa fa-calendar" aria-hidden="true"></i> <time>{{ match.PlannedDateTime | date:'yyyy-MM-dd HH:mm:ss' }}</time></td>
+        <td ng-show="match.Started && !match.Finished"><i class="fa fa-play" aria-hidden="true"></i> <time>{{ match.StartedDateTime | date:'yyyy-MM-dd HH:mm:ss' }}</time></td>
+        <td ng-show="match.Finished"><i class="fa fa-check" aria-hidden="true"></i> <time>{{ match.FinishedDateTime | date:'yyyy-MM-dd HH:mm:ss' }}</time></td>
+        <td class="bg-lightblue">{{ match.FighterBlue }}</td>
+        <td class="bg-lightred">{{ match.FighterRed }}</td>
+        <td><i class="fa fa-pencil" aria-hidden="true"></i> <a ng-show="!match.Finished" href="#!ScoreKeeper/{{match.Id}}"><i class="fa fa-play" aria-hidden="true"></i></a></td>
+    </tr>
+</table>
+

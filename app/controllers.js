@@ -278,6 +278,22 @@ app.controller("PhaseController", function ($scope, $http, $routeParams, $interv
     $scope.generateMatches = function() {
         $scope.$parent.ochsHub.invoke("PhaseGenerateMatches", $scope.phaseId);
     }
+    $scope.checkAll = function () {
+        angular.forEach($scope.currentPhase.Fighters, function (obj) {
+            obj.Selected = $scope.select;
+        });
+    };
+    $scope.phaseRemoveFighters = function() {
+        var fighterIds = [];
+        angular.forEach($scope.currentPhase.Fighters, function (fighter) {
+            if (fighter.Selected && fighter.MatchesTotal === 0) {
+                fighterIds.push(fighter.Id);
+            }
+        });
+        if (fighterIds.length > 0) {
+            $scope.$parent.ochsHub.invoke("PhaseRemoveFighters", $scope.phaseId, fighterIds);
+        }
+    }
 });
 
 
@@ -322,6 +338,22 @@ app.controller("PoolController", function ($scope, $http, $routeParams, $interva
     });
     $scope.generateMatches = function() {
         $scope.$parent.ochsHub.invoke("PoolGenerateMatches", $scope.poolId);
+    }
+    $scope.checkAll = function () {
+        angular.forEach($scope.currentPool.Fighters, function (obj) {
+            obj.Selected = $scope.select;
+        });
+    };
+    $scope.poolRemoveFighters = function() {
+        var fighterIds = [];
+        angular.forEach($scope.currentPool.Fighters, function (fighter) {
+            if (fighter.Selected && fighter.MatchesTotal === 0) {
+                fighterIds.push(fighter.Id);
+            }
+        });
+        if (fighterIds.length > 0) {
+            $scope.$parent.ochsHub.invoke("PoolRemoveFighters", $scope.poolId, fighterIds);
+        }
     }
 });
 

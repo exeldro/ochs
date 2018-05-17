@@ -22,6 +22,14 @@ tbody tr:nth-child(odd){
     background-color: #EEE;
 }
 
+tbody tr:nth-child(even) .bg-lightblue {
+        background-color: #CFF;
+}
+
+tbody tr:nth-child(even) .bg-lightred {
+    background-color: #FCC;
+}
+
 .table-header-rotated th.row-header{
     width: auto;
 }

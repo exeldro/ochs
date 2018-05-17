@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Configuration;
+using System.Net;
 using System.Net.Http.Formatting;
+using System.Net.Sockets;
 using System.Runtime.Remoting.Contexts;
 using System.Web.Http;
 using System.Web.Routing;
@@ -24,6 +26,17 @@ namespace Ochs
             using (WebApp.Start(endpoint,Startup))
             {
                 Console.WriteLine("Server running at "+endpoint);
+                if (endpoint.Contains("*"))
+                {
+                    Console.WriteLine("Browse to: " + endpoint.Replace("*", Dns.GetHostName()));
+                    var host = Dns.GetHostEntry(Dns.GetHostName());
+                    foreach (var ip in host.AddressList)
+                    {
+                        if (ip.AddressFamily == AddressFamily.InterNetwork)
+                            Console.WriteLine("Browse to: " + endpoint.Replace("*", ip.ToString()));
+                    }
+                }
+
                 Console.WriteLine("Enter Q to exit");
                 using (NHibernateHelper.OpenSession()){}
 

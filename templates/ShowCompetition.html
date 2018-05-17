@@ -49,7 +49,9 @@
         <td><i class="fa fa-check" aria-hidden="true"></i> {{fighter.MatchesFinished}}</td>
     </tr>
 </table>
-<button ng-click="competitionRemoveFighters()">Remove selected</button>
+Selected: <button ng-click="competitionRemoveFighters()">Remove</button> from competition, <button ng-click="phaseAddFighters()">Add</button> to phase <select ng-model="addFightersPhase">
+    <option ng-repeat="phase in currentCompetition.Phases" value="{{phase.Id}}">{{phase.Name}}</option>
+</select> 
 <table>
     <tr><td>Firstname</td><td><input placeholder="Firstname" type="text" ng-model="newFighterFirstName" /></td></tr>
     <tr><td>Prefix</td><td><input placeholder="Prefix" type="text" ng-model="newFighterLastNamePrefix" /></td></tr>
@@ -75,8 +77,6 @@
 </table>
 
 <input type="file" onchange="angular.element(this).scope().uploadFighters( this.files[0] )" />
-
-
 
 <h3>Matches {{currentCompetition.MatchesTotal}}</h3>
 <matches-table context="currentCompetition"></matches-table>

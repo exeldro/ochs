@@ -731,6 +731,44 @@ namespace Ochs
             }
         }
 
+        public void PhaseAddFighters(Guid phaseId, IList<Guid> fighterIds)
+        {
+            using (var session = NHibernateHelper.OpenSession())
+            {
+                var phase = session.Get<Phase>(phaseId);
+                if (phase == null)
+                    return;
+
+                if (!HasOrganizationRights(session, phase.Competition.Organization, UserRoles.Admin))
+                    return;
+
+                var added = 0;
+                foreach (var fighterId in fighterIds)
+                {
+                    if(phase.Fighters.Any(x=>x.Id == fighterId))
+                        continue;
+
+                    var fighter = phase.Competition.Fighters.SingleOrDefault(x => x.Id == fighterId);
+                    if(fighter == null)
+                        continue;
+
+                    added++;
+
+                    phase.Fighters.Add(fighter);
+
+                }
+
+                if (added > 0)
+                {
+                    using (var transaction = session.BeginTransaction())
+                    {
+                        session.Update(phase);
+                        transaction.Commit();
+                    }
+                    Clients.All.updatePhase(new PhaseDetailView(phase));
+                }
+            }
+        }
         public void PhaseAddAllFighters(Guid phaseId)
         {
             using (var session = NHibernateHelper.OpenSession())

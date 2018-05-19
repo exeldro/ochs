@@ -376,12 +376,14 @@ namespace Ochs
             {
                 var rankings = session.QueryOver<PoolRanking>().Where(x => x.Pool == match.Pool).List().Cast<Ranking>().ToList();
                 UpdateRankingsInternal(session, rankings, match.Pool.Matches, () => new PoolRanking {Pool = match.Pool}, match.Phase.Elimination);
+                Clients.All.updateRankings(match.Pool.Id);
             }
 
             if (match.Phase != null)
             {
                 var rankings = session.QueryOver<PhaseRanking>().Where(x => x.Phase == match.Phase).List().Cast<Ranking>().ToList();
                 UpdateRankingsInternal(session, rankings, match.Phase.Matches, () => new PhaseRanking {Phase = match.Phase}, match.Phase.Elimination);
+                Clients.All.updateRankings(match.Phase.Id);
             }
         }
 
@@ -427,8 +429,7 @@ namespace Ochs
                 }
                 UpdateRankingMatch(rankingRed, rankingRules, match, false, elimination);
             }
-            //calc ranking
-            //TODO for elimination don't use rankingRules.Sorting
+
             if (elimination)
             {
                 using (var transaction = session.BeginTransaction())
@@ -441,7 +442,7 @@ namespace Ochs
                 }
                 return;
             }
-
+            //calc ranking
             var order = rankings.OrderBy(x => x.Disqualified);
             foreach (var rankingStat in rankingRules.Sorting)
             {

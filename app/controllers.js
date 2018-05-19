@@ -28,6 +28,9 @@ app.controller('OchsController',
         $scope.ochsHub.client.addPool = function (data) {
             $scope.$broadcast('addPool', data);
         };
+        $scope.ochsHub.client.updateRankings = function (data) {
+            $scope.$broadcast('updateRankings', data);
+        };
         $scope.ochsHub.client.authorizationException = function (gotsession) {
             //$scope.
             $('#authorizationExceptionModal').modal('show');
@@ -494,20 +497,26 @@ app.controller("EliminationController", function ($scope, $http, $routeParams, $
         }
     });
 });
-app.controller("RankingController",
-    function($scope, $http, $routeParams, $interval) {
-        var url = "";
-        if ($routeParams.poolId) {
-            url = "api/Pool/GetRanking/" + $routeParams.poolId;
-        } else if ($routeParams.phaseId) {
-            url = "api/Phase/GetRanking/" + $routeParams.phaseId;
-        } else {
-            return;
-        }
-        $http.get(url).then(function(response) {
-            $scope.rankings = response.data;
-        });
+app.controller("RankingController", function($scope, $http, $routeParams, $interval) {
+    var url = "";
+    if ($routeParams.poolId) {
+        url = "api/Pool/GetRanking/" + $routeParams.poolId;
+    } else if ($routeParams.phaseId) {
+        url = "api/Phase/GetRanking/" + $routeParams.phaseId;
+    } else {
+        return;
+    }
+    $http.get(url).then(function(response) {
+        $scope.rankings = response.data;
     });
+    $scope.$on('updateRankings', function(event, args) {
+        if (args && (args === $routeParams.poolId || args === $routeParams.phaseId)) {
+            $http.get(url).then(function(response) {
+                $scope.rankings = response.data;
+            });
+        }
+    });
+});
 
 app.controller("ListMatchesController", function ($scope, $http) {
     $http.get("api/Match/All")

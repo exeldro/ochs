@@ -55,10 +55,12 @@
         <td><i class="fa fa-check" aria-hidden="true"></i> {{fighter.MatchesFinished}}</td>
     </tr>
 </table>
-Selected: <button ng-click="phaseRemoveFighters()">Remove</button> from phase, <button ng-click="poolAddFighters()">Add</button> to pool 
-<select ng-model="addFightersPool">
-    <option ng-repeat="pool in currentPhase.Pools" value="{{pool.Id}}">{{pool.Name}}</option>
-</select><br/>
+Selected: <button ng-click="phaseRemoveFighters()">Remove</button> from phase<span ng-show="currentPhase.PoolsTotal > 0">
+    , <button ng-click="poolAddFighters()">Add</button> to pool
+    <select ng-model="addFightersPool">
+        <option ng-repeat="pool in currentPhase.Pools" value="{{pool.Id}}">{{pool.Name}}</option>
+    </select>
+</span><br />
 <button ng-show="currentPhase.PhaseOrder <= 1" ng-click="addAllFighters()">Add all fighters from competition</button><br />
 <div ng-show="currentPhase.PhaseOrder > 1"><input type="number" min="2" ng-model="topfighters" max="128" /><button ng-click="addTopFighters()">Add top from previous phase</button></div>
 

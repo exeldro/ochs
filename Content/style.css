@@ -37,6 +37,14 @@ tbody tr:nth-child(even) .bg-lightred {
     background-color: #FCC;
 }
 
+tbody tr:nth-child(even) .bg-blue {
+    background-color: #AFF;
+}
+
+tbody tr:nth-child(even) .bg-red {
+    background-color: #FAA;
+}
+
 .table-header-rotated th.row-header{
     width: auto;
 }

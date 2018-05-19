@@ -20,7 +20,7 @@
         <td ng-show="match.Finished"><i class="fa fa-check" aria-hidden="true"></i> <time>{{ match.FinishedDateTime | date:'yyyy-MM-dd HH:mm:ss' }}</time></td>
         <td class="bg-lightblue">{{ match.FighterBlue }}</td>
         <td class="bg-lightred">{{ match.FighterRed }}</td>
-        <td><i class="fa fa-pencil" aria-hidden="true"></i> <a ng-show="!match.Finished" href="#!ScoreKeeper/{{match.Id}}"><i class="fa fa-play" aria-hidden="true"></i></a></td>
+        <td><i class="fa fa-pencil" aria-hidden="true"></i> <a href="#!ShowMatch/{{match.Id}}"><i class="fa fa-eye" aria-hidden="true"></i></a> <a ng-show="!match.Finished" href="#!ScoreKeeper/{{match.Id}}"><i class="fa fa-play" aria-hidden="true"></i></a></td>
     </tr>
 </table>
 

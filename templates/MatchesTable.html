@@ -3,6 +3,7 @@
     <tr>
         <th><input type="checkbox" ng-model="select" ng-click="checkAll()" /></th>
         <th ng-click="matchSortType = 'Name'; matchSortReverse=!matchSortReverse">Match</th>
+        <th ng-click="matchSortType = 'Location'; matchSortReverse=!matchSortReverse">Location</th>
         <th>
             <i ng-click="matchSortType = 'PlannedDateTime'; matchSortReverse=!matchSortReverse" class="fa fa-calendar" aria-hidden="true"></i> {{context.MatchesTodo}}
             <i ng-click="matchSortType = 'StartedDateTime'; matchSortReverse=!matchSortReverse" class="fa fa-play" aria-hidden="true"></i> {{context.MatchesBusy}}
@@ -14,6 +15,7 @@
     <tr ng-repeat="match in context.Matches | filter:searchMatchText | orderBy:matchSortType:matchSortReverse">
         <td><input type="checkbox" name="matchesSelected[]" ng-model="match.Selected" value="{{match.Id}}" /></td>
         <td>{{ match.Name }}</td>
+        <td>{{ match.Location }}</td>
         <td ng-show="!match.Started && !match.Finished && !match.Planned"></td>
         <td ng-show="!match.Started && !match.Finished && match.Planned"><i class="fa fa-calendar" aria-hidden="true"></i> <time>{{ match.PlannedDateTime | date:'yyyy-MM-dd HH:mm:ss' }}</time></td>
         <td ng-show="match.Started && !match.Finished"><i class="fa fa-play" aria-hidden="true"></i> <time>{{ match.StartedDateTime | date:'yyyy-MM-dd HH:mm:ss' }}</time></td>

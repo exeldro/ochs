@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-var app = angular.module('angularOchsApp', ["ngRoute"]);
+var app = angular.module('angularOchsApp', ["ngRoute","ngCookies"]);
 //app.value('backendServerUrl', 'http://localhost/test/');
 app.filter('timespan', function () {
     return function (seconds) {
@@ -82,6 +82,10 @@ app.config(['$routeProvider',
             when('/ShowPoolRanking/:poolId', {
                 templateUrl: 'templates/ShowRanking.html',
                 controller: 'RankingController'
+            }).
+            when('/ViewSettings', {
+                templateUrl: 'templates/ViewSettings.html',
+                controller: 'ViewSettingsController'
             }).
             otherwise({
                 redirectTo: '/Welcome'

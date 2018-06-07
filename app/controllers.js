@@ -67,6 +67,13 @@ app.controller('OchsController',
 app.controller("WelcomeController", function ($scope, $http) {
 });
 
+app.controller("ViewSettingsController", function ($scope, $cookies) {
+    $scope.location = $cookies.get('location');
+    $scope.apply = function() {
+        $cookies.put('location',$scope.location);
+    }
+});
+
 app.controller("ListUsersController", function ($scope, $http) {
     $http.get("api/Auth/All")
         .then(function (response) { $scope.users = response.data; });

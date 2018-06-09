@@ -185,6 +185,11 @@ namespace Ochs
                     if (!match.StartedDateTime.HasValue)
                     {
                         match.StartedDateTime = match.TimeRunningSince;
+                        if (Context.Request.Cookies.ContainsKey("location") &&
+                            !string.IsNullOrWhiteSpace(Context.Request.Cookies["location"].Value))
+                        {
+                            match.Location = Context.Request.Cookies["location"].Value;
+                        }
                     }
                     session.Update(match);
                     transaction.Commit();

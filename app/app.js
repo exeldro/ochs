@@ -12,8 +12,9 @@ app.filter('timespan', function () {
         return m + ':' + (s < 10 ? '0' : '') + parseFloat(Math.round(s * 100) / 100).toFixed(2);
     };
 });
-app.config(['$routeProvider',
-    function ($routeProvider) {
+
+app.config(['$routeProvider', '$locationProvider',
+    function ($routeProvider, $locationProvider) {
         $routeProvider.
             when('/Welcome', {
                 templateUrl: 'templates/Welcome.html',

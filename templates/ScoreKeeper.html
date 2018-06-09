@@ -1,4 +1,13 @@
-﻿<div class="container">
+﻿<h2 align="center">
+    <span class="d-none d-md-inline">
+        <a href="#!ShowCompetition/{{currentMatch.CompetitionId}}">{{currentMatch.Competition}}</a>
+        - <a href="#!ShowPhase/{{currentMatch.PhaseId}}">{{currentMatch.Phase}}</a> -
+    </span>
+    <span class="d-none d-sm-inline">
+        <span ng-show="currentMatch.PoolId"><a href="#!ShowPool/{{currentMatch.PoolId}}">{{currentMatch.Pool}}</a> - </span>
+    </span>{{currentMatch.Name}}
+</h2>
+<div class="container">
     <div class="row">
         <div class="col-6 bg-blue" align="left">
             {{currentMatch.FighterBlue}}
@@ -91,6 +100,26 @@
                 <option value="DisqualificationRed">{{currentMatch.FighterRed}} (Red) disqualified</option>
             </select>
             <button type="button" class="btn" ng-click="setMatchResult()">Submit</button>
+        </div>
+    </div>
+    <div ng-show="nextMatch" class="row">
+        <div class="col-12" align="center">
+            <strong>Next match</strong>
+        </div>
+        <div class="col-12" align="center">
+            <span class="d-none d-md-inline">
+                <a href="#!ShowCompetition/{{nextMatch.CompetitionId}}">{{nextMatch.Competition}}</a>
+                - <a href="#!ShowPhase/{{nextMatch.PhaseId}}">{{nextMatch.Phase}}</a> -
+            </span>
+            <span class="d-none d-sm-inline">
+                <span ng-show="nextMatch.PoolId"><a href="#!ShowPool/{{nextMatch.PoolId}}">{{nextMatch.Pool}}</a> - </span>
+            </span>{{nextMatch.Name}}
+        </div>
+        <div class="col-12 col-sm-6 bg-blue" align="left">
+            <strong>{{nextMatch.FighterBlue}}</strong>
+        </div>
+        <div class="col-12 col-sm-6 bg-red" align="right">
+            <strong>{{nextMatch.FighterRed}}</strong>
         </div>
     </div>
 </div>

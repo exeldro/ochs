@@ -33,6 +33,12 @@ namespace Ochs
         public virtual Phase Phase { get; set; }
         public virtual Pool Pool { get; set; }
         public virtual TimeSpan LiveTime => Time + (TimeRunningSince.HasValue ? DateTime.Now.Subtract(TimeRunningSince.Value) : TimeSpan.Zero);
+
+        public virtual string GetLocation()
+        {
+                return !string.IsNullOrWhiteSpace(Location)? Location
+                    : (!string.IsNullOrWhiteSpace(Pool?.Location) ? Pool.Location : Phase?.Location);
+        }
     }
 
     public enum MatchResult

@@ -549,21 +549,34 @@ app.controller("MatchController", function ($scope, $http, $routeParams, $interv
         $scope.matchResult = response.data.Result;
         $scope.editTime = new Date(1970, 1, 1, 0, 0, response.data.LiveTime);
     });
+    $http.get("api/Match/GetNext/" + $routeParams.matchId).then(function (response) {
+        $scope.nextMatch = response.data;
+    });
     $scope.$on('updateMatch', function (event, args) {
         if ($scope.matchId === args.Id) {
             if (!$scope.currentMatch.Finished && args.Finished) {
-                if (args.PoolId) {
+                if ($scope.nextMatch) {
+                    if ($location.path().length >= 12 && $location.path().substring(0, 12) === '/ScoreKeeper') {
+                        $location.path("ScoreKeeper/" + $scope.nextMatch.Id);
+                    } else {
+                        $location.path("ShowMatch/" + $scope.nextMatch.Id);
+                    }
+                }else if (args.PoolId) {
                     $location.path("ShowPool/" + args.PoolId);
                 } else if (args.PhaseId) {
                     $location.path("ShowPhase/" + args.PhaseId);
                 } else if (args.CompetitionId) {
-                    $location.path("ShowCompetition/"+args.CompetitionId);
+                    $location.path("ShowCompetition/" + args.CompetitionId);
                 } else {
                     $location.path("ListCompetitions");
                 }
             }
             $scope.currentMatch = args;
             $scope.editTime = new Date(1970, 1, 1, 0, 0, args.LiveTime);
+        } else if ($scope.nextMatch && $scope.nextMatch.Id === args.Id) {
+            $http.get("api/Match/GetNext/" + $scope.matchId).then(function (response) {
+                $scope.nextMatch = response.data;
+            });
         }
     });
     $interval(function () {

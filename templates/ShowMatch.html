@@ -60,4 +60,24 @@
             <span ng-show="currentMatch.Finished">Result: {{currentMatch.Result}}</span>
         </div>
     </div>
+    <div ng-show="nextMatch" class="row">
+        <div class="col-12" align="center">
+            <strong>Next match</strong>
+        </div>
+        <div class="col-12" align="center">
+            <span class="d-none d-md-inline">
+                <a href="#!ShowCompetition/{{nextMatch.CompetitionId}}">{{nextMatch.Competition}}</a>
+                - <a href="#!ShowPhase/{{nextMatch.PhaseId}}">{{nextMatch.Phase}}</a> -
+            </span>
+            <span class="d-none d-sm-inline">
+                <span ng-show="nextMatch.PoolId"><a href="#!ShowPool/{{nextMatch.PoolId}}">{{nextMatch.Pool}}</a> - </span>
+            </span>{{nextMatch.Name}}
+        </div>
+        <div class="col-12 col-sm-6 bg-blue" align="left">
+            <strong>{{nextMatch.FighterBlue}}</strong>
+        </div>
+        <div class="col-12 col-sm-6 bg-red" align="right">
+            <strong>{{nextMatch.FighterRed}}</strong>
+        </div>
+    </div>
 </div>

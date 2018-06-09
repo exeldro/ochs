@@ -15,9 +15,7 @@ namespace Ochs
         public virtual Guid Id => _match.Id;
         public virtual string Name => _match.Name;
 
-        public virtual string Location => !string.IsNullOrWhiteSpace(_match.Location)
-            ? _match.Location
-            : (!string.IsNullOrWhiteSpace(_match.Pool?.Location) ? _match.Pool.Location : _match.Phase?.Location);
+        public virtual string Location => _match.GetLocation();
         public virtual string FighterBlue => _match.FighterBlue?.ToString();
         public virtual Guid? FighterBlueId => _match.FighterBlue?.Id;
         public virtual string FighterBlueCountryCode => _match.FighterBlue?.CountryCode;

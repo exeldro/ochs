@@ -54,6 +54,10 @@ namespace Ochs
                     if (match.Validated && !HasMatchRights(session, match, UserRoles.Admin))
                         return;
 
+                    //check for doubleclick
+                    if(match.Events.Any(x=>DateTime.Now.Subtract(x.CreatedDateTime).TotalSeconds < 0.5))
+                        return;
+
                     match.Events.Add(new MatchEvent
                     {
                         CreatedDateTime = DateTime.Now,

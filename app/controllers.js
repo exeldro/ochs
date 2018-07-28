@@ -523,6 +523,13 @@ app.controller("RankingController", function($scope, $http, $routeParams, $inter
             });
         }
     });
+    $scope.updateRankings = function() {
+        if ($routeParams.poolId) {
+            $scope.$parent.ochsHub.invoke("UpdatePoolRankings", $routeParams.poolId);
+        } else if ($routeParams.phaseId) {
+            $scope.$parent.ochsHub.invoke("UpdatePhaseRankings", $routeParams.phaseId);
+        }
+    }
 });
 
 app.controller("ListMatchesController", function ($scope, $http) {

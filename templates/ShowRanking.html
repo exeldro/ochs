@@ -1,4 +1,5 @@
-﻿<table class="table-header-rotated" >
+﻿<button type="button" class="btn" ng-click="updateRankings()">Update</button>
+<table class="table-header-rotated" >
     <tr>
         <th>#</th>
         <th>Fighter</th>
@@ -25,16 +26,16 @@
         <td class="rotate-45">{{ranking.Wins}}</td>
         <td class="rotate-45">{{ranking.Draws}}</td>
         <td class="rotate-45">{{ranking.Losses}}</td>
-        <td class="rotate-45">{{ranking.WinRatio}}</td>
+        <td class="rotate-45">{{ranking.WinRatio | number : 2}}</td>
         <td class="rotate-45">{{ranking.MatchPoints}}</td>
-        <td class="rotate-45">{{ranking.MatchPointsPerMatch}}</td>
+        <td class="rotate-45">{{ranking.MatchPointsPerMatch | number : 2}}</td>
         <td class="rotate-45">{{ranking.DoubleHits}}</td>
-        <td class="rotate-45">{{ranking.DoubleHitsPerMatch}}</td>
+        <td class="rotate-45">{{ranking.DoubleHitsPerMatch | number : 2}}</td>
         <td class="rotate-45">{{ranking.Penalties}}</td>
         <td class="rotate-45">{{ranking.Warnings}}</td>
         <td class="rotate-45">{{ranking.Exchanges}}</td>
         <td class="rotate-45">{{ranking.HitsGiven}}</td>
         <td class="rotate-45">{{ranking.HitsReceived}}</td>
-        <td class="rotate-45">{{ranking.HitRatio}}</td>
+        <td class="rotate-45">{{ranking.HitRatio | number : 2}}</td>
     </tr>
 </table>

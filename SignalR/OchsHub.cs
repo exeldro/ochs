@@ -386,11 +386,32 @@ namespace Ochs
 
             if (match.Phase != null)
             {
-                var rankings = session.QueryOver<PhaseRanking>().Where(x => x.Phase == match.Phase).List().Cast<Ranking>().ToList();
-                UpdateRankingsInternal(session, rankings, match.Phase.Matches, () => new PhaseRanking {Phase = match.Phase}, match.Phase.Elimination);
-                Clients.All.updateRankings(match.Phase.Id);
+                UpdatePhaseRankingsInternal(session, match.Phase);
             }
         }
+
+        private void UpdatePhaseRankingsInternal(ISession session, Phase phase)
+        {
+            var rankings = session.QueryOver<PhaseRanking>().Where(x => x.Phase == phase).List().Cast<Ranking>().ToList();
+            UpdateRankingsInternal(session, rankings, phase.Matches, () => new PhaseRanking {Phase = phase},
+                phase.Elimination);
+            Clients.All.updateRankings(phase.Id);
+        }
+
+        public void UpdatePhaseRankings(Guid phaseId)
+        {
+            using (var session = NHibernateHelper.OpenSession())
+            {
+                var phase = session.Get<Phase>(phaseId);
+                if (phase == null)
+                    return;
+
+                if (!HasOrganizationRights(session, phase.Competition.Organization, UserRoles.Admin))
+                    return;
+                UpdatePhaseRankingsInternal(session, phase);
+            }
+        }
+
 
         private void UpdateRankingsInternal(ISession session, IList<Ranking> rankings, IList<Match> matches, Func<Ranking> createRanking, bool elimination)
         {
@@ -486,32 +507,32 @@ namespace Ochs
                     {
                         if (rankingStat == RankingStat.MatchPoints)
                         {
-                            same = same && (orderedRankings[rankingIndex].MatchPointsPerMatch !=
+                            same = same && (orderedRankings[rankingIndex].MatchPointsPerMatch ==
                                             orderedRankings[rankingIndex - 1].MatchPointsPerMatch);
                         }
                         else if (rankingStat == RankingStat.DoubleHits)
                         {
-                            same = same && (orderedRankings[rankingIndex].DoubleHitsPerMatch !=
+                            same = same && (orderedRankings[rankingIndex].DoubleHitsPerMatch ==
                                             orderedRankings[rankingIndex - 1].DoubleHitsPerMatch);
                         }
                         else if (rankingStat == RankingStat.HitRatio)
                         {
-                            same = same && (orderedRankings[rankingIndex].HitRatio !=
+                            same = same && (orderedRankings[rankingIndex].HitRatio ==
                                             orderedRankings[rankingIndex - 1].HitRatio);
                         }
                         else if (rankingStat == RankingStat.WinRatio)
                         {
-                            same = same && (orderedRankings[rankingIndex].WinRatio !=
+                            same = same && (orderedRankings[rankingIndex].WinRatio ==
                                             orderedRankings[rankingIndex - 1].WinRatio);
                         }
                         else if (rankingStat == RankingStat.Penalties)
                         {
-                            same = same && (orderedRankings[rankingIndex].Penalties !=
+                            same = same && (orderedRankings[rankingIndex].Penalties ==
                                             orderedRankings[rankingIndex - 1].Penalties);
                         }
                         else if (rankingStat == RankingStat.Warnings)
                         {
-                            same = same && (orderedRankings[rankingIndex].Warnings !=
+                            same = same && (orderedRankings[rankingIndex].Warnings ==
                                             orderedRankings[rankingIndex - 1].Warnings);
                         }
                     }

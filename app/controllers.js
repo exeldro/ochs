@@ -433,10 +433,22 @@ app.controller("EliminationController", function ($scope, $http, $routeParams, $
             for (var j = 0; j < response.data.Matches[i].length; j++) {
                 if (response.data.Matches[i][j]){
                     if (response.data.Matches[i][j].Finished) {
-                        bracketdata.results[0][i].push([
-                            response.data.Matches[i][j].ScoreBlue, response.data.Matches[i][j].ScoreRed,
-                            response.data.Matches[i][j]
-                        ]);
+                        if (response.data.Matches[i][j].Result == 'ForfeitBlue' || response.data.Matches[i][j].Result == 'DisqualificationBlue') {
+                            bracketdata.results[0][i].push([
+                                -1, 0,
+                                response.data.Matches[i][j]
+                            ]);
+                        }else if (response.data.Matches[i][j].Result == 'ForfeitRed' || response.data.Matches[i][j].Result == 'DisqualificationRed') {
+                            bracketdata.results[0][i].push([
+                                0, -1,
+                                response.data.Matches[i][j]
+                            ]);
+                        } else {
+                            bracketdata.results[0][i].push([
+                                response.data.Matches[i][j].ScoreBlue, response.data.Matches[i][j].ScoreRed,
+                                response.data.Matches[i][j]
+                            ]);
+                        }
                     } else {
                         bracketdata.results[0][i].push([
                             null, null,

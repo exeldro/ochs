@@ -561,7 +561,7 @@ app.controller("LoginController", function ($scope, $location, $http) {
     };
 });
 
-app.controller("MatchController", function ($scope, $http, $routeParams, $interval, $location) {
+app.controller("MatchController", function ($scope, $http, $routeParams, $interval, $location, $cookies) {
     $scope.matchId = $routeParams.matchId;
     $http.get("api/Match/Get/" + $routeParams.matchId).then(function (response) {
         $scope.currentMatch = response.data;
@@ -580,7 +580,7 @@ app.controller("MatchController", function ($scope, $http, $routeParams, $interv
                     } else {
                         $location.path("ShowMatch/" + $scope.nextMatch.Id);
                     }
-                }else if (args.PoolId) {
+                } else if (args.PoolId) {
                     $location.path("ShowPool/" + args.PoolId);
                 } else if (args.PhaseId) {
                     $location.path("ShowPhase/" + args.PhaseId);
@@ -592,8 +592,10 @@ app.controller("MatchController", function ($scope, $http, $routeParams, $interv
             }
             $scope.currentMatch = args;
             $scope.editTime = new Date(1970, 1, 1, 0, 0, args.LiveTime);
+        } else if (!$scope.currentMatch.Started && args.Started && !args.Finished && $cookies.get('location') && $cookies.get('location') === args.Location && $location.path().length >= 12 && $location.path().substring(0, 12) !== '/ScoreKeeper') {
+            $location.path("ShowMatch/" + args.Id);
         } else if ($scope.nextMatch && $scope.nextMatch.Id === args.Id) {
-            $http.get("api/Match/GetNext/" + $scope.matchId).then(function (response) {
+            $http.get("api/Match/GetNext/" + $scope.matchId).then(function(response) {
                 $scope.nextMatch = response.data;
             });
         }

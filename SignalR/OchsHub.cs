@@ -308,15 +308,15 @@ namespace Ochs
                         var matchNumber = Service.GetMatchNumber(match.Name, round);
                         var nextRound = round-1;
                         var nextMatchNumber = ((matchNumber - 1) >> 1) + 1;
-                        var nextMatchName = Service.GetMatchName(nextRound, nextMatchNumber);
+                        var nextMatchName = Service.GetMatchName(nextRound, nextMatchNumber).Trim();
                         Match nextMatch = null;
                         if (match.Pool != null)
                         {
-                            nextMatch = match.Pool.Matches.SingleOrDefault(x => x.Name == nextMatchName);
+                            nextMatch = match.Pool.Matches.SingleOrDefault(x => x.Name.Trim() == nextMatchName);
                         }
                         else if (match.Phase != null)
                         {
-                            nextMatch = match.Phase.Matches.SingleOrDefault(x => x.Name == nextMatchName);
+                            nextMatch = match.Phase.Matches.SingleOrDefault(x => x.Name.Trim() == nextMatchName);
                         }
 
                         if (nextMatch != null)
@@ -341,15 +341,15 @@ namespace Ochs
 
                         if (round == 1 && loser != null)
                         {
-                            nextMatchName = Service.GetMatchName(0, 2);
+                            nextMatchName = Service.GetMatchName(0, 2).Trim();
                             nextMatch = null;
                             if (match.Pool != null)
                             {
-                                nextMatch = match.Pool.Matches.SingleOrDefault(x => x.Name == nextMatchName);
+                                nextMatch = match.Pool.Matches.SingleOrDefault(x => x.Name.Trim() == nextMatchName);
                             }
                             else if (match.Phase != null)
                             {
-                                nextMatch = match.Phase.Matches.SingleOrDefault(x => x.Name == nextMatchName);
+                                nextMatch = match.Phase.Matches.SingleOrDefault(x => x.Name.Trim() == nextMatchName);
                             }
 
                             if (nextMatch != null)
@@ -637,7 +637,7 @@ namespace Ochs
                 var round = Service.GetRound(match.Name);
                 if (round == 0)
                 {
-                    if (match.Name == Service.GetMatchName(round, 2))
+                    if (match.Name.Trim() == Service.GetMatchName(round, 2).Trim())
                     {
                         ranking.Rank = win ? 3 : 4;
                     }
@@ -1371,15 +1371,15 @@ namespace Ochs
             for (var i = 0; i < matchedFighters.Count - 1; i += 2)
             {
                 var matchNumber = (i >> 1) +1;
-                var matchName = Service.GetMatchName(roundCount, matchNumber);
-                var match = matches.SingleOrDefault(x => x.Name == matchName);
+                var matchName = Service.GetMatchName(roundCount, matchNumber).Trim();
+                var match = matches.SingleOrDefault(x => x.Name.Trim() == matchName);
                 if (matchedFighters[i] == null || matchedFighters[i + 1] == null)
                 {
                     var fighter = matchedFighters[i] ?? matchedFighters[i + 1];
                     if(fighter == null)
                         continue;
-                    matchName = Service.GetMatchName(roundCount-1, (i>>2)+1);
-                    match = matches.SingleOrDefault(x => x.Name == matchName);
+                    matchName = Service.GetMatchName(roundCount-1, (i>>2)+1).Trim();
+                    match = matches.SingleOrDefault(x => x.Name.Trim() == matchName);
                     if(match == null)
                         continue;
                     if (matchNumber % 2 == 1)

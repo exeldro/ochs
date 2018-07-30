@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Microsoft.VisualBasic;
 using NHibernate;
 
 namespace Ochs
@@ -12,9 +13,9 @@ namespace Ochs
         {
             if (round == 0)
             {
-                return matchNumber == 2 ? thirdPlaceMatchName  : roundNames[0];
+                return matchNumber == 2 ? " "+thirdPlaceMatchName  : roundNames[0];
             }
-            return roundNames[round] + " match " + matchNumber.ToString().PadLeft(3);
+            return Strings.Space(round) + roundNames[round] + " match " + matchNumber.ToString().PadLeft(3);
         }
 
         public static IList<Person> SingleEliminationMatchedFighters(IList<Person> fighters)

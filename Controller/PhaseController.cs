@@ -74,8 +74,8 @@ namespace Ochs
                         matchCount = 2;
                     for (var matchNumber = 1; matchNumber <= matchCount; matchNumber++)
                     {
-                        var matchName = Service.GetMatchName(round, matchNumber);
-                        var match = phase.Matches.SingleOrDefault(x => x.Name == matchName);
+                        var matchName = Service.GetMatchName(round, matchNumber).Trim();
+                        var match = phase.Matches.SingleOrDefault(x => x.Name.Trim() == matchName);
                         if (match == null)
                         {
                             matches.Add(null);

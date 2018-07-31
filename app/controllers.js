@@ -592,7 +592,7 @@ app.controller("MatchController", function ($scope, $http, $routeParams, $interv
             }
             $scope.currentMatch = args;
             $scope.editTime = new Date(1970, 1, 1, 0, 0, args.LiveTime);
-        } else if (!$scope.currentMatch.Started && args.Started && !args.Finished && $cookies.get('location') && $cookies.get('location') === args.Location && $location.path().length >= 12 && $location.path().substring(0, 12) !== '/ScoreKeeper') {
+        } else if ((!$scope.currentMatch.Started || $scope.currentMatch.Finished) && args.Started && !args.Finished && $cookies.get('location') && $cookies.get('location') === args.Location && $location.path().length >= 12 && $location.path().substring(0, 12) !== '/ScoreKeeper') {
             $location.path("ShowMatch/" + args.Id);
         } else if ($scope.nextMatch && $scope.nextMatch.Id === args.Id) {
             $http.get("api/Match/GetNext/" + $scope.matchId).then(function(response) {

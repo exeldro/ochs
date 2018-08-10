@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Security.Principal;
-using System.Threading.Tasks;
-using System.Web.UI;
 using Microsoft.AspNet.SignalR;
 using NHibernate;
 using NHibernate.Criterion;
@@ -1482,6 +1479,7 @@ namespace Ochs
                             (y.FighterBlue.Id == fighterBlue.Id && y.FighterRed.Id == x.Id) ||
                             (y.FighterRed.Id == fighterBlue.Id && y.FighterBlue.Id == x.Id)))
                     .OrderBy(x => matches.Count(y => y.FighterBlue?.Id == x.Id || y.FighterRed?.Id == x.Id))
+                    .ThenBy(x => matches.OrderBy(y => y.Name).LastOrDefault(y => y.FighterBlue?.Id == x.Id || y.FighterRed?.Id == x.Id)?.Name)
                     .FirstOrDefault();
                 if (fighterRed == null)
                     break;

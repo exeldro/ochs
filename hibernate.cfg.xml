@@ -2,9 +2,9 @@
 <hibernate-configuration xmlns="urn:nhibernate-configuration-2.2">
   <session-factory>
     <property name="connection.provider">NHibernate.Connection.DriverConnectionProvider</property>
-    <property name="dialect">NHibernate.Dialect.SQLiteDialect</property>
-    <property name="connection.driver_class">NHibernate.Driver.SQLite20Driver</property>
-    <property name="connection.connection_string">Data Source=ochs.db;Version=3;New=True;</property>
+    <property name="dialect">NHibernate.Dialect.MsSql2012Dialect</property>
+    <property name="connection.driver_class">NHibernate.Driver.SqlClientDriver</property>
+    <property name="connection.connection_string">Data Source=localhost;Database=ochs;User Id=sa;Password=workit;</property>
     <property name="show_sql">false</property>
   </session-factory>
 

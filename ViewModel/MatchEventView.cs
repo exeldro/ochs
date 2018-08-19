@@ -1,4 +1,6 @@
-﻿namespace Ochs
+﻿using System;
+
+namespace Ochs
 {
     public class MatchEventView
     {
@@ -14,5 +16,6 @@
         public virtual double Time => _matchEvent.MatchTime.TotalSeconds;
         public virtual int PointsBlue => _matchEvent.PointsBlue;
         public virtual int PointsRed => _matchEvent.PointsRed;
+        public virtual DateTime CreatedDateTime => _matchEvent.CreatedDateTime;
     }
 }

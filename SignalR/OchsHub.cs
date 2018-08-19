@@ -1221,8 +1221,11 @@ namespace Ochs
                             };
                             session.Save(organization);
                         }
-                        person.Organizations.Add(organization);
-                        session.Update(person);
+                        if (!person.Organizations.Contains(organization))
+                        {
+                            person.Organizations.Add(organization);
+                            session.Update(person);
+                        }
                     }
                     transaction.Commit();
                     Clients.All.updateCompetition(new CompetitionDetailView(competition));

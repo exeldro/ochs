@@ -11,8 +11,8 @@ namespace Ochs
         public virtual string LastNamePrefix { get; set; }
         public virtual string CountryCode { get; set; }
         public virtual IList<Organization> Organizations { get; set; } = new List<Organization>();
-
         public virtual string FullName { get; set; }
+        public virtual Gender Gender { get; set; } = Gender.Unknown;
 
         public override string ToString() => DisplayName;
 
@@ -41,5 +41,12 @@ namespace Ochs
                 return fullName.Trim();
             }
         }
+    }
+
+    public enum Gender
+    {
+        Unknown,
+        Male,
+        Female
     }
 }

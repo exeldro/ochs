@@ -65,7 +65,7 @@ namespace Ochs
                         Type = eventType,
                         Match = match
                     });
-                    UpdateMatchData(match);
+                    match.UpdateMatchData();
                     session.Update(match);
                     transaction.Commit();
                     Clients.All.updateMatch(new MatchWithEventsView(match));
@@ -97,7 +97,7 @@ namespace Ochs
                         return;
 
                     match.Events.Remove(lastEvent);
-                    UpdateMatchData(match);
+                    match.UpdateMatchData();
                     session.Update(match);
                     transaction.Commit();
                     Clients.All.updateMatch(new MatchWithEventsView(match));
@@ -135,16 +135,6 @@ namespace Ochs
                 return false;
             }
             return true;
-        }
-
-        private void UpdateMatchData(Match match)
-        {
-            match.ExchangeCount = match.Events.Count(x => x.Type != MatchEventType.WarningBlue &&
-                                                          x.Type != MatchEventType.WarningRed &&
-                                                          x.Type != MatchEventType.Penalty);
-            match.DoubleCount = match.Events.Count(x => x.Type == MatchEventType.DoubleHit);
-            match.ScoreRed = match.Events.Sum(x => x.PointsRed < 0 ? x.PointsRed : (x.PointsRed > x.PointsBlue ? x.PointsRed - x.PointsBlue : 0));
-            match.ScoreBlue = match.Events.Sum(x => x.PointsBlue < 0 ? x.PointsBlue : (x.PointsBlue > x.PointsRed ? x.PointsBlue - x.PointsRed : 0));
         }
 
         public void StopTime(Guid matchGuid)
@@ -451,6 +441,7 @@ namespace Ochs
                 ranking.Warnings = 0;
                 ranking.Penalties = 0;
                 ranking.MatchPoints = 0;
+                ranking.SportmanshipPoints = 0;
             }
             //calc ranking stats
             foreach (var match in matches)
@@ -708,6 +699,20 @@ namespace Ochs
                     else
                     {
                         ranking.Penalties += Math.Abs(matchEvent.PointsRed);
+                    }
+                }
+                else if (matchEvent.Type == MatchEventType.SportmanshipBlue)
+                {
+                    if (blue)
+                    {
+                        ranking.SportmanshipPoints++;
+                    }
+                }
+                else if (matchEvent.Type == MatchEventType.SportmanshipRed)
+                {
+                    if (!blue)
+                    {
+                        ranking.SportmanshipPoints++;
                     }
                 }
                 else if (matchEvent.Type == MatchEventType.WarningBlue)

@@ -20,6 +20,7 @@ namespace Ochs
             Map(x => x.Exchanges);
             Map(x => x.HitsGiven);
             Map(x => x.HitsReceived);
+            Map(x => x.SportmanshipPoints);
         }
         
     }

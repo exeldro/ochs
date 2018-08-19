@@ -10,10 +10,10 @@
 <div class="container">
     <div class="row">
         <div class="col-6 bg-blue" align="left">
-            {{currentMatch.FighterBlue}}
+            <strong>{{currentMatch.FighterBlue}}</strong>
         </div>
         <div class="col-6 bg-red" align="right">
-            {{currentMatch.FighterRed}}
+            <strong>{{currentMatch.FighterRed}}</strong>
         </div>
     </div>
     <div class="row d-none d-sm-flex">
@@ -26,7 +26,7 @@
     </div>
     <div class="row">
         <div class="col-12" align="center">
-            <span ng-show="!editingTime">{{currentMatch.LiveTime | timespan}}</span>
+            <span ng-show="!editingTime"><strong>{{currentMatch.LiveTime | timespan}}</strong></span>
             <input type="time" ng-show="editingTime" id="exampleInput" name="input" ng-model="editTime" step="1" required="required" />
             <br />
             <button type="button" class="btn" ng-click="startTime()"><i class="fa fa-play" aria-hidden="true"></i></button>
@@ -66,17 +66,23 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-6" align="right">
-            <button type="button" class="btn" ng-click="addMatchEvent(0,0,'WarningBlue')">Warning blue</button>
+        <div class="col-3" align="right">
+            <button type="button" class="btn bg-lightblue" ng-click="addMatchEvent(0,0,'SportmanshipBlue')">Sportmanship</button>
         </div>
-        <div class="col-6" align="left">
-            <button type="button" class="btn" ng-click="addMatchEvent(0,0,'WarningRed')">Warning red</button>
+        <div class="col-3" align="right">
+            <button type="button" class="btn bg-lightblue" ng-click="addMatchEvent(0,0,'WarningBlue')">Warning</button>
+        </div>
+        <div class="col-3" align="left">
+            <button type="button" class="btn bg-lightred" ng-click="addMatchEvent(0,0,'WarningRed')">Warning</button>
+        </div>
+        <div class="col-3" align="left">
+            <button type="button" class="btn bg-lightred" ng-click="addMatchEvent(0,0,'SportmanshipRed')">Sportmanship</button>
         </div>
     </div>
     <div class="row">
         <div class="col-12" align="center">
-            {{currentMatch.ExchangeCount}} Exchanges<br/>
-            {{currentMatch.DoubleCount}} Doubles<br/>
+            <strong>{{currentMatch.ExchangeCount}}</strong> Exchanges<br/>
+            <strong>{{currentMatch.DoubleCount}}</strong> Doubles<br/>
             <table>
                 <tr><th>Time</th><th>Event</th><th>Blue</th><th>Red</th></tr>
                 <tr ng-repeat="event in currentMatch.Events">

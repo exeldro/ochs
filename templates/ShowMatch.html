@@ -16,16 +16,16 @@
         </div>
     </div>
     <div class="row d-none d-sm-flex">
-        <div class="col-6 bg-blue" align="left">
+        <div class="col-6 bg-blue text-nowrap" align="left">
             {{currentMatch.FighterBlueOrganization || '-'}}
         </div>
-        <div class="col-6 bg-red" align="right">
+        <div class="col-6 bg-red text-nowrap" align="right">
             {{currentMatch.FighterRedOrganization || '-'}}
         </div>
     </div>
     <div class="row">
         <div class="col-12" align="center">
-            {{currentMatch.LiveTime | timespan}}
+            <strong>{{currentMatch.LiveTime | timespan}}</strong>
         </div>
     </div>
     <div class="row">
@@ -38,8 +38,8 @@
     </div>
     <div class="row d-none d-sm-flex">
         <div class="col-12" align="center">
-            {{currentMatch.ExchangeCount}} Exchanges<br />
-            {{currentMatch.DoubleCount}} Doubles<br />
+            <strong>{{currentMatch.ExchangeCount}}</strong> Exchanges<br />
+            <strong>{{currentMatch.DoubleCount}}</strong> Doubles<br />
         </div>
     </div>
     <div class="row d-none d-md-flex">

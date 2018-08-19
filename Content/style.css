@@ -20,6 +20,9 @@
 .bg-lightred {
     background-color: #FAA;
 }
+.text-nowrap {
+    white-space: nowrap;
+}
 
 table td input {
     width: 100%;   

@@ -27,6 +27,8 @@ namespace Ochs
         AfterBlow,
         UnclearExchange,
         ProtestBlue,
-        ProtestRed
+        ProtestRed,
+        SportmanshipBlue,
+        SportmanshipRed
     }
 }

@@ -130,6 +130,15 @@ app.controller("CompetitionController", function ($scope, $http, $routeParams, $
     $scope.competitionId = $routeParams.competitionId;
     $http.get("api/Competition/Get/" + $routeParams.competitionId).then(function (response) {
         $scope.currentCompetition = response.data;
+        if ($scope.rights) {
+            $scope.currentCompetition.Rights = $scope.rights;
+        }
+    });
+    $http.get("api/Auth/CompetitionRights/" + $routeParams.competitionId).then(function (response) {
+        $scope.rights = response.data;
+        if ($scope.currentCompetition) {
+            $scope.currentCompetition.Rights = response.data;
+        }
     });
     $http.get("api/Organization/All").then(function (response) {
         $scope.organizations = response.data;
@@ -140,6 +149,9 @@ app.controller("CompetitionController", function ($scope, $http, $routeParams, $
     $scope.$on('updateCompetition', function (event, args) {
         if ($scope.competitionId === args.Id) {
             $scope.currentCompetition = args;
+            if ($scope.rights) {
+                $scope.currentCompetition.Rights = $scope.rights;
+            }
             $scope.$apply();
         }
     });
@@ -198,11 +210,11 @@ app.controller("CompetitionController", function ($scope, $http, $routeParams, $
         $scope.$parent.ochsHub.invoke("CompetitionAddFight", $scope.competitionId, $scope.newFightName, $scope.newFightPlanned, $scope.newFightBlueFighterId, $scope.newFightRedFighterId);
     };
     $scope.uploadFighters = function(fighterFile) {
-        $http.post("api/Competition/UploadFighters/"+$scope.competitionId, fighterFile)
+        $http.post("api/Competition/UploadFighters/" + $scope.competitionId, fighterFile)
             .then(function(response) {
                 $scope.currentCompetition = response.data;
             });
-    }
+    };
     $scope.checkAll = function () {
         angular.forEach($scope.currentCompetition.Fighters, function (obj) {
             obj.Selected = $scope.select;
@@ -210,28 +222,30 @@ app.controller("CompetitionController", function ($scope, $http, $routeParams, $
     };
     $scope.competitionRemoveFighters = function() {
         var fighterIds = [];
-        angular.forEach($scope.currentCompetition.Fighters, function (fighter) {
-            if (fighter.Selected && fighter.MatchesTotal === 0) {
-                fighterIds.push(fighter.Id);
-            }
-        });
-        if (fighterIds.length > 0) {
-            $scope.$parent.ochsHub.invoke("CompetitionRemoveFighters", $scope.competitionId, fighterIds);
-        }
-    }
-    $scope.phaseAddFighters = function() {
-        if ($scope.addFightersPhase) {
-            var fighterIds = [];
-            angular.forEach($scope.currentCompetition.Fighters, function (fighter) {
+        angular.forEach($scope.currentCompetition.Fighters,
+            function(fighter) {
                 if (fighter.Selected && fighter.MatchesTotal === 0) {
                     fighterIds.push(fighter.Id);
                 }
             });
+        if (fighterIds.length > 0) {
+            $scope.$parent.ochsHub.invoke("CompetitionRemoveFighters", $scope.competitionId, fighterIds);
+        }
+    };
+    $scope.phaseAddFighters = function() {
+        if ($scope.addFightersPhase) {
+            var fighterIds = [];
+            angular.forEach($scope.currentCompetition.Fighters,
+                function(fighter) {
+                    if (fighter.Selected && fighter.MatchesTotal === 0) {
+                        fighterIds.push(fighter.Id);
+                    }
+                });
             if (fighterIds.length > 0) {
                 $scope.$parent.ochsHub.invoke("PhaseAddFighters", $scope.addFightersPhase, fighterIds);
             }
         }
-    }
+    };
 });
 
 app.controller("CompetitionRulesController", function ($scope, $http, $routeParams, $interval) {
@@ -245,10 +259,17 @@ app.controller("PhaseController", function ($scope, $http, $routeParams, $interv
     $scope.phaseId = $routeParams.phaseId;
     $http.get("api/Phase/Get/" + $routeParams.phaseId).then(function (response) {
         $scope.currentPhase = response.data;
+        $http.get("api/Auth/CompetitionRights/" + $scope.currentPhase.CompetitionId).then(function (response) {
+            $scope.rights = response.data;
+            $scope.currentPhase.Rights = $scope.rights;
+        });
     });
     $scope.$on('updatePhase', function (event, args) {
         if ($scope.phaseId === args.Id) {
             $scope.currentPhase = args;
+            if ($scope.rights) {
+                $scope.currentPhase.Rights = $scope.rights;
+            }
             $scope.$apply();
         }
     });
@@ -348,10 +369,17 @@ app.controller("PoolController", function ($scope, $http, $routeParams, $interva
     $scope.poolId = $routeParams.poolId;
     $http.get("api/Pool/Get/" + $routeParams.poolId).then(function (response) {
         $scope.currentPool = response.data;
+        $http.get("api/Auth/CompetitionRights/" + $scope.currentPool.CompetitionId).then(function (response) {
+            $scope.rights = response.data;
+            $scope.currentPool.Rights = $scope.rights;
+        });
     });
     $scope.$on('updatePool', function (event, args) {
         if ($scope.poolId === args.Id) {
             $scope.currentPool = args;
+            if ($scope.rights) {
+                $scope.currentPool.Rights = $scope.rights;
+            }
             $scope.$apply();
         }
     });

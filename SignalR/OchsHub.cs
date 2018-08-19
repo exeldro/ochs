@@ -380,9 +380,7 @@ namespace Ochs
         {
             if (match.Pool != null)
             {
-                var rankings = session.QueryOver<PoolRanking>().Where(x => x.Pool == match.Pool).List().Cast<Ranking>().ToList();
-                UpdateRankingsInternal(session, rankings, match.Pool.Matches, () => new PoolRanking {Pool = match.Pool}, match.Phase.Elimination);
-                Clients.All.updateRankings(match.Pool.Id);
+                UpdatePoolRankingsInternal(session, match.Pool);
             }
 
             if (match.Phase != null)
@@ -410,6 +408,27 @@ namespace Ochs
                 if (!HasOrganizationRights(session, phase.Competition.Organization, UserRoles.Admin))
                     return;
                 UpdatePhaseRankingsInternal(session, phase);
+            }
+        }
+
+        private void UpdatePoolRankingsInternal(ISession session, Pool pool)
+        {
+            var rankings = session.QueryOver<PoolRanking>().Where(x => x.Pool == pool).List().Cast<Ranking>().ToList();
+            UpdateRankingsInternal(session, rankings, pool.Matches, () => new PoolRanking {Pool = pool}, pool.Phase.Elimination);
+            Clients.All.updateRankings(pool.Id);
+        }
+
+        public void UpdatePoolRankings(Guid poolId)
+        {
+            using (var session = NHibernateHelper.OpenSession())
+            {
+                var pool = session.Get<Pool>(poolId);
+                if (pool == null)
+                    return;
+
+                if (!HasOrganizationRights(session, pool.Phase.Competition.Organization, UserRoles.Admin))
+                    return;
+                UpdatePoolRankingsInternal(session, pool);
             }
         }
 

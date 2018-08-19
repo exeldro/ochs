@@ -84,7 +84,7 @@
                     <td>{{ event.Type }}</td>
                     <td class="bg-blue" align="center">{{ event.PointsBlue }}</td>
                     <td class="bg-red" align="center">{{ event.PointsRed }}</td>
-                    <td ng-show="$last"><button type="button" class="btn" ng-click="undoLastMatchEvent()"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
+                    <td ng-show="$first"><button type="button" class="btn" ng-click="undoLastMatchEvent()"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
                 </tr>
             </table>
             <br/>

@@ -168,6 +168,31 @@ namespace Ochs
             var i = Request.GetOwinContext().Authentication?.User?.Identity as ClaimsIdentity;
             return i?.Claims.SingleOrDefault(x => x.Type == ClaimTypes.Name)?.Value;
         }
+
+        [HttpGet]
+        public string CompetitionRights(Guid id)
+        {
+            var i = Request.GetOwinContext().Authentication?.User?.Identity as ClaimsIdentity;
+            var idstring = i?.Claims.SingleOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrWhiteSpace(idstring))
+                return null;
+            using (var session = NHibernateHelper.OpenSession())
+            {
+                var competition = session.QueryOver<Competition>().Where(x => x.Id == id).SingleOrDefault();
+                if (competition == null)
+                    return null;
+
+                var userId = new Guid(idstring);
+                var roles = session.QueryOver<UserRole>().Where(x => x.User.Id == userId).List().Where(x => x.Organization == null || x.Organization.Id == competition.Organization.Id).Select(x=>x.Role).ToList();
+                if (roles.Contains(UserRoles.Admin))
+                    return nameof(UserRoles.Admin);
+                if (roles.Contains(UserRoles.ScoreValidator))
+                    return nameof(UserRoles.ScoreValidator);
+                if (roles.Contains(UserRoles.Scorekeeper))
+                    return nameof(UserRoles.Scorekeeper);
+            }
+            return null;
+        }
     }
     public class LoginRequest
     {

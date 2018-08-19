@@ -30,7 +30,7 @@
         <td ng-show="match.Started && (match.Result == 'None' || match.Result == 'WinBlue' || match.Result == 'WinRed' || match.Result == 'Draw')"><i ng-show="!match.Finished" class="fa fa-play" aria-hidden="true"></i> {{ match.ScoreBlue }} - {{ match.ScoreRed }}</td>
         <td ng-show="match.Started && (match.Result != 'None' && match.Result != 'WinBlue' && match.Result != 'WinRed' && match.Result != 'Draw')">{{ match.Result }}</td>
         <td ng-show="!match.Started"></td>
-        <td><i class="fa fa-pencil" aria-hidden="true"></i> <a href="#!ShowMatch/{{match.Id}}"><i class="fa fa-eye" aria-hidden="true"></i></a> <a ng-show="!match.Finished" href="#!ScoreKeeper/{{match.Id}}"><i class="fa fa-play" aria-hidden="true"></i></a></td>
+        <td><a ng-show="context.Rights =='Admin' || context.Rights == 'ScoreValidator'" href="#!EditMatch/{{match.Id}}"><i class="fa fa-pencil" aria-hidden="true"></i></a> <a href="#!ShowMatch/{{match.Id}}"><i class="fa fa-eye" aria-hidden="true"></i></a> <a ng-show="!match.Finished && (context.Rights =='Admin' || context.Rights == 'ScoreKeeper')" href="#!ScoreKeeper/{{match.Id}}"><i class="fa fa-play" aria-hidden="true"></i></a></td>
     </tr>
 </table>
 

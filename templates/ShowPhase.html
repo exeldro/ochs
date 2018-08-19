@@ -19,21 +19,21 @@
             <i class="fa fa-check" aria-hidden="true"></i> {{pool.MatchesFinished}}
         </td>
     </tr>
-    <tr>
+    <tr ng-show="rights == 'Admin'">
         <td><input type="text" ng-model="newPoolName" /></td>
         <td><input type="text" ng-model="newPoolLocationName" /></td>
         <td><input placeholder="yyyy-MM-ddTHH:mm:ss" type="datetime-local" ng-model="newPoolPlanned" /></td>
         <td><button ng-click="createPhasePool()">Create</button></td>
     </tr>
 </table>
-<button ng-show="currentPhase.PoolsTotal > 0 && currentPhase.FightersTotal > 0" ng-click="distributeFighters()">Distribute fighters over the pools</button>
+<button ng-show="rights == 'Admin' && currentPhase.PoolsTotal > 0 && currentPhase.FightersTotal > 0" ng-click="distributeFighters()">Distribute fighters over the pools</button>
 <br />
 <h3>Fighters {{currentPhase.FightersTotal}}</h3>
 <label>Search: <input type="text" ng-model="searchFighterText"></label>
 <table>
 
     <tr>
-        <th><input type="checkbox" ng-model="select" ng-click="checkAll()" /></th>
+        <th ng-show="rights == 'Admin'"><input type="checkbox" ng-model="select" ng-click="checkAll()" /></th>
         <th ng-click="fighterSortType = 'FirstName'; fighterSortReverse=!fighterSortReverse">Firstname</th>
         <th ng-click="fighterSortType = 'LastName'; fighterSortReverse=!fighterSortReverse">LastName</th>
         <th ng-click="fighterSortType = 'Organization'; fighterSortReverse=!fighterSortReverse">Organization</th>
@@ -45,7 +45,7 @@
 
     </tr>
     <tr ng-repeat="fighter in currentPhase.Fighters | filter:searchFighterText | orderBy:fighterSortType:fighterSortReverse">
-        <td><input type="checkbox" name="fightersSelected[]" ng-model="fighter.Selected" value="{{fighter.Id}}" /></td>
+        <td ng-show="rights == 'Admin'"><input type="checkbox" name="fightersSelected[]" ng-model="fighter.Selected" value="{{fighter.Id}}" /></td>
         <td colspan="2">{{fighter.DisplayName}}</td>
         <td>{{fighter.Organization}}</td>
         <td><img alt="{{fighter.CountryCode}}" title="{{fighter.CountryName}}" ng-src="Content/flags/{{fighter.CountryCode?fighter.CountryCode:'none'}}.svg" height="20" width="30" /></td>
@@ -55,16 +55,17 @@
         <td><i class="fa fa-check" aria-hidden="true"></i> {{fighter.MatchesFinished}}</td>
     </tr>
 </table>
-Selected: <button ng-click="phaseRemoveFighters()">Remove</button> from phase<span ng-show="currentPhase.PoolsTotal > 0">
-    , <button ng-click="poolAddFighters()">Add</button> to pool
-    <select ng-model="addFightersPool">
-        <option ng-repeat="pool in currentPhase.Pools" value="{{pool.Id}}">{{pool.Name}}</option>
-    </select>
-</span><br />
-<button ng-show="currentPhase.PhaseOrder <= 1" ng-click="addAllFighters()">Add all fighters from competition</button><br />
-<div ng-show="currentPhase.PhaseOrder > 1"><input type="number" min="2" ng-model="topfighters" max="128" /><button ng-click="addTopFighters()">Add top from previous phase</button></div>
-
+<div ng-show="rights == 'Admin'">
+    Selected: <button ng-click="phaseRemoveFighters()">Remove</button> from phase<span ng-show="currentPhase.PoolsTotal > 0">
+        , <button ng-click="poolAddFighters()">Add</button> to pool
+        <select ng-model="addFightersPool">
+            <option ng-repeat="pool in currentPhase.Pools" value="{{pool.Id}}">{{pool.Name}}</option>
+        </select>
+    </span><br />
+    <button ng-show="currentPhase.PhaseOrder <= 1" ng-click="addAllFighters()">Add all fighters from competition</button><br />
+    <div ng-show="currentPhase.PhaseOrder > 1"><input type="number" min="2" ng-model="topfighters" max="128" /><button ng-click="addTopFighters()">Add top from previous phase</button></div>
+</div>
 <h3>Matches {{currentPhase.MatchesTotal}}</h3>
 <matches-table context="currentPhase"></matches-table>
-<button ng-show="currentPhase.PoolsTotal == 0 && currentPhase.FightersTotal > 1" ng-click="generateMatches()">Generate Matches</button>
-<button ng-show="currentPhase.MatchesTotal > 0 && currentPhase.FightersTotal > 1" ng-click="fillMatches()">Fill Matches</button>
+<button ng-show="rights == 'Admin' && currentPhase.PoolsTotal == 0 && currentPhase.FightersTotal > 1" ng-click="generateMatches()">Generate Matches</button>
+<button ng-show="rights == 'Admin' && currentPhase.MatchesTotal > 0 && currentPhase.FightersTotal > 1" ng-click="fillMatches()">Fill Matches</button>

@@ -7,7 +7,7 @@
         <td>{{ phase.Location }}</td>
         <td>{{ phase.PhaseType }}</td>
     </tr>
-    <tr>
+    <tr ng-show="rights == 'Admin'">
         <td><input type="text" ng-model="newPhaseName" /></td>
         <td><input type="text" ng-model="newPhaseLocationName" /></td>
         <td>
@@ -26,9 +26,9 @@
 <label>Search: <input type="text" ng-model="searchFighterText"></label>
 <table>
     <tr>
-        <th><input type="checkbox" ng-model="select" ng-click="checkAll()" /></th>
-        <th>Blue</th>
-        <th>Red</th>
+        <th ng-show="rights == 'Admin'"><input type="checkbox" ng-model="select" ng-click="checkAll()" /></th>
+        <th ng-show="rights == 'Admin'">Blue</th>
+        <th ng-show="rights == 'Admin'">Red</th>
         <th ng-click="fighterSortType = 'FirstName'; fighterSortReverse=!fighterSortReverse">Firstname</th>
         <th ng-click="fighterSortType = 'LastName'; fighterSortReverse=!fighterSortReverse">LastName</th>
         <th ng-click="fighterSortType = 'Organization'; fighterSortReverse=!fighterSortReverse">Organization</th>
@@ -38,9 +38,9 @@
         <th><i ng-click="fighterSortType = 'MatchesFinished'; fighterSortReverse=!fighterSortReverse" class="fa fa-check" aria-hidden="true"></i> {{currentCompetition.MatchesFinished}}</th>
     </tr>
     <tr ng-repeat="fighter in currentCompetition.Fighters | filter:searchFighterText | orderBy:fighterSortType:fighterSortReverse">
-        <td><input type="checkbox" name="fightersSelected[]" ng-model="fighter.Selected" value="{{fighter.Id}}" /></td>
-        <td><input type="radio" name="newFightBlueFighterId" ng-model="$parent.newFightBlueFighterId" value="{{fighter.Id}}"/></td>
-        <td><input type="radio" name="newFightRedFighterId" ng-model="$parent.newFightRedFighterId" value="{{fighter.Id}}"/></td>
+        <td ng-show="rights == 'Admin'"><input type="checkbox" name="fightersSelected[]" ng-model="fighter.Selected" value="{{fighter.Id}}" /></td>
+        <td ng-show="rights == 'Admin'"><input type="radio" name="newFightBlueFighterId" ng-model="$parent.newFightBlueFighterId" value="{{fighter.Id}}"/></td>
+        <td ng-show="rights == 'Admin'"><input type="radio" name="newFightRedFighterId" ng-model="$parent.newFightRedFighterId" value="{{fighter.Id}}"/></td>
         <td colspan="2">{{fighter.DisplayName}}</td>
         <td>{{fighter.Organization}}</td>
         <td align="center"><img alt="{{fighter.CountryCode}}" title="{{fighter.CountryName}}" ng-src="Content/flags/{{fighter.CountryCode?fighter.CountryCode:'none'}}.svg" height="20" width="30"/> </td>
@@ -49,10 +49,12 @@
         <td><i class="fa fa-check" aria-hidden="true"></i> {{fighter.MatchesFinished}}</td>
     </tr>
 </table>
-Selected: <button ng-click="competitionRemoveFighters()">Remove</button> from competition, <button ng-click="phaseAddFighters()">Add</button> to phase <select ng-model="addFightersPhase">
-    <option ng-repeat="phase in currentCompetition.Phases" value="{{phase.Id}}">{{phase.Name}}</option>
-</select> 
-<table>
+<div ng-show="rights == 'Admin'">
+    Selected: <button ng-click="competitionRemoveFighters()">Remove</button> from competition, <button ng-click="phaseAddFighters()">Add</button> to phase <select ng-model="addFightersPhase">
+        <option ng-repeat="phase in currentCompetition.Phases" value="{{phase.Id}}">{{phase.Name}}</option>
+    </select>
+</div>
+<table ng-show="rights == 'Admin'">
     <tr><td>Firstname</td><td><input placeholder="Firstname" type="text" ng-model="newFighterFirstName" /></td></tr>
     <tr><td>Prefix</td><td><input placeholder="Prefix" type="text" ng-model="newFighterLastNamePrefix" /></td></tr>
     <tr><td>Lastname</td><td><input placeholder="Lastname" type="text" ng-model="newFighterLastName" /></td></tr>
@@ -76,11 +78,11 @@ Selected: <button ng-click="competitionRemoveFighters()">Remove</button> from co
     <tr><td colspan="2"><button ng-click="competitionAddFighter()">Add</button></td></tr>
 </table>
 
-<input type="file" onchange="angular.element(this).scope().uploadFighters( this.files[0] )" />
+<input ng-show="rights == 'Admin'" type="file" onchange="angular.element(this).scope().uploadFighters( this.files[0] )" />
 
 <h3>Matches {{currentCompetition.MatchesTotal}}</h3>
 <matches-table context="currentCompetition"></matches-table>
-<table>
+<table ng-show="rights == 'Admin'">
     <tr>
         <td>Fight name</td><td><input placeholder="Fight name" type="text" ng-model="newFightName" /></td>
         <td>Planned</td><td><input placeholder="yyyy-MM-ddTHH:mm:ss" type="datetime-local" ng-model="newFightPlanned" /></td>

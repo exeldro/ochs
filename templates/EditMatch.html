@@ -1,0 +1,62 @@
+﻿<h2 align="center">
+    <span class="d-none d-md-inline">
+        <a href="#!ShowCompetition/{{currentMatch.CompetitionId}}">{{currentMatch.Competition}}</a>
+        - <a href="#!ShowPhase/{{currentMatch.PhaseId}}">{{currentMatch.Phase}}</a> -
+    </span>
+    <span class="d-none d-sm-inline">
+        <span ng-show="currentMatch.PoolId"><a href="#!ShowPool/{{currentMatch.PoolId}}">{{currentMatch.Pool}}</a> - </span>
+    </span>{{currentMatch.Name}}
+</h2>
+
+Fighter blue<br />
+Fighter red<br />
+Planned Time<br />
+location<br />
+<strong>{{currentMatch.ExchangeCount}}</strong> Exchanges<br />
+<strong>{{currentMatch.DoubleCount}}</strong> Doubles<br />
+<table>
+    <tr><th>Time</th><th>Event</th><th>Blue</th><th>Red</th></tr>
+    <tr>
+        <td><input type="time" name="addEventTime" ng-model="addEventTime" step="1" required="required" /></td>
+        <td>
+            <select ng-model="addEventType" bs-selectbox>
+                ProtestBlue,
+                ProtestRed,
+                SportmanshipBlue,
+                SportmanshipRed
+                <option value="Score">Score</option>
+                <option value="DoubleHit">DoubleHit</option>
+                <option value="AfterBlow">AfterBlow</option>
+                <option value="UnclearExchange">Unclear Exchange</option>
+                <option value="Penalty">Penalty</option>
+                <option value="WarningBlue">{{currentMatch.FighterBlue}} (Blue) warning</option>
+                <option value="WarningRed">{{currentMatch.FighterRed}} (Red) warning</option>
+                <option value="SportmanshipBlue">{{currentMatch.FighterBlue}} (Blue) sportmanship</option>
+                <option value="SportmanshipRed">{{currentMatch.FighterRed}} (Red) sportmanship</option>
+            </select>
+        </td>
+        <td><input type="number" ng-model="addEventPointBlue" /></td>
+        <td><input type="number" ng-model="addEventPointRed" /></td>
+        <td><button type="button" class="btn" ng-click="addMatchEvent(addEventPointBlue,addEventPointRed,addEventType)">Add</button></td>
+    </tr>
+    <tr ng-repeat="event in currentMatch.Events">
+        <td>{{ event.Time | timespan }}</td>
+        <td>{{ event.Type }}</td>
+        <td class="bg-blue" align="center">{{ event.PointsBlue }}</td>
+        <td class="bg-red" align="center">{{ event.PointsRed }}</td>
+        <td ng-show="$first"><button type="button" class="btn" ng-click="undoLastMatchEvent()"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
+    </tr>
+</table>
+<br />
+
+Result: <select ng-model="matchResult" bs-selectbox>
+    <option value="None">None</option>
+    <option value="Draw">Draw</option>
+    <option value="WinBlue" class="bg-blue">{{currentMatch.FighterBlue}} (Blue) wins</option>
+    <option value="WinRed" class="bg-red">{{currentMatch.FighterRed}} (Red) wins</option>
+    <option value="ForfeitBlue">{{currentMatch.FighterBlue}} (Blue) forfeits</option>
+    <option value="ForfeitRed">{{currentMatch.FighterRed}} (Red) forfeits</option>
+    <option value="DisqualificationBlue">{{currentMatch.FighterBlue}} (Blue) disqualified</option>
+    <option value="DisqualificationRed">{{currentMatch.FighterRed}} (Red) disqualified</option>
+</select>
+<button type="button" class="btn" ng-click="setMatchResult()">Submit</button>

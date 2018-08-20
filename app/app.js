@@ -68,6 +68,10 @@ app.config(['$routeProvider', '$locationProvider',
                 templateUrl: 'templates/ScoreKeeper.html',
                 controller: 'MatchController'
             }).
+            when('/EditMatch/:matchId', {
+                templateUrl: 'templates/EditMatch.html',
+                controller: 'MatchController'
+            }).
             when('/ShowPhaseElimination/:phaseId', {
                 templateUrl: 'templates/ShowElimination.html',
                 controller: 'EliminationController'

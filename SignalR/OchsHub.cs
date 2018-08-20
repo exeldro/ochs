@@ -39,7 +39,7 @@ namespace Ochs
                 using (var transaction = session.BeginTransaction())
                 {
                     var match = session.Get<Match>(matchGuid);
-                    if(match == null)
+                    if (match == null || match.Finished || match.Validated)
                         return;
 
                     if (!HasMatchRights(session, match, UserRoles.Scorekeeper))

@@ -591,6 +591,8 @@ app.controller("LoginController", function ($scope, $location, $http) {
 
 app.controller("MatchController", function ($scope, $http, $routeParams, $interval, $location, $cookies) {
     $scope.matchId = $routeParams.matchId;
+    $scope.addEventPointBlue = 0;
+    $scope.addEventPointRed = 0;
     $http.get("api/Match/Get/" + $routeParams.matchId).then(function (response) {
         $scope.currentMatch = response.data;
         $scope.matchResult = response.data.Result;
@@ -602,7 +604,7 @@ app.controller("MatchController", function ($scope, $http, $routeParams, $interv
     $scope.$on('updateMatch', function (event, args) {
         if ($scope.matchId === args.Id) {
             if (!$scope.currentMatch.Finished && args.Finished) {
-                if ($scope.nextMatch) {
+                if ($scope.nextMatch && ($location.path().length < 10 || $location.path().substring(0, 10) !== '/EditMatch')) {
                     if ($location.path().length >= 12 && $location.path().substring(0, 12) === '/ScoreKeeper') {
                         $location.path("ScoreKeeper/" + $scope.nextMatch.Id);
                     } else {

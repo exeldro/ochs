@@ -58,9 +58,11 @@ app.controller('OchsController',
         });
         $scope.reconnectSignalR = function() {
             $.connection.hub.stop();
-            $.connection.hub.start().done(function () { console.log('Now connected, connection ID=' + $.connection.hub.id); })
-                .fail(function () { console.log('Could not Connect!'); });
-        }
+            $.connection.hub.start().done(function() {
+                    console.log('Now connected, connection ID=' + $.connection.hub.id);
+                })
+                .fail(function() { console.log('Could not Connect!'); });
+        };
     }
 );
 
@@ -70,8 +72,8 @@ app.controller("WelcomeController", function ($scope, $http) {
 app.controller("ViewSettingsController", function ($scope, $cookies) {
     $scope.location = $cookies.get('location');
     $scope.apply = function() {
-        $cookies.put('location',$scope.location);
-    }
+        $cookies.put('location', $scope.location);
+    };
 });
 
 app.controller("ListUsersController", function ($scope, $http) {
@@ -112,7 +114,7 @@ app.controller("ListOrganizationsController", function ($scope, $http) {
             .then(function(response) {
                 $scope.organizations = response.data;
             });
-    }
+    };
 });
 
 app.controller("ListCompetitionsController", function ($scope, $http) {
@@ -126,7 +128,7 @@ app.controller("ListCompetitionsController", function ($scope, $http) {
             .then(function (response) { $scope.competitions.push(response.data); });
     };
 });
-app.controller("CompetitionController", function ($scope, $http, $routeParams, $interval) {
+app.controller("CompetitionController", function ($scope, $http, $routeParams) {
     $scope.competitionId = $routeParams.competitionId;
     $http.get("api/Competition/Get/" + $routeParams.competitionId).then(function (response) {
         $scope.currentCompetition = response.data;
@@ -248,14 +250,14 @@ app.controller("CompetitionController", function ($scope, $http, $routeParams, $
     };
 });
 
-app.controller("CompetitionRulesController", function ($scope, $http, $routeParams, $interval) {
+app.controller("CompetitionRulesController", function ($scope, $http, $routeParams) {
     $scope.competitionId = $routeParams.competitionId;
     $http.get("api/Competition/GetRules/" + $routeParams.competitionId).then(function (response) {
         $scope.currentCompetition = response.data;
     });
 });
 
-app.controller("PhaseController", function ($scope, $http, $routeParams, $interval) {
+app.controller("PhaseController", function ($scope, $http, $routeParams) {
     $scope.phaseId = $routeParams.phaseId;
     $http.get("api/Phase/Get/" + $routeParams.phaseId).then(function (response) {
         $scope.currentPhase = response.data;
@@ -365,7 +367,7 @@ app.controller("PhaseController", function ($scope, $http, $routeParams, $interv
 });
 
 
-app.controller("PoolController", function ($scope, $http, $routeParams, $interval) {
+app.controller("PoolController", function ($scope, $http, $routeParams) {
     $scope.poolId = $routeParams.poolId;
     $http.get("api/Pool/Get/" + $routeParams.poolId).then(function (response) {
         $scope.currentPool = response.data;
@@ -433,8 +435,8 @@ app.controller("PoolController", function ($scope, $http, $routeParams, $interva
 });
 
 app.controller("EliminationController", function ($scope, $http, $routeParams, $interval, $location) {
-    var eliminationUrl = "";
-    var url = "";
+    var eliminationUrl;
+    var url;
     if ($routeParams.poolId) {
         eliminationUrl = "api/Pool/GetElimination/" + $routeParams.poolId;
         url = "api/Pool/Get/" + $routeParams.poolId;
@@ -461,12 +463,12 @@ app.controller("EliminationController", function ($scope, $http, $routeParams, $
             for (var j = 0; j < response.data.Matches[i].length; j++) {
                 if (response.data.Matches[i][j]){
                     if (response.data.Matches[i][j].Finished) {
-                        if (response.data.Matches[i][j].Result == 'ForfeitBlue' || response.data.Matches[i][j].Result == 'DisqualificationBlue') {
+                        if (response.data.Matches[i][j].Result === 'ForfeitBlue' || response.data.Matches[i][j].Result === 'DisqualificationBlue') {
                             bracketdata.results[0][i].push([
                                 -1, 0,
                                 response.data.Matches[i][j]
                             ]);
-                        }else if (response.data.Matches[i][j].Result == 'ForfeitRed' || response.data.Matches[i][j].Result == 'DisqualificationRed') {
+                        }else if (response.data.Matches[i][j].Result === 'ForfeitRed' || response.data.Matches[i][j].Result === 'DisqualificationRed') {
                             bracketdata.results[0][i].push([
                                 0, -1,
                                 response.data.Matches[i][j]
@@ -495,13 +497,11 @@ app.controller("EliminationController", function ($scope, $http, $routeParams, $
             onMatchClick: function(data) {
                 if (data) {
                     if (data.Finished) {
-
+                        $location.path("ShowMatch/"+data.Id);
                     } else {
                         $location.path("ScoreKeeper/"+data.Id);
                     }
                     $scope.$apply();
-                } else {
-
                 }
             },
             decorator: {
@@ -544,8 +544,8 @@ app.controller("EliminationController", function ($scope, $http, $routeParams, $
         }
     });
 });
-app.controller("RankingController", function($scope, $http, $routeParams, $interval) {
-    var url = "";
+app.controller("RankingController", function($scope, $http, $routeParams) {
+    var url;
     if ($routeParams.poolId) {
         url = "api/Pool/GetRanking/" + $routeParams.poolId;
     } else if ($routeParams.phaseId) {
@@ -578,7 +578,7 @@ app.controller("ListMatchesController", function ($scope, $http) {
 });
 
 app.controller("LoginController", function ($scope, $location, $http) {
-    $scope.login = function (e) {
+    $scope.login = function () {
         $http.post("api/Auth/Login", { Username: $scope.username, Password: $scope.password }).then(function(result) {
             if (result) {
                 $scope.$parent.username = $scope.username;

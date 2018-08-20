@@ -57,6 +57,8 @@ namespace Ochs
                 var fighters = Service.SortFightersByRanking(session, phase.Fighters, Service.GetPreviousPhase(phase));
                 var fighterViews = Service.SingleEliminationMatchedFighters(fighters).Select(x=>
                 {
+                    if (x == null)
+                        return null;
                     NHibernateUtil.Initialize(x.Organizations);
                     return new PersonView(x);
                 }).ToList();

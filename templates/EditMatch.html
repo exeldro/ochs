@@ -8,10 +8,14 @@
     </span>{{currentMatch.Name}}
 </h2>
 
-Fighter blue<br />
-Fighter red<br />
-Planned Time<br />
-location<br />
+Fighter blue <strong>{{currentMatch.FighterBlue}}</strong><br />
+Fighter red <strong>{{currentMatch.FighterRed}}</strong><br />
+Planned Time <strong>{{currentMatch.PlannedDateTime | date:'yyyy-MM-dd HH:mm:ss'}}</strong><br />
+Started Time <strong>{{currentMatch.StartedDateTime | date:'yyyy-MM-dd HH:mm:ss'}}</strong><br />
+Finished Time <strong>{{currentMatch.FinishedDateTime | date:'yyyy-MM-dd HH:mm:ss'}}</strong><br />
+location <strong>{{currentMatch.Location}}</strong><br />
+Score blue <h1>{{currentMatch.ScoreBlue}}</h1>
+Score red <h1>{{currentMatch.ScoreRed}}</h1>
 <strong>{{currentMatch.ExchangeCount}}</strong> Exchanges<br />
 <strong>{{currentMatch.DoubleCount}}</strong> Doubles<br />
 <table>

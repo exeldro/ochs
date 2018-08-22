@@ -214,7 +214,7 @@ namespace Ochs
                                             {
                                                 organization = new Organization
                                                 {
-                                                    Name = fields[organizationIndex]
+                                                    Name = org.Trim()
                                                 };
                                                 using (var transaction = session.BeginTransaction())
                                                 {
@@ -223,7 +223,8 @@ namespace Ochs
                                                 }
                                                 organizations.Add(organization);
                                             }
-                                            fighter.Organizations.Add(organization);
+                                            if(!fighter.Organizations.Contains(organization))
+                                                fighter.Organizations.Add(organization);
                                         }
                                     }
                                     else
@@ -243,7 +244,8 @@ namespace Ochs
                                 }
                                 else
                                 {
-                                    fighter.Organizations.Add(organization);
+                                    if(!fighter.Organizations.Contains(organization))
+                                        fighter.Organizations.Add(organization);
                                 }
                             }
                             using (var transaction = session.BeginTransaction())

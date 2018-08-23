@@ -10,7 +10,7 @@ namespace Ochs
         {
             _matchEvent = matchEvent;
         }
-
+        public virtual Guid Id => _matchEvent.Id;
         public virtual string Type => _matchEvent.Type.ToString();
         public virtual int Round => _matchEvent.Round;
         public virtual double Time => _matchEvent.MatchTime.TotalSeconds;

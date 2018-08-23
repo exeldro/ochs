@@ -44,7 +44,7 @@ Score red <h1>{{currentMatch.ScoreRed}}</h1>
         <td>{{ event.Type }}</td>
         <td class="bg-blue" align="center">{{ event.PointsBlue }}</td>
         <td class="bg-red" align="center">{{ event.PointsRed }}</td>
-        <td ng-show="$first"><button type="button" class="btn" ng-click="undoLastMatchEvent()"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
+        <td><button type="button" class="btn" ng-click="deleteMatchEvent(event.Id)"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
     </tr>
 </table>
 <br />

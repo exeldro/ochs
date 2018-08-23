@@ -636,33 +636,38 @@ app.controller("MatchController", function ($scope, $http, $routeParams, $interv
             $scope.editingTime = false;
         }
     }, 10);
-    $scope.addMatchEvent = function($pointsBlue,$pointsRed,$eventtype) {
-        $scope.$parent.ochsHub.invoke("AddMatchEvent", $scope.matchId, $pointsBlue, $pointsRed, $eventtype);
-    }
+    $scope.addMatchEvent = function($pointsBlue, $pointsRed, $eventType) {
+        $scope.$parent.ochsHub.invoke("AddMatchEvent", $scope.matchId, $pointsBlue, $pointsRed, $eventType);
+    };
     $scope.undoLastMatchEvent = function() {
         $scope.$parent.ochsHub.invoke("UndoLastMatchEvent", $scope.matchId);
-    }
+    };
+    $scope.deleteMatchEvent = function($eventId) {
+        $scope.$parent.ochsHub.invoke("DeleteMatchEvent", $scope.matchId, $eventId);
+    };
     $scope.startTime = function() {
         if ($scope.editingTime) {
             $scope.changeEditTime();
         }
         $scope.$parent.ochsHub.invoke("StartTime", $scope.matchId);
-    }
+    };
     $scope.stopTime = function() {
         $scope.$parent.ochsHub.invoke("StopTime", $scope.matchId);
-    }
+    };
     $scope.changeEditTime = function() {
         if ($scope.editingTime) {
-            $scope.$parent.ochsHub.invoke("SetTimeMilliSeconds", $scope.matchId,  $scope.editTime - new Date(1970, 1, 1, 0, 0, 0));
+            $scope.$parent.ochsHub.invoke("SetTimeMilliSeconds",
+                $scope.matchId,
+                $scope.editTime - new Date(1970, 1, 1, 0, 0, 0));
             $scope.editingTime = false;
-        } else if(!$scope.currentMatch.TimeRunning){
+        } else if (!$scope.currentMatch.TimeRunning) {
             $scope.editingTime = true;
         }
-    }
+    };
     $scope.setMatchResult = function() {
         if ($scope.matchResult)
             $scope.$parent.ochsHub.invoke("SetMatchResult", $scope.matchId, $scope.matchResult);
-    }
+    };
 
 
 });

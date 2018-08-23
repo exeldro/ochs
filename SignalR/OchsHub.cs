@@ -105,6 +105,38 @@ namespace Ochs
             }
         }
 
+        public void DeleteMatchEvent(Guid matchGuid, Guid eventGuid)
+        {
+            using (var session = NHibernateHelper.OpenSession())
+            {
+                using (var transaction = session.BeginTransaction())
+                {
+                    var match = session.Get<Match>(matchGuid);
+                    if (match == null || match.Finished || match.Validated || !match.Events.Any())
+                        return;
+
+                    var deleteEvent = match.Events.SingleOrDefault(x => x.Id == eventGuid);
+                    if(deleteEvent == null)
+                        return;
+
+                    if (!HasMatchRights(session, match, UserRoles.Scorekeeper))
+                        return;
+
+                    if (match.Finished && !HasMatchRights(session, match, UserRoles.ScoreValidator))
+                        return;
+
+                    if (match.Validated && !HasMatchRights(session, match, UserRoles.Admin))
+                        return;
+
+                    match.Events.Remove(deleteEvent);
+                    match.UpdateMatchData();
+                    session.Update(match);
+                    transaction.Commit();
+                    Clients.All.updateMatch(new MatchWithEventsView(match));
+                }
+            }
+        }
+
 
         private bool HasMatchRights(ISession session, Match match, UserRoles requiredRole)
         {

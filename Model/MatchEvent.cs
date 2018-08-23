@@ -28,7 +28,7 @@ namespace Ochs
         UnclearExchange,
         ProtestBlue,
         ProtestRed,
-        SportmanshipBlue,
-        SportmanshipRed
+        SportsmanshipBlue,
+        SportsmanshipRed
     }
 }

@@ -441,7 +441,7 @@ namespace Ochs
                 ranking.Warnings = 0;
                 ranking.Penalties = 0;
                 ranking.MatchPoints = 0;
-                ranking.SportmanshipPoints = 0;
+                ranking.SportsmanshipPoints = 0;
             }
             //calc ranking stats
             foreach (var match in matches)
@@ -701,18 +701,18 @@ namespace Ochs
                         ranking.Penalties += Math.Abs(matchEvent.PointsRed);
                     }
                 }
-                else if (matchEvent.Type == MatchEventType.SportmanshipBlue)
+                else if (matchEvent.Type == MatchEventType.SportsmanshipBlue)
                 {
                     if (blue)
                     {
-                        ranking.SportmanshipPoints++;
+                        ranking.SportsmanshipPoints++;
                     }
                 }
-                else if (matchEvent.Type == MatchEventType.SportmanshipRed)
+                else if (matchEvent.Type == MatchEventType.SportsmanshipRed)
                 {
                     if (!blue)
                     {
-                        ranking.SportmanshipPoints++;
+                        ranking.SportsmanshipPoints++;
                     }
                 }
                 else if (matchEvent.Type == MatchEventType.WarningBlue)

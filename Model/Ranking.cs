@@ -23,6 +23,6 @@ namespace Ochs
         public virtual int HitsGiven { get; set; }
         public virtual int HitsReceived { get; set; }
         public virtual double HitRatio => Matches == 0 ? 0 :(double)(HitsGiven - HitsReceived) / Matches;
-        public virtual int SportmanshipPoints { get; set; }
+        public virtual int SportsmanshipPoints { get; set; }
     }
 }

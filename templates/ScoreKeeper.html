@@ -26,7 +26,7 @@
     </div>
     <div class="row">
         <div class="col-12" align="center">
-            <span ng-show="!editingTime"><strong>{{currentMatch.LiveTime | timespan}}</strong></span>
+            <span ng-show="!editingTime"><strong>{{currentMatch.LiveTime | timespanmili}}</strong></span>
             <input type="time" ng-show="editingTime" id="exampleInput" name="input" ng-model="editTime" step="1" required="required" />
             <br />
             <button type="button" class="btn" ng-click="startTime()"><i class="fa fa-play" aria-hidden="true"></i></button>

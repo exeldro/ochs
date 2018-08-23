@@ -9,6 +9,17 @@ app.filter('timespan', function () {
         }
         var s = seconds % 60;
         var m = parseInt(seconds / 60);
+        return (m<10?'0':'')+m + ':' + (s < 10 ? '0' : '') + parseInt(s);
+    };
+});
+
+app.filter('timespanmili', function () {
+    return function (seconds) {
+        if (isNaN(parseFloat(seconds)) || !isFinite(seconds)) {
+            seconds = 0.0;
+        }
+        var s = seconds % 60;
+        var m = parseInt(seconds / 60);
         return m + ':' + (s < 10 ? '0' : '') + parseFloat(Math.round(s * 100) / 100).toFixed(2);
     };
 });

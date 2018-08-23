@@ -19,9 +19,16 @@ namespace Ochs
         public virtual string FighterBlue => _match.FighterBlue?.ToString();
         public virtual Guid? FighterBlueId => _match.FighterBlue?.Id;
         public virtual string FighterBlueCountryCode => _match.FighterBlue?.CountryCode;
+        public virtual string FighterBlueCountryName => string.IsNullOrWhiteSpace(_match.FighterBlue?.CountryCode) || !Country.Countries.ContainsKey(_match.FighterBlue?.CountryCode)
+            ? null
+            : Country.Countries[_match.FighterBlue?.CountryCode];
+
         public virtual string FighterRed => _match.FighterRed?.ToString();
         public virtual Guid? FighterRedId => _match.FighterRed?.Id;
         public virtual string FighterRedCountryCode => _match.FighterRed?.CountryCode;
+        public virtual string FighterRedCountryName => string.IsNullOrWhiteSpace(_match.FighterRed?.CountryCode) || !Country.Countries.ContainsKey(_match.FighterRed?.CountryCode)
+            ? null
+            : Country.Countries[_match.FighterRed?.CountryCode];
         public virtual string Result => _match.Result.ToString();
         public virtual string Organization => _match.Competition?.Organization?.Name;
         public virtual Guid? OrganizationId => _match.Competition?.Organization?.Id;

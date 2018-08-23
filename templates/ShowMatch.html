@@ -9,18 +9,14 @@
 <div class="container">
     <div class="row">
         <div class="col-12 col-sm-6 bg-blue" align="left">
+            <img class="flag"  style="float: left" alt="{{currentMatch.FighterBlueCountryCode}}" title="{{currentMatch.FighterBlueCountryName}}" ng-src="Content/flags/{{currentMatch.FighterBlueCountryCode?currentMatch.FighterBlueCountryCode:'none'}}.svg" />
             <strong>{{currentMatch.FighterBlue}}</strong>
+            <span align="left" class="d-none d-sm-block text-nowrap">{{currentMatch.FighterBlueOrganization || '-'}}</span>
         </div>
         <div class="col-12 col-sm-6 bg-red" align="right">
+            <img class="flag" style="float: right" alt="{{currentMatch.FighterRedCountryCode}}" title="{{currentMatch.FighterRedCountryName}}" ng-src="Content/flags/{{currentMatch.FighterRedCountryCode?currentMatch.FighterRedCountryCode:'none'}}.svg" />
             <strong>{{currentMatch.FighterRed}}</strong>
-        </div>
-    </div>
-    <div class="row d-none d-sm-flex">
-        <div class="col-6 bg-blue text-nowrap" align="left">
-            {{currentMatch.FighterBlueOrganization || '-'}}
-        </div>
-        <div class="col-6 bg-red text-nowrap" align="right">
-            {{currentMatch.FighterRedOrganization || '-'}}
+            <span align="right" class="d-none d-sm-block text-nowrap">{{currentMatch.FighterRedOrganization || '-'}}</span>
         </div>
     </div>
     <div class="row">

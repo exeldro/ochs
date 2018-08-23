@@ -20,12 +20,18 @@
 .bg-lightred {
     background-color: #FAA;
 }
+
 .text-nowrap {
     white-space: nowrap;
 }
+.flag {
+    border: 2px solid #FFF;
+    height: 1.8em;
+    margin: 2px;
+}
 
 table td input {
-    width: 100%;   
+    width: 100%;
 }
 
 tbody tr:nth-child(odd){

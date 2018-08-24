@@ -1405,7 +1405,7 @@ namespace Ochs
 
             if (phaseType == PhaseType.SingleRoundRobin)
             {
-                GenerateSingleRoundRobinMatches(session, matches, fighters, phase, pool);
+                GenerateSingleRoundRobinMatches(session, matches, fighters, phase, pool, 300);
             }
             else if (phaseType == PhaseType.SingleElimination)
             {
@@ -1524,10 +1524,12 @@ namespace Ochs
         }
 
         private void GenerateSingleRoundRobinMatches(ISession session, IList<Match> matches, IList<Person> fighters,
-            Phase phase, Pool pool)
+            Phase phase, Pool pool, int secondsPerMatch)
         {
 
             var matchCounter = 1;
+            var plannedDateTime = pool?.PlannedDateTime;
+
             while (true)
             {
                 var fighterBlue = fighters
@@ -1550,6 +1552,7 @@ namespace Ochs
                     FighterBlue = fighterBlue,
                     FighterRed = fighterRed,
                     Competition = phase.Competition,
+                    PlannedDateTime = plannedDateTime,
                     Phase = phase,
                     Pool = pool
                 };
@@ -1562,6 +1565,7 @@ namespace Ochs
 
                 Clients.All.addMatch(new MatchView(match));
                 matchCounter++;
+                plannedDateTime = plannedDateTime?.AddSeconds(secondsPerMatch);
             }
         }
     }

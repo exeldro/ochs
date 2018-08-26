@@ -15,6 +15,9 @@ namespace Ochs
         public virtual int PointsRed { get; set; }
         public virtual int PointsBlue { get; set; }
         public virtual Match Match { get; set; }
+
+        public virtual bool IsExchange => Type == MatchEventType.Score || Type == MatchEventType.AfterBlow ||
+                                          Type == MatchEventType.DoubleHit || Type == MatchEventType.UnclearExchange;
     }
 
     public enum MatchEventType

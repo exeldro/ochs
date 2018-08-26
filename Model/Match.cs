@@ -43,9 +43,7 @@ namespace Ochs
 
         public virtual void UpdateMatchData()
         {
-            ExchangeCount = Events.Count(x =>
-                x.Type == MatchEventType.Score || x.Type == MatchEventType.AfterBlow ||
-                x.Type == MatchEventType.DoubleHit || x.Type == MatchEventType.UnclearExchange);
+            ExchangeCount = Events.Count(x => x.IsExchange);
             DoubleCount = Events.Count(x => x.Type == MatchEventType.DoubleHit);
             ScoreRed = Events.Sum(x => x.PointsRed < 0 ? x.PointsRed : (x.PointsRed > x.PointsBlue ? x.PointsRed - x.PointsBlue : 0));
             ScoreBlue = Events.Sum(x => x.PointsBlue < 0 ? x.PointsBlue : (x.PointsBlue > x.PointsRed ? x.PointsBlue - x.PointsRed : 0));

@@ -4,11 +4,12 @@ namespace Ochs
 {
     public class MatchEventView
     {
-        private MatchEvent _matchEvent;
+        private readonly MatchEvent _matchEvent;
 
-        public MatchEventView(MatchEvent matchEvent)
+        public MatchEventView(MatchEvent matchEvent, int? exchangeNumber)
         {
             _matchEvent = matchEvent;
+            ExchangeNumber = exchangeNumber;
         }
         public virtual Guid Id => _matchEvent.Id;
         public virtual string Type => _matchEvent.Type.ToString();
@@ -17,5 +18,6 @@ namespace Ochs
         public virtual int PointsBlue => _matchEvent.PointsBlue;
         public virtual int PointsRed => _matchEvent.PointsRed;
         public virtual DateTime CreatedDateTime => _matchEvent.CreatedDateTime;
+        public virtual int? ExchangeNumber { get; }
     }
 }

@@ -84,8 +84,9 @@
             <strong>{{currentMatch.ExchangeCount}}</strong> Exchanges<br/>
             <strong>{{currentMatch.DoubleCount}}</strong> Doubles<br/>
             <table>
-                <tr><th>Time</th><th>Event</th><th>Blue</th><th>Red</th></tr>
+                <tr><th>Exchange</th><th>Time</th><th>Event</th><th>Blue</th><th>Red</th></tr>
                 <tr ng-repeat="event in currentMatch.Events">
+                    <td align="center">{{ event.ExchangeNumber }}</td>
                     <td>{{ event.Time | timespan }}</td>
                     <td>{{ event.Type }}</td>
                     <td class="bg-blue" align="center">{{ event.PointsBlue }}</td>

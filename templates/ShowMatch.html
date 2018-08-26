@@ -8,15 +8,15 @@
 </h2>
 <div class="container">
     <div class="row">
-        <div class="col-12 col-sm-6 bg-blue" align="left">
-            <img class="flag"  style="float: left" alt="{{currentMatch.FighterBlueCountryCode}}" title="{{currentMatch.FighterBlueCountryName}}" ng-src="Content/flags/{{currentMatch.FighterBlueCountryCode?currentMatch.FighterBlueCountryCode:'none'}}.svg" />
+        <div class="col-12 col-sm-6 bg-blue  text-nowrap" align="left" style="overflow:hidden;">
+            <img class="flag" style="float: left" alt="{{currentMatch.FighterBlueCountryCode}}" title="{{currentMatch.FighterBlueCountryName}}" ng-src="Content/flags/{{currentMatch.FighterBlueCountryCode?currentMatch.FighterBlueCountryCode:'none'}}.svg" />
             <strong>{{currentMatch.FighterBlue}}</strong>
-            <span align="left" class="d-none d-sm-block text-nowrap">{{currentMatch.FighterBlueOrganization || '-'}}</span>
+            <span align="left" class="d-none d-sm-block" style="overflow:hidden;">{{currentMatch.FighterBlueOrganization || '-'}}</span>
         </div>
-        <div class="col-12 col-sm-6 bg-red" align="right">
+        <div class="col-12 col-sm-6 bg-red text-nowrap" align="right" style="overflow:hidden;">
             <img class="flag" style="float: right" alt="{{currentMatch.FighterRedCountryCode}}" title="{{currentMatch.FighterRedCountryName}}" ng-src="Content/flags/{{currentMatch.FighterRedCountryCode?currentMatch.FighterRedCountryCode:'none'}}.svg" />
             <strong>{{currentMatch.FighterRed}}</strong>
-            <span align="right" class="d-none d-sm-block text-nowrap">{{currentMatch.FighterRedOrganization || '-'}}</span>
+            <span align="right" class="d-none d-sm-block" style="overflow:hidden;">{{currentMatch.FighterRedOrganization || '-'}}</span>
         </div>
     </div>
     <div class="row">
@@ -32,9 +32,13 @@
             <h1>{{currentMatch.ScoreRed}}</h1>
         </div>
     </div>
-    <div class="row d-none d-sm-flex">
+    <div class="row">
         <div class="col-12" align="center">
             <strong>{{currentMatch.ExchangeCount}}</strong> Exchanges<br />
+        </div>
+    </div>
+    <div class="row d-none d-sm-flex">
+        <div class="col-12" align="center">
             <strong>{{currentMatch.DoubleCount}}</strong> Doubles<br />
         </div>
     </div>

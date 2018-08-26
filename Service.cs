@@ -101,11 +101,11 @@ namespace Ochs
 
         public static int GetRound(string matchName)
         {
-            if (matchName == thirdPlaceMatchName)
+            if (matchName.Trim() == thirdPlaceMatchName)
                 return 0;
             for (var round = 0; round < roundNames.Length; round++)
             {
-                if (matchName.StartsWith(roundNames[round]))
+                if (matchName.TrimStart().StartsWith(roundNames[round]))
                     return round;
             }
             return -1;

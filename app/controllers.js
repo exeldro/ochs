@@ -593,20 +593,24 @@ app.controller("LoginController", function ($scope, $location, $http) {
     };
 });
 
-app.controller("MatchController", function ($scope, $http, $routeParams, $interval, $location, $cookies) {
+app.controller("MatchController", function($scope, $http, $routeParams, $interval, $location, $cookies) {
     $scope.matchId = $routeParams.matchId;
     $scope.addEventPointBlue = 0;
     $scope.addEventPointRed = 0;
-    $http.get("api/Match/Get/" + $routeParams.matchId).then(function (response) {
-        $scope.currentMatch = response.data;
-        $scope.matchResult = response.data.Result;
-        $scope.editTime = new Date(1970, 1, 1, 0, 0, response.data.LiveTime);
-    });
-    $http.get("api/Match/GetNext/" + $routeParams.matchId).then(function (response) {
-        $scope.nextMatch = response.data;
-    });
+    $scope.location = $cookies.get('location');
+    if ($routeParams.matchId) {
+
+        $http.get("api/Match/Get/" + $routeParams.matchId).then(function(response) {
+            $scope.currentMatch = response.data;
+            $scope.matchResult = response.data.Result;
+            $scope.editTime = new Date(1970, 1, 1, 0, 0, response.data.LiveTime);
+        });
+        $http.get("api/Match/GetNext/" + $routeParams.matchId).then(function(response) {
+            $scope.nextMatch = response.data;
+        });
+    }
     $scope.$on('updateMatch', function (event, args) {
-        if ($scope.matchId === args.Id) {
+        if ($scope.matchId && $scope.matchId === args.Id) {
             if (!$scope.currentMatch.Finished && args.Finished) {
                 if ($scope.nextMatch && ($location.path().length < 10 || $location.path().substring(0, 10) !== '/EditMatch')) {
                     if ($location.path().length >= 12 && $location.path().substring(0, 12) === '/ScoreKeeper') {
@@ -614,6 +618,8 @@ app.controller("MatchController", function ($scope, $http, $routeParams, $interv
                     } else {
                         $location.path("ShowMatch/" + $scope.nextMatch.Id);
                     }
+                } else if ($cookies.get('location') && $location.path().length >= 10 && $location.path().substring(0, 10) === '/ShowMatch') {
+                    $location.path("ShowLocation");
                 } else if (args.PoolId) {
                     $location.path("ShowPool/" + args.PoolId);
                 } else if (args.PhaseId) {

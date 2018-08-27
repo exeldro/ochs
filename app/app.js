@@ -103,6 +103,10 @@ app.config(['$routeProvider', '$locationProvider',
                 templateUrl: 'templates/ViewSettings.html',
                 controller: 'ViewSettingsController'
             }).
+            when('/ShowLocation', {
+                templateUrl: 'templates/ShowLocation.html',
+                controller: 'MatchController'
+            }).
             otherwise({
                 redirectTo: '/Welcome'
             });

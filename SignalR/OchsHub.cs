@@ -55,6 +55,16 @@ namespace Ochs
                     if(match.Events.Any(x=>DateTime.Now.Subtract(x.CreatedDateTime).TotalSeconds < 0.5))
                         return;
 
+                    if (!match.StartedDateTime.HasValue)
+                    {
+                        match.StartedDateTime = DateTime.Now;
+                        if (Context.Request.Cookies.ContainsKey("location") &&
+                            !string.IsNullOrWhiteSpace(Context.Request.Cookies["location"].Value))
+                        {
+                            match.Location = Context.Request.Cookies["location"].Value;
+                        }
+                    }
+
                     match.Events.Add(new MatchEvent
                     {
                         CreatedDateTime = DateTime.Now,

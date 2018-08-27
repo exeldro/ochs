@@ -78,14 +78,7 @@ namespace Ochs
                     {
                         var matchName = Service.GetMatchName(round, matchNumber).Trim();
                         var match = phase.Matches.SingleOrDefault(x => x.Name.Trim() == matchName);
-                        if (match == null)
-                        {
-                            matches.Add(null);
-                        }
-                        else
-                        {
-                            matches.Add(new MatchView(match));
-                        }
+                        matches.Add(match == null ? null : new MatchView(match));
                     }
                 }
                 return new BracketView{Fighters = fighterViews, Matches = matchesPerRound};

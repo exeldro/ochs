@@ -11,8 +11,8 @@
             <i ng-click="matchSortType = 'StartedDateTime'; matchSortReverse=!matchSortReverse" class="fa fa-play" aria-hidden="true"></i> {{context.MatchesBusy}}
             <i ng-click="matchSortType = 'FinishedDateTime'; matchSortReverse=!matchSortReverse" class="fa fa-check" aria-hidden="true"></i> {{context.MatchesFinished}}
         </th>
-        <th class="bg-lightblue" ng-click="matchSortType = 'FighterBlue'; matchSortReverse=!matchSortReverse">Blue</th>
-        <th class="bg-lightred" ng-click="matchSortType = 'FighterRed'; matchSortReverse=!matchSortReverse">Red</th>
+        <th ng-click="matchSortType = 'FighterBlue'; matchSortReverse=!matchSortReverse">Blue</th>
+        <th ng-click="matchSortType = 'FighterRed'; matchSortReverse=!matchSortReverse">Red</th>
         <th ng-click="matchSortType = 'Result'; matchSortReverse=!matchSortReverse">Result</th>
     </tr>
     <tr ng-repeat="match in context.Matches | filter:searchMatchText | orderBy:matchSortType:matchSortReverse">

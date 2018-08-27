@@ -8,19 +8,31 @@
 .bg-blue {
     background-color: #6FF;
 }
-
+.highcontrast .bg-blue {
+    background-color: #00F;
+    color: #FFF;
+}
 .bg-red {
     background-color: #F66;
 }
-
+.highcontrast .bg-red {
+    background-color: #F00;
+    color: #FFF;
+}
 .bg-lightblue {
     background-color: #AFF;
 }
-
+.highcontrast .bg-lightblue {
+    background-color: #08F;
+    color: #FFF;
+}
 .bg-lightred {
     background-color: #FAA;
 }
-
+.highcontrast .bg-lightred {
+    background-color: #F44;
+    color: #FFF;
+}
 .text-nowrap {
     white-space: nowrap;
 }
@@ -29,32 +41,40 @@
     height: 1.8em;
     margin: 2px;
 }
-
 table td input {
     width: 100%;
 }
-
-tbody tr:nth-child(odd){
+tr:nth-child(odd){
     background-color: #EEE;
 }
-
-tbody tr:nth-child(even) .bg-lightblue {
-        background-color: #CFF;
+.highcontrast tr:nth-child(odd) {
+    background-color: #AAA;
 }
-
-tbody tr:nth-child(even) .bg-lightred {
+tr:nth-child(even) .bg-lightblue {
+    background-color: #CFF;
+}
+.highcontrast tr:nth-child(even) .bg-lightblue {
+    background-color: #00F;
+}
+tr:nth-child(even) .bg-lightred {
     background-color: #FCC;
 }
-
-tbody tr:nth-child(even) .bg-blue {
+.highcontrast tr:nth-child(even) .bg-lightred {
+    background-color: #F00;
+}
+tr:nth-child(even) .bg-blue {
     background-color: #AFF;
 }
-
-tbody tr:nth-child(even) .bg-red {
+.highcontrast tr:nth-child(even) .bg-blue {
+    background-color: #08F;
+}
+tr:nth-child(even) .bg-red {
     background-color: #FAA;
 }
-
-.table-header-rotated th.row-header{
+.highcontrast tr:nth-child(even) .bg-red {
+    background-color: #F44;
+}
+.table-header-rotated th.row-header {
     width: auto;
 }
 

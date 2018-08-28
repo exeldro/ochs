@@ -59,6 +59,7 @@ namespace Ochs
         ForfeitRed,
         ForfeitBlue,
         DisqualificationBlue,
-        DisqualificationRed
+        DisqualificationRed,
+        Skipped
     }
 }

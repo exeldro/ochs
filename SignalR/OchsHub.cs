@@ -286,12 +286,16 @@ namespace Ochs
                     {
                         match.FinishedDateTime = null;
                     }
-                }
+                } 
                 else
                 {
+                    if (matchResult == MatchResult.Skipped && (match.ScoreBlue != 0 || match.ScoreRed != 0 || match.Events.Count > 0))
+                    {
+                        return;
+                    }
                     if (!match.StartedDateTime.HasValue)
                     {
-                        if (!HasMatchRights(session, match, UserRoles.Admin))
+                        if (matchResult == MatchResult.Skipped || !HasMatchRights(session, match, UserRoles.Admin))
                             return;
                         match.StartedDateTime = DateTime.Now;
                     }
@@ -606,6 +610,8 @@ namespace Ochs
 
         private void UpdateRankingMatch(Ranking ranking, RankingRules rankingRules, Match match, bool blue, bool elimination)
         {
+            if(match.Result == MatchResult.Skipped)
+                return;
             var win = false;
             ranking.Matches++;
             if (match.Result == MatchResult.Draw)

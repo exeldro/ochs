@@ -39,16 +39,19 @@ namespace Ochs
                 using (var transaction = session.BeginTransaction())
                 {
                     var match = session.Get<Match>(matchGuid);
-                    if (match == null || match.Finished || match.Validated)
+                    if (match == null)
+                    {
+                        Clients.Caller.displayMessage("Match not found", "warning");
                         return;
+                    }
 
-                    if (!HasMatchRights(session, match, UserRoles.Scorekeeper))
+                    if (match.Finished || match.Validated)
+                    {
+                        Clients.Caller.displayMessage("Match finished", "warning");
                         return;
+                    }
 
-                    if (match.Finished && !HasMatchRights(session, match, UserRoles.ScoreValidator))
-                        return;
-
-                    if (match.Validated && !HasMatchRights(session, match, UserRoles.Admin))
+                    if(!HasMatchEditRights(session, match))
                         return;
 
                     //check for doubleclick
@@ -90,20 +93,27 @@ namespace Ochs
                 using (var transaction = session.BeginTransaction())
                 {
                     var match = session.Get<Match>(matchGuid);
-                    if (match == null || match.Finished || match.Validated || !match.Events.Any())
+                    if (match == null)
+                    {
+                        Clients.Caller.displayMessage("Match not found", "warning");
                         return;
+                    }
+                    if (match.Finished || match.Validated)
+                    {
+                        Clients.Caller.displayMessage("Match finished", "warning");
+                        return;
+                    }
+                    if (!match.Events.Any())
+                    {
+                        Clients.Caller.displayMessage("No match events found", "warning");
+                        return;
+                    }
 
                     var lastEvent = match.Events.OrderBy(x => x.CreatedDateTime).Last();
                     //if(lastEvent.CreatedDateTime < DateTime.Now.AddSeconds(-300))
                     //    return;
 
-                    if (!HasMatchRights(session, match, UserRoles.Scorekeeper))
-                        return;
-
-                    if (match.Finished && !HasMatchRights(session, match, UserRoles.ScoreValidator))
-                        return;
-
-                    if (match.Validated && !HasMatchRights(session, match, UserRoles.Admin))
+                    if(!HasMatchEditRights(session, match))
                         return;
 
                     match.Events.Remove(lastEvent);
@@ -122,20 +132,30 @@ namespace Ochs
                 using (var transaction = session.BeginTransaction())
                 {
                     var match = session.Get<Match>(matchGuid);
-                    if (match == null || match.Finished || match.Validated || !match.Events.Any())
+                    if (match == null)
+                    {
+                        Clients.Caller.displayMessage("Match not found", "warning");
                         return;
+                    }
+                    if (match.Finished || match.Validated)
+                    {
+                        Clients.Caller.displayMessage("Match finished", "warning");
+                        return;
+                    }
+                    if (!match.Events.Any())
+                    {
+                        Clients.Caller.displayMessage("No match events found", "warning");
+                        return;
+                    }
 
                     var deleteEvent = match.Events.SingleOrDefault(x => x.Id == eventGuid);
-                    if(deleteEvent == null)
+                    if (deleteEvent == null)
+                    {
+                        Clients.Caller.displayMessage("Match event not found", "warning");
                         return;
+                    }
 
-                    if (!HasMatchRights(session, match, UserRoles.Scorekeeper))
-                        return;
-
-                    if (match.Finished && !HasMatchRights(session, match, UserRoles.ScoreValidator))
-                        return;
-
-                    if (match.Validated && !HasMatchRights(session, match, UserRoles.Admin))
+                    if(!HasMatchEditRights(session, match))
                         return;
 
                     match.Events.Remove(deleteEvent);
@@ -147,11 +167,33 @@ namespace Ochs
             }
         }
 
+        private bool HasMatchEditRights(ISession session, Match match)
+        {
+            if (!HasMatchRights(session, match, UserRoles.Scorekeeper))
+            {
+                Clients.Caller.displayMessage("Not logged in as score keeper", "warning");
+                return false;
+            }
+
+            if (match.Finished && !HasMatchRights(session, match, UserRoles.ScoreValidator))
+            {
+                Clients.Caller.displayMessage("Match is finished and not logged in as score validator", "warning");
+                return false;
+            }
+
+            if (match.Validated && !HasMatchRights(session, match, UserRoles.Admin))
+            {
+                Clients.Caller.displayMessage("Match is validated and not logged in as administrator", "warning");
+                return false;
+            }
+
+            return true;
+        }
+
 
         private bool HasMatchRights(ISession session, Match match, UserRoles requiredRole)
         {
             return HasOrganizationRights(session, match.Competition.Organization, requiredRole);
-
         }
 
         private bool HasOrganizationRights(ISession session, Organization organization, UserRoles requiredRole)
@@ -190,7 +232,10 @@ namespace Ochs
                         return;
 
                     if (!HasMatchRights(session, match, UserRoles.Scorekeeper))
+                    {
+                        Clients.Caller.displayMessage("Not logged in as score keeper", "warning");
                         return;
+                    }
 
                     match.Time = match.LiveTime;
                     match.TimeRunningSince = null;
@@ -208,11 +253,19 @@ namespace Ochs
                 using (var transaction = session.BeginTransaction())
                 {
                     var match = session.Get<Match>(matchGuid);
-                    if (match.TimeRunningSince.HasValue || match.Finished)
+                    if (match.TimeRunningSince.HasValue)
                         return;
+                    if (match.Finished)
+                    {
+                        Clients.Caller.displayMessage("Match finished", "warning");
+                        return;
+                    }
 
                     if (!HasMatchRights(session, match, UserRoles.Scorekeeper))
+                    {
+                        Clients.Caller.displayMessage("Not logged in as score keeper", "warning");
                         return;
+                    }
 
                     match.TimeRunningSince = DateTime.Now;
                     if (!match.StartedDateTime.HasValue)
@@ -244,15 +297,12 @@ namespace Ochs
                 {
                     var match = session.Get<Match>(matchGuid);
                     if (match.TimeRunningSince.HasValue)
+                    {
+                        Clients.Caller.displayMessage("can not set running time", "warning");
                         return;
-                    
-                    if (!HasMatchRights(session, match, UserRoles.Scorekeeper))
-                        return;
+                    }
 
-                    if (match.Finished && !HasMatchRights(session, match, UserRoles.ScoreValidator))
-                        return;
-
-                    if (match.Validated && !HasMatchRights(session, match, UserRoles.Admin))
+                    if (!HasMatchEditRights(session, match))
                         return;
 
                     match.Time = time;
@@ -268,19 +318,17 @@ namespace Ochs
             using (var session = NHibernateHelper.OpenSession())
             {
                 var match = session.Get<Match>(matchGuid);
-                if (!HasMatchRights(session, match, UserRoles.Scorekeeper))
-                    return;
-
-                if (match.Finished && !HasMatchRights(session, match, UserRoles.ScoreValidator))
-                    return;
-
-                if (match.Validated && !HasMatchRights(session, match, UserRoles.Admin))
+                if (!HasMatchEditRights(session, match))
                     return;
 
                 if (matchResult == MatchResult.None)
                 {
                     if (!HasMatchRights(session, match, UserRoles.Admin))
+                    {
+                        Clients.Caller.displayMessage("Not logged in as administrator", "warning");
                         return;
+                    }
+
                     match.Result = matchResult;
                     if (match.FinishedDateTime.HasValue)
                     {
@@ -291,12 +339,16 @@ namespace Ochs
                 {
                     if (matchResult == MatchResult.Skipped && (match.ScoreBlue != 0 || match.ScoreRed != 0 || match.Events.Count > 0))
                     {
+                        Clients.Caller.displayMessage("Can't set match with events to skipped", "warning");
                         return;
                     }
                     if (!match.StartedDateTime.HasValue)
                     {
                         if (matchResult == MatchResult.Skipped || !HasMatchRights(session, match, UserRoles.Admin))
+                        {
+                            Clients.Caller.displayMessage("Match not started", "warning");
                             return;
+                        }
                         match.StartedDateTime = DateTime.Now;
                     }
 
@@ -439,10 +491,17 @@ namespace Ochs
             {
                 var phase = session.Get<Phase>(phaseId);
                 if (phase == null)
+                {
+                    Clients.Caller.displayMessage("Phase not found", "warning");
                     return;
+                }
 
                 if (!HasOrganizationRights(session, phase.Competition.Organization, UserRoles.Admin))
+                {
+                    Clients.Caller.displayMessage("Not logged in as administrator", "warning");
                     return;
+                }
+
                 UpdatePhaseRankingsInternal(session, phase);
             }
         }
@@ -460,10 +519,17 @@ namespace Ochs
             {
                 var pool = session.Get<Pool>(poolId);
                 if (pool == null)
+                {
+                    Clients.Caller.displayMessage("Pool not found", "warning");
                     return;
+                }
 
                 if (!HasOrganizationRights(session, pool.Phase.Competition.Organization, UserRoles.Admin))
+                {
+                    Clients.Caller.displayMessage("Not logged in as administrator", "warning");
                     return;
+                }
+
                 UpdatePoolRankingsInternal(session, pool);
             }
         }
@@ -799,10 +865,16 @@ namespace Ochs
                 {
                     var competition = session.Get<Competition>(competiotionId);
                     if (competition == null)
+                    {
+                        Clients.Caller.displayMessage("Competition not found", "warning");
                         return;
+                    }
 
                     if (!HasOrganizationRights(session, competition.Organization, UserRoles.Admin))
+                    {
+                        Clients.Caller.displayMessage("Not logged in as administrator", "warning");
                         return;
+                    }
 
                     var phase = competition.Phases.SingleOrDefault(x =>
                         string.Equals(x.Name, phaseName, StringComparison.InvariantCultureIgnoreCase));
@@ -837,10 +909,16 @@ namespace Ochs
             {
                 var phase = session.Get<Phase>(phaseId);
                 if (phase == null)
+                {
+                    Clients.Caller.displayMessage("Phase not found", "warning");
                     return;
+                }
 
                 if (!HasOrganizationRights(session, phase.Competition.Organization, UserRoles.Admin))
+                {
+                    Clients.Caller.displayMessage("Not logged in as administrator", "warning");
                     return;
+                }
 
                 var added = 0;
                 foreach (var fighterId in fighterIds)
@@ -880,13 +958,22 @@ namespace Ochs
             {
                 var phase = session.Get<Phase>(phaseId);
                 if (phase == null)
+                {
+                    Clients.Caller.displayMessage("Phase not found", "warning");
                     return;
+                }
 
                 if (!HasOrganizationRights(session, phase.Competition.Organization, UserRoles.Admin))
+                {
+                    Clients.Caller.displayMessage("Not logged in as administrator", "warning");
                     return;
+                }
 
-                if(phase.Fighters.Count > 0)
+                if (phase.Fighters.Count > 0)
+                {
+                    Clients.Caller.displayMessage("Phase "+phase.Name+" already has fighters", "warning");
                     return;
+                }
 
                 phase.Fighters = phase.Competition.Fighters.ToList();
                 session.Update(phase);
@@ -902,14 +989,23 @@ namespace Ochs
             {
                 var phase = session.Get<Phase>(phaseId);
                 if (phase == null)
+                {
+                    Clients.Caller.displayMessage("Phase not found", "warning");
                     return;
+                }
 
                 if (!HasOrganizationRights(session, phase.Competition.Organization, UserRoles.Admin))
+                {
+                    Clients.Caller.displayMessage("Not logged in as administrator", "warning");
                     return;
+                }
 
                 var previousPhase = Service.GetPreviousPhase(phase);
-                if(previousPhase == null)
+                if (previousPhase == null)
+                {
+                    Clients.Caller.displayMessage("Previous phase not found", "warning");
                     return;
+                }
 
                 var rankings = session.QueryOver<PhaseRanking>().Where(x => x.Phase == previousPhase).List();
                 foreach (var phaseRanking in rankings)
@@ -934,10 +1030,16 @@ namespace Ochs
             {
                 var phase = session.Get<Phase>(phaseId);
                 if (phase == null)
+                {
+                    Clients.Caller.displayMessage("Phase not found", "warning");
                     return;
+                }
 
                 if (!HasOrganizationRights(session, phase.Competition.Organization, UserRoles.Admin))
+                {
+                    Clients.Caller.displayMessage("Not logged in as administrator", "warning");
                     return;
+                }
 
                 var fighters = phase.Fighters.Where(x => phase.Pools.All(y => y.Fighters.All(z => z.Id != x.Id))).ToList();
                 foreach (var fighter in fighters)
@@ -980,10 +1082,16 @@ namespace Ochs
             {
                 var phase = session.Get<Phase>(phaseId);
                 if (phase == null)
+                {
+                    Clients.Caller.displayMessage("Phase not found", "warning");
                     return;
+                }
 
                 if (!HasOrganizationRights(session, phase.Competition.Organization, UserRoles.Admin))
+                {
+                    Clients.Caller.displayMessage("Not logged in as administrator", "warning");
                     return;
+                }
 
                 var pool = phase.Pools.SingleOrDefault(x => string.Equals(poolName, x.Name));
                 if (pool == null)
@@ -1015,11 +1123,17 @@ namespace Ochs
             using (var session = NHibernateHelper.OpenSession())
             {
                 var competition = session.Get<Competition>(competiotionId);
-                if(competition == null)
+                if (competition == null)
+                {
+                    Clients.Caller.displayMessage("Competition not found", "warning");
                     return;
+                }
 
                 if (!HasOrganizationRights(session, competition.Organization, UserRoles.Admin))
+                {
+                    Clients.Caller.displayMessage("Not logged in as administrator", "warning");
                     return;
+                }
 
                 var deleted = 0;
                 var phasesToUpdate = new List<Phase>();
@@ -1095,11 +1209,17 @@ namespace Ochs
             using (var session = NHibernateHelper.OpenSession())
             {
                 var phase = session.Get<Phase>(phaseId);
-                if(phase == null)
+                if (phase == null)
+                {
+                    Clients.Caller.displayMessage("Phase not found", "warning");
                     return;
+                }
 
                 if (!HasOrganizationRights(session, phase.Competition.Organization, UserRoles.Admin))
+                {
+                    Clients.Caller.displayMessage("Not logged in as administrator", "warning");
                     return;
+                }
 
                 var deleted = 0;
                 var poolsToUpdate = new List<Pool>();
@@ -1158,10 +1278,16 @@ namespace Ochs
             {
                 var pool = session.Get<Pool>(poolId);
                 if (pool == null)
+                {
+                    Clients.Caller.displayMessage("Pool not found", "warning");
                     return;
+                }
 
                 if (!HasOrganizationRights(session, pool.Phase.Competition.Organization, UserRoles.Admin))
+                {
+                    Clients.Caller.displayMessage("Not logged in as administrator", "warning");
                     return;
+                }
 
                 var added = 0;
                 foreach (var fighterId in fighterIds)
@@ -1201,11 +1327,17 @@ namespace Ochs
             using (var session = NHibernateHelper.OpenSession())
             {
                 var pool = session.Get<Pool>(poolId);
-                if(pool == null)
+                if (pool == null)
+                {
+                    Clients.Caller.displayMessage("Pool not found", "warning");
                     return;
+                }
 
                 if (!HasOrganizationRights(session, pool.Phase.Competition.Organization, UserRoles.Admin))
+                {
+                    Clients.Caller.displayMessage("Not logged in as administrator", "warning");
                     return;
+                }
 
                 var deleted = 0;
 
@@ -1244,11 +1376,24 @@ namespace Ochs
             {
                 using (var transaction = session.BeginTransaction())
                 {
+                    if (string.IsNullOrWhiteSpace(firstName) ||
+                        string.IsNullOrWhiteSpace(lastName))
+                    {
+                        Clients.Caller.displayMessage("Name empty", "warning");
+                        return;
+                    }
                     var competition = session.Get<Competition>(competiotionId);
-                    if (competition == null || string.IsNullOrWhiteSpace(firstName) || string.IsNullOrWhiteSpace(lastName))
+                    if (competition == null)
+                    {
+                        Clients.Caller.displayMessage("Competition not found", "warning");
                         return;
+                    }
+
                     if (!HasOrganizationRights(session, competition.Organization, UserRoles.Admin))
+                    {
+                        Clients.Caller.displayMessage("Not logged in as administrator", "warning");
                         return;
+                    }
 
                     var person = session.QueryOver<Person>().Where(x => x.FirstName.IsInsensitiveLike(firstName) && x.LastName.IsInsensitiveLike(lastName)).List().FirstOrDefault();
                     if (person == null)
@@ -1312,21 +1457,36 @@ namespace Ochs
             {
                 var competition = session.Get<Competition>(competiotionId);
                 if (competition == null)
+                {
+                    Clients.Caller.displayMessage("Competition not found", "warning");
                     return;
+                }
 
                 if (!HasOrganizationRights(session, competition.Organization, UserRoles.Admin))
+                {
+                    Clients.Caller.displayMessage("Not logged in as administrator", "warning");
                     return;
+                }
 
                 var blueFighter = session.Get<Person>(blueFighterId);
                 if (blueFighter == null)
+                {
+                    Clients.Caller.displayMessage("Blue fighter not found", "warning");
                     return;
+                }
 
                 var redFighter = session.Get<Person>(redFighterId);
                 if (redFighter == null)
+                {
+                    Clients.Caller.displayMessage("Red fighter not found", "warning");
                     return;
+                }
 
                 if (blueFighter == redFighter)
+                {
+                    Clients.Caller.displayMessage("Blue and red fighter are the same", "warning");
                     return;
+                }
 
                 var uniqueName = matchName;
                 if (string.IsNullOrWhiteSpace(matchName))
@@ -1364,10 +1524,15 @@ namespace Ochs
             {
                 var phase = session.Get<Phase>(phaseId);
                 if (phase == null)
+                {
+                    Clients.Caller.displayMessage("Phase not found", "warning");
                     return;
+                }
 
-                if (!HasOrganizationRights(session, phase.Competition.Organization, UserRoles.Admin))
+                if (!HasOrganizationRights(session, phase.Competition.Organization, UserRoles.Admin)){
+                    Clients.Caller.displayMessage("Not logged in as administrator", "warning");
                     return;
+                }
 
                 var fighters = Service.SortFightersByRanking(session, phase.Fighters, Service.GetPreviousPhase(phase));
 
@@ -1384,13 +1549,22 @@ namespace Ochs
             {
                 var pool = session.Get<Pool>(poolId);
                 if (pool == null)
+                {
+                    Clients.Caller.displayMessage("Pool not found", "warning");
                     return;
+                }
 
-                if(pool.Fighters.Count <= 1)
+                if (pool.Fighters.Count <= 1)
+                {
+                    Clients.Caller.displayMessage("Pool "+pool.Name+" has not enough fighter to generate matches", "warning");
                     return;
+                }
 
                 if (!HasOrganizationRights(session, pool.Phase.Competition.Organization, UserRoles.Admin))
+                {
+                    Clients.Caller.displayMessage("Not logged in as administrator", "warning");
                     return;
+                }
 
                 var fighters = Service.SortFightersByRanking(session, pool.Fighters, Service.GetPreviousPhase(pool.Phase));
                 GenerateMatches(session, pool.Phase.PhaseType, pool.Matches, fighters, pool.Phase, pool);
@@ -1401,8 +1575,10 @@ namespace Ochs
 
         private void GenerateMatches(ISession session, PhaseType phaseType, IList<Match> matches, IList<Person> fighters, Phase phase, Pool pool = null)
         {
-            if(fighters.Count <= 1)
+            if(fighters.Count <= 1){
+                Clients.Caller.displayMessage("Not enough fighter to generate matches", "warning");
                 return;
+            }
 
             if (!matches.Any(x => x.Started))
             {

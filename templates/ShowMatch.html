@@ -1,7 +1,9 @@
-﻿<h2 align="center">
-    <span class="d-none d-md-inline">
+﻿<img class="pull-left img-responsive" src="Content/logo.png" height="40" style="margin:3px">
+<h2 align="center">
+    <span class="d-none d-lg-inline">
         <a href="#!ShowCompetition/{{currentMatch.CompetitionId}}">{{currentMatch.Competition}}</a>
-        - <a href="#!ShowPhase/{{currentMatch.PhaseId}}">{{currentMatch.Phase}}</a> - </span>
+        -
+    </span><span class="d-none d-md-inline"><a href="#!ShowPhase/{{currentMatch.PhaseId}}">{{currentMatch.Phase}}</a> - </span>
     <span class="d-none d-sm-inline">
         <span ng-show="currentMatch.PoolId"><a href="#!ShowPool/{{currentMatch.PoolId}}">{{currentMatch.Pool}}</a> - </span>
     </span>{{currentMatch.Name}}
@@ -9,12 +11,12 @@
 <div class="container">
     <div class="row">
         <div class="col-12 col-sm-6 bg-blue  text-nowrap" align="left" style="overflow:hidden;">
-            <img class="flag" style="float: left" alt="{{currentMatch.FighterBlueCountryCode}}" title="{{currentMatch.FighterBlueCountryName}}" ng-src="Content/flags/{{currentMatch.FighterBlueCountryCode?currentMatch.FighterBlueCountryCode:'none'}}.svg" />
+            <img class="flag pull-left" alt="{{currentMatch.FighterBlueCountryCode}}" title="{{currentMatch.FighterBlueCountryName}}" ng-src="Content/flags/{{currentMatch.FighterBlueCountryCode?currentMatch.FighterBlueCountryCode:'none'}}.svg" />
             <strong>{{currentMatch.FighterBlue}}</strong>
             <span align="left" class="d-none d-sm-block" style="overflow:hidden;">{{currentMatch.FighterBlueOrganization || '-'}}</span>
         </div>
         <div class="col-12 col-sm-6 bg-red text-nowrap" align="right" style="overflow:hidden;">
-            <img class="flag" style="float: right" alt="{{currentMatch.FighterRedCountryCode}}" title="{{currentMatch.FighterRedCountryName}}" ng-src="Content/flags/{{currentMatch.FighterRedCountryCode?currentMatch.FighterRedCountryCode:'none'}}.svg" />
+            <img class="flag pull-right" alt="{{currentMatch.FighterRedCountryCode}}" title="{{currentMatch.FighterRedCountryName}}" ng-src="Content/flags/{{currentMatch.FighterRedCountryCode?currentMatch.FighterRedCountryCode:'none'}}.svg" />
             <strong>{{currentMatch.FighterRed}}</strong>
             <span align="right" class="d-none d-sm-block" style="overflow:hidden;">{{currentMatch.FighterRedOrganization || '-'}}</span>
         </div>
@@ -63,12 +65,12 @@
     </div>
     <div ng-show="nextMatch" class="row">
         <div class="col-12" align="center">
-            <strong>Next match</strong>
-        </div>
-        <div class="col-12" align="center">
-            <span class="d-none d-md-inline">
+            Next match:
+            <span class="d-none d-lg-inline">
                 <a href="#!ShowCompetition/{{nextMatch.CompetitionId}}">{{nextMatch.Competition}}</a>
-                - <a href="#!ShowPhase/{{nextMatch.PhaseId}}">{{nextMatch.Phase}}</a> -
+                -
+            </span><span class="d-none d-md-inline">
+                <a href="#!ShowPhase/{{nextMatch.PhaseId}}">{{nextMatch.Phase}}</a> -
             </span>
             <span class="d-none d-sm-inline">
                 <span ng-show="nextMatch.PoolId"><a href="#!ShowPool/{{nextMatch.PoolId}}">{{nextMatch.Pool}}</a> - </span>

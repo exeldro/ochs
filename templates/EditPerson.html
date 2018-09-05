@@ -1,0 +1,10 @@
+﻿<h2>Person {{currentPerson.DisplayName}}</h2>
+Id: {{currentPerson.Id}}<br />
+
+First name: <input placeholder="First name" type="text" ng-model="currentPerson.FirstName" /><br />
+Last name prefix: <input placeholder="Last name prefix" type="text" ng-model="currentPerson.LastNamePrefix" /><br />
+Last name: <input placeholder="Last name" type="text" ng-model="currentPerson.LastName" /><br />
+Full name: <input placeholder="Full name" type="text" ng-model="currentPerson.FullName" /><br />
+Country: <select ng-model="currentPerson.CountryCode">
+    <option ng-repeat="(countryCode,country) in countries" data-image="Content/flags/{{countryCode}}.svg" value="{{countryCode}}">{{country}}</option>
+</select><br />

@@ -126,6 +126,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controller\PersonController.cs" />
     <Compile Include="Service.cs" />
     <Compile Include="Controller\CompetitionController.cs" />
     <Compile Include="Controller\AuthController.cs" />
@@ -1058,6 +1059,9 @@
     <Content Include="Scripts\umd\popper.js" />
     <Content Include="Scripts\umd\popper.min.js" />
     <Content Include="templates\EditMatch.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="templates\EditPerson.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="templates\ShowLocation.html">

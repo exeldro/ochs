@@ -36,6 +36,7 @@
         <th><i ng-click="fighterSortType = 'MatchesTodo'; fighterSortReverse=!fighterSortReverse" class="fa fa-calendar" aria-hidden="true"></i> {{currentCompetition.MatchesTodo}}</th>
         <th><i ng-click="fighterSortType = 'MatchesBusy'; fighterSortReverse=!fighterSortReverse" class="fa fa-play" aria-hidden="true"></i> {{currentCompetition.MatchesBusy}}</th>
         <th><i ng-click="fighterSortType = 'MatchesFinished'; fighterSortReverse=!fighterSortReverse" class="fa fa-check" aria-hidden="true"></i> {{currentCompetition.MatchesFinished}}</th>
+        <th ng-show="rights == 'Admin'"></th>
     </tr>
     <tr ng-repeat="fighter in currentCompetition.Fighters | filter:searchFighterText | orderBy:fighterSortType:fighterSortReverse">
         <td ng-show="rights == 'Admin'"><input type="checkbox" name="fightersSelected[]" ng-model="fighter.Selected" value="{{fighter.Id}}" /></td>
@@ -47,6 +48,7 @@
         <td><i class="fa fa-calendar" aria-hidden="true"></i> {{fighter.MatchesTodo}}</td>
         <td><i class="fa fa-play" aria-hidden="true"></i> {{fighter.MatchesBusy}}</td>
         <td><i class="fa fa-check" aria-hidden="true"></i> {{fighter.MatchesFinished}}</td>
+        <td ng-show="rights == 'Admin'"><a href="#!EditPerson/{{fighter.Id}}"><i class="fa fa-pencil" aria-hidden="true"></i></a></td>
     </tr>
 </table>
 <div ng-show="rights == 'Admin'">

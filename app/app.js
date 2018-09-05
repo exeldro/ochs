@@ -107,6 +107,10 @@ app.config(['$routeProvider', '$locationProvider',
                 templateUrl: 'templates/ShowLocation.html',
                 controller: 'MatchController'
             }).
+            when('/EditPerson/:personId', {
+                templateUrl: 'templates/EditPerson.html',
+                controller: 'EditPersonController'
+            }).
             otherwise({
                 redirectTo: '/Welcome'
             });

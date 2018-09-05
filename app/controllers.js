@@ -109,6 +109,20 @@ app.controller("EditUserController", function ($scope, $http, $routeParams) {
     };
 });
 
+app.controller("EditPersonController", function ($scope, $http, $routeParams) {
+    $scope.personId = $routeParams.personId;
+    $http.get("api/Person/Get/" + $routeParams.personId).then(function (response) {
+        $scope.currentPerson = response.data;
+    });
+    $http.get("api/Organization/All").then(function (response) {
+        $scope.organizations = response.data;
+    });
+    $http.get("api/Country/All").then(function (response) {
+        $scope.countries = response.data;
+    });
+
+});
+
 app.controller("ListOrganizationsController", function ($scope, $http) {
     $http.get("api/Organization/AllWithDetails").then(function (response) {
         $scope.organizations = response.data;

@@ -54,34 +54,23 @@ namespace Ochs
                 if (phase == null)
                     return null;
 
-                var fighters = Service.SortFightersByRanking(session, phase.Fighters, Service.GetPreviousPhase(phase));
-                var fighterViews = Service.SingleEliminationMatchedFighters(fighters).Select(x=>
+                var fighterViews = new List<PersonView>();
+                foreach (var match in phase.Matches)
                 {
-                    if (x == null)
-                        return null;
-                    NHibernateUtil.Initialize(x.Organizations);
-                    return new PersonView(x);
-                }).ToList();
-
-                var matchesPerRound = new List<IList<MatchView>>();
-                var roundCount = 0;
-                while (2<<roundCount < fighters.Count)
-                    roundCount++;
-                for (var round = roundCount; round >= 0; round--)
-                {
-                    var matches = new List<MatchView>();
-                    matchesPerRound.Add(matches);
-                    var matchCount = 1 << round;
-                    if (round == 0)
-                        matchCount = 2;
-                    for (var matchNumber = 1; matchNumber <= matchCount; matchNumber++)
-                    {
-                        var matchName = Service.GetMatchName(round, matchNumber).Trim();
-                        var match = phase.Matches.SingleOrDefault(x => x.Name.Trim() == matchName);
-                        matches.Add(match == null ? null : new MatchView(match));
-                    }
+                    NHibernateUtil.Initialize(match.FighterBlue?.Organizations);
+                    NHibernateUtil.Initialize(match.FighterRed?.Organizations);
+                    fighterViews.Add(match.FighterBlue == null ? null : new PersonView(match.FighterBlue));
+                    fighterViews.Add(match.FighterRed == null ? null : new PersonView(match.FighterRed));
                 }
-                return new BracketView{Fighters = fighterViews, Matches = matchesPerRound};
+
+                var handler = new SingleEliminationPhaseHandler();
+                var matchesPerRound = handler.GetMatchesPerRound(phase.Matches);
+                var matchViewsPerRound = new List<IList<MatchView>>();
+                foreach (var matches in matchesPerRound)
+                {
+                    matchViewsPerRound.Add(matches.Select(x=> new MatchView(x)).ToList());
+                }
+                return new BracketView{Fighters = fighterViews, Matches = matchViewsPerRound};
             }
         }
     }

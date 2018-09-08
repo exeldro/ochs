@@ -127,7 +127,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controller\PersonController.cs" />
-    <Compile Include="Service.cs" />
+    <Compile Include="Service\EliminationRoundNames.cs" />
+    <Compile Include="Service\Service.cs" />
     <Compile Include="Controller\CompetitionController.cs" />
     <Compile Include="Controller\AuthController.cs" />
     <Compile Include="Controller\CountryController.cs" />
@@ -165,6 +166,9 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Service\IPhaseTypeHandler.cs" />
+    <Compile Include="Service\SingleEliminationPhaseHandler.cs" />
+    <Compile Include="Service\SingleRoundRobinPhaseHandler.cs" />
     <Compile Include="SignalR\OchsHub.cs" />
     <Compile Include="NHibernate\MatchMap.cs" />
     <Compile Include="Model\MatchRules.cs" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Security.Claims;
 using Microsoft.AspNet.SignalR;
@@ -370,97 +371,27 @@ namespace Ochs
                     transaction.Commit();
                 }
                 Clients.All.updateMatch(new MatchWithEventsView(match));
-                if (match.Phase?.Elimination ?? false)
+
+
+                var phaseTypeHandler = (match.Phase == null?null:Service.GetPhaseTypeHandler(match.Phase.PhaseType));
+                if(phaseTypeHandler == null)
+                    return;
+
+                var updatedMatches =
+                    phaseTypeHandler.UpdateMatchesAfterFinishedMatch(match,
+                        match.Pool?.Matches ?? match.Phase?.Matches);
+                foreach (var updatedMatch in updatedMatches)
                 {
-                    Person winner = null;
-                    Person loser = null;
-                    if (match.Result == MatchResult.WinBlue || match.Result == MatchResult.DisqualificationRed || match.Result == MatchResult.ForfeitRed)
+                    using (var transaction = session.BeginTransaction())
                     {
-                        winner = match.FighterBlue;
-                        if(match.Result == MatchResult.WinBlue)
-                            loser = match.FighterRed;
-                    }
-                    else if(match.Result == MatchResult.WinRed || match.Result == MatchResult.DisqualificationBlue || match.Result == MatchResult.ForfeitBlue)
-                    {
-                        winner = match.FighterRed;
-                        if(match.Result == MatchResult.WinRed)
-                            loser = match.FighterBlue;
+                        session.Update(updatedMatch);
+                        transaction.Commit();
                     }
 
-                    var round = Service.GetRound(match.Name);
-                    if (round > 0 && winner != null)
-                    {
-                        var matchNumber = Service.GetMatchNumber(match.Name, round);
-                        var nextRound = round-1;
-                        var nextMatchNumber = ((matchNumber - 1) >> 1) + 1;
-                        var nextMatchName = Service.GetMatchName(nextRound, nextMatchNumber).Trim();
-                        Match nextMatch = null;
-                        if (match.Pool != null)
-                        {
-                            nextMatch = match.Pool.Matches.SingleOrDefault(x => x.Name.Trim() == nextMatchName);
-                        }
-                        else if (match.Phase != null)
-                        {
-                            nextMatch = match.Phase.Matches.SingleOrDefault(x => x.Name.Trim() == nextMatchName);
-                        }
-
-                        if (nextMatch != null)
-                        {
-                            if (matchNumber % 2 == 1)
-                            {
-                                nextMatch.FighterBlue = winner;
-                            }
-                            else
-                            {
-                                nextMatch.FighterRed = winner;
-                            }
-
-                            using (var transaction = session.BeginTransaction())
-                            {
-                                session.Update(nextMatch);
-                                transaction.Commit();
-                            }
-
-                            Clients.All.updateMatch(new MatchView(nextMatch));
-                        }
-
-                        if (round == 1 && loser != null)
-                        {
-                            nextMatchName = Service.GetMatchName(0, 2).Trim();
-                            nextMatch = null;
-                            if (match.Pool != null)
-                            {
-                                nextMatch = match.Pool.Matches.SingleOrDefault(x => x.Name.Trim() == nextMatchName);
-                            }
-                            else if (match.Phase != null)
-                            {
-                                nextMatch = match.Phase.Matches.SingleOrDefault(x => x.Name.Trim() == nextMatchName);
-                            }
-
-                            if (nextMatch != null)
-                            {
-                                if (matchNumber % 2 == 1)
-                                {
-                                    nextMatch.FighterBlue = loser;
-                                }
-                                else
-                                {
-                                    nextMatch.FighterRed = loser;
-                                }
-
-                                using (var transaction = session.BeginTransaction())
-                                {
-                                    session.Update(nextMatch);
-                                    transaction.Commit();
-                                }
-
-                                Clients.All.updateMatch(new MatchView(nextMatch));
-                            }
-                        }
-                    }
+                    Clients.All.updateMatch(new MatchView(updatedMatch));
                 }
-                UpdateRankings(session, match);
 
+                UpdateRankings(session, match);
             }
         }
 
@@ -753,7 +684,7 @@ namespace Ochs
                     ranking.Disqualified = true;
                 }
             }
-            if (elimination && match.Finished)
+            /*if (elimination && match.Finished)
             {
                 var round = Service.GetRound(match.Name);
                 if (round == 0)
@@ -781,7 +712,7 @@ namespace Ochs
                         ranking.Rank = (1 << round) + 1;
                     }
                 }
-            }
+            }*/
 
             if (rankingRules.DoubleReduction > 0 && match.DoubleCount> rankingRules.DoubleReduction)
             {
@@ -1595,124 +1526,25 @@ namespace Ochs
                 }
             }
 
-            if (phaseType == PhaseType.SingleRoundRobin)
-            {
-                GenerateSingleRoundRobinMatches(session, matches, fighters, phase, pool, 300);
-            }
-            else if (phaseType == PhaseType.SingleElimination)
-            {
-                GenerateSingleEliminationMatches(session, matches, fighters.Count, phase, pool);
-                AssignFightersToSingleEliminationMatches(session, matches, fighters);
-            }
-        }
 
-        private void AssignFightersToSingleEliminationMatches(ISession session, IList<Match> matches, IList<Person> fighters)
-        {
+            var phaseTypeHandler = Service.GetPhaseTypeHandler(phaseType);
+            if(phaseTypeHandler == null)
+                return;
+            matches = phaseTypeHandler.GenerateMatches(fighters.Count, phase, pool);
             var sortedFighters = Service.SortFightersByRanking(session, fighters, Service.GetPreviousPhase(matches[0].Phase));
-            var matchedFighters = Service.SingleEliminationMatchedFighters(sortedFighters);
-            
-            var roundCount = 0;
-            while (2<<roundCount < fighters.Count)
-                roundCount++;
-
-
-            for (var i = 0; i < matchedFighters.Count - 1; i += 2)
+            phaseTypeHandler.AssignFightersToMatches(matches, sortedFighters);
+            var plannedDateTime = pool?.PlannedDateTime;
+            foreach (var match in matches)
             {
-                var matchNumber = (i >> 1) +1;
-                var matchName = Service.GetMatchName(roundCount, matchNumber).Trim();
-                var match = matches.SingleOrDefault(x => x.Name.Trim() == matchName);
-                if (matchedFighters[i] == null || matchedFighters[i + 1] == null)
-                {
-                    var fighter = matchedFighters[i] ?? matchedFighters[i + 1];
-                    if(fighter == null)
-                        continue;
-                    matchName = Service.GetMatchName(roundCount-1, (i>>2)+1).Trim();
-                    match = matches.SingleOrDefault(x => x.Name.Trim() == matchName);
-                    if(match == null)
-                        continue;
-                    if (matchNumber % 2 == 1)
-                    {
-                        match.FighterBlue = fighter;
-                    }
-                    else
-                    {
-                        match.FighterRed = fighter;
-                    }
-                    using (var transaction = session.BeginTransaction())
-                    {
-                        session.Update(match);
-                        transaction.Commit();
-                    }
-                    Clients.All.updateMatch(new MatchView(match));
-                    continue;
-                }
-                if(match == null)
-                    continue;
-                match.FighterBlue = matchedFighters[i];
-                match.FighterRed = matchedFighters[i + 1];
+                match.PlannedDateTime = plannedDateTime;
                 using (var transaction = session.BeginTransaction())
                 {
-                    session.Update(match);
+                    session.Save(match);
                     transaction.Commit();
                 }
-                Clients.All.updateMatch(new MatchView(match));
+                Clients.All.addMatch(new MatchView(match));
+                plannedDateTime = plannedDateTime?.AddSeconds(300);
             }
-        }
-
-        private void GenerateSingleEliminationMatches(ISession session, IList<Match> matches, int fighterCount, Phase phase, Pool pool)
-        {
-            var roundCount = 0;
-            while (2<<roundCount < fighterCount)
-                roundCount++;
-
-            for (var round = roundCount; round > 0; round--)
-            {
-                for (var matchNumber = 1; matchNumber <= (1 << round); matchNumber++)
-                {
-                    var match = new Match
-                    {
-                        Name = Service.GetMatchName(round, matchNumber),
-                        Competition = phase.Competition,
-                        Phase = phase,
-                        Pool = pool
-                    };
-                    matches.Add(match);
-                    using (var transaction = session.BeginTransaction())
-                    {
-                        session.Save(match);
-                        transaction.Commit();
-                    }
-                    Clients.All.addMatch(new MatchView(match));
-                }
-            }
-            var finalmatch = new Match
-            {
-                Name = Service.GetMatchName(0, 2),
-                Competition = phase.Competition,
-                Phase = phase,
-                Pool = pool
-            };
-            matches.Add(finalmatch);
-            using (var transaction = session.BeginTransaction())
-            {
-                session.Save(finalmatch);
-                transaction.Commit();
-            }
-            Clients.All.addMatch(new MatchView(finalmatch));
-            finalmatch = new Match
-            {
-                Name = Service.GetMatchName(0, 1),
-                Competition = phase.Competition,
-                Phase = phase,
-                Pool = pool
-            };
-            matches.Add(finalmatch);
-            using (var transaction = session.BeginTransaction())
-            {
-                session.Save(finalmatch);
-                transaction.Commit();
-            }
-            Clients.All.addMatch(new MatchView(finalmatch));
         }
 
         private void GenerateSingleRoundRobinMatches(ISession session, IList<Match> matches, IList<Person> fighters,

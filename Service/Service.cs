@@ -7,17 +7,10 @@ namespace Ochs
 {
     public static class Service
     {
+        private static readonly Dictionary<PhaseType,IPhaseTypeHandler> phaseTypeHandlers = new Dictionary<PhaseType, IPhaseTypeHandler>{{PhaseType.SingleRoundRobin, new SingleRoundRobinPhaseHandler()},{PhaseType.SingleElimination,new SingleEliminationPhaseHandler()}};
         public static IPhaseTypeHandler GetPhaseTypeHandler(PhaseType phaseType)
         {
-            if (phaseType == PhaseType.SingleRoundRobin)
-            {
-                return new SingleRoundRobinPhaseHandler();
-            }
-            else if (phaseType == PhaseType.SingleElimination)
-            {
-                return new SingleEliminationPhaseHandler();
-            }
-            return null;
+            return phaseTypeHandlers.ContainsKey(phaseType) ? phaseTypeHandlers[phaseType] : null;
         }
 
         public static IList<Person> SortFightersByRanking(ISession session, IList<Person> fighters, Phase previousPhase)

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NHibernate;
 
@@ -61,8 +62,19 @@ namespace Ochs
                 var matchNumber = (i >> 1) +1;
                 var matchName = EliminationRoundNames.GetMatchName(roundCount, matchNumber).Trim();
                 var match = matches.SingleOrDefault(x => x.Name.Trim() == matchName);
+                if (match != null)
+                {
+                    match.FighterBlue = matchedFighters[i];
+                    match.FighterRed = matchedFighters[i + 1];
+                }
                 if (matchedFighters[i] == null || matchedFighters[i + 1] == null)
                 {
+                    if (match != null)
+                    {
+                        match.Result = MatchResult.Skipped;
+                        match.StartedDateTime = DateTime.Now;
+                        match.FinishedDateTime = DateTime.Now;
+                    }
                     var fighter = matchedFighters[i] ?? matchedFighters[i + 1];
                     if(fighter == null)
                         continue;
@@ -80,10 +92,6 @@ namespace Ochs
                     }
                     continue;
                 }
-                if(match == null)
-                    continue;
-                match.FighterBlue = matchedFighters[i];
-                match.FighterRed = matchedFighters[i + 1];
             }
         }
 
@@ -99,9 +107,12 @@ namespace Ochs
                 {
                     round = matchRound;
                     matchesPerRound.Add(matches);
+                    matches = new List<Match>();
                 }
                 matches.Add(match);
             }
+            if(matches.Any())
+                matchesPerRound.Add(matches);
             return matchesPerRound;
         }
 

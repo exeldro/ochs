@@ -1511,7 +1511,7 @@ namespace Ochs
                 return;
             }
 
-            if (!matches.Any(x => x.Started))
+            if (!matches.Any(x => x.Started && x.Result != MatchResult.Skipped))
             {
                 while (matches.Count > 0)
                 {
@@ -1524,6 +1524,10 @@ namespace Ochs
                         transaction.Commit();
                     }
                 }
+            }
+            else if (matches.Any())
+            {
+                return;
             }
 
 

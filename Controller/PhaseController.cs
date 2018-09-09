@@ -54,17 +54,16 @@ namespace Ochs
                 if (phase == null)
                     return null;
 
+                var phaseTypeHandler = Service.GetPhaseTypeHandler(phase.PhaseType);
+                var matchesPerRound = phaseTypeHandler.GetMatchesPerRound(phase.Matches);
                 var fighterViews = new List<PersonView>();
-                foreach (var match in phase.Matches)
+                foreach (var match in matchesPerRound.First())
                 {
                     NHibernateUtil.Initialize(match.FighterBlue?.Organizations);
                     NHibernateUtil.Initialize(match.FighterRed?.Organizations);
                     fighterViews.Add(match.FighterBlue == null ? null : new PersonView(match.FighterBlue));
                     fighterViews.Add(match.FighterRed == null ? null : new PersonView(match.FighterRed));
                 }
-
-                var handler = new SingleEliminationPhaseHandler();
-                var matchesPerRound = handler.GetMatchesPerRound(phase.Matches);
                 var matchViewsPerRound = new List<IList<MatchView>>();
                 foreach (var matches in matchesPerRound)
                 {

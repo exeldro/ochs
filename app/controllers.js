@@ -257,7 +257,7 @@ app.controller("CompetitionController", function ($scope, $http, $routeParams) {
             var fighterIds = [];
             angular.forEach($scope.currentCompetition.Fighters,
                 function(fighter) {
-                    if (fighter.Selected && fighter.MatchesTotal === 0) {
+                    if (fighter.Selected) {
                         fighterIds.push(fighter.Id);
                     }
                 });

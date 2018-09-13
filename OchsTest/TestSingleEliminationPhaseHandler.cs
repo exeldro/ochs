@@ -134,5 +134,26 @@ namespace OchsTest
             Assert.AreEqual(1, changedMatches.Count);
             Assert.AreEqual(matches[16].FighterBlue, matches[24].FighterBlue);
         }
+
+        [TestMethod]
+        public void TestEliminationOf17()
+        {
+            var fighters = Enumerable.Range(0, 17).Select(x => new Person{Id = Guid.NewGuid()}).ToList();
+            Assert.AreEqual(17, fighters.Count);
+            var matches = _singleEliminationPhaseHandler.GenerateMatches(fighters.Count, null, null);
+            Assert.AreEqual(32, matches.Count);
+            _singleEliminationPhaseHandler.AssignFightersToMatches(matches,fighters);
+            var matchesPart = matches.Take(16).ToList();
+            foreach (var match in matchesPart)
+            {
+                Assert.AreNotEqual(null, match.FighterBlue?? match.FighterRed, match.Name + " blue en red are null");
+                if (match.FighterBlue != null && match.FighterRed != null)
+                {
+                    var indexBlue = fighters.IndexOf(match.FighterBlue);
+                    var indexRed = fighters.IndexOf(match.FighterRed);
+                    Assert.AreEqual(31, indexBlue + indexRed, match.Name + " is not good pair");
+                }
+            }
+        }
     }
 }

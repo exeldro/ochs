@@ -103,11 +103,14 @@ namespace Ochs
             foreach (var match in allMatches)
             {
                 var matchRound = EliminationRoundNames.GetRound(match.Name);
-                if (matchRound != -1 && matchRound != round && matches.Any())
+                if (matchRound != -1 && matchRound != round)
                 {
                     round = matchRound;
-                    matchesPerRound.Add(matches);
-                    matches = new List<Match>();
+                    if (matches.Any())
+                    {
+                        matchesPerRound.Add(matches);
+                        matches = new List<Match>();
+                    }
                 }
                 matches.Add(match);
             }
@@ -190,40 +193,25 @@ namespace Ochs
             matchedFighters.Add(fighters[1]);
             for (var round = 1; round <= roundCount; round++)
             {
-
                 var fightersToAdd = 1 << round;
-                var index =  1;
-                var back = false;
-                var front = false;
                 for (var addIndex = 0; addIndex < fightersToAdd; addIndex++)
                 {
-                    var fighterIndex = fightersToAdd + (addIndex>>1);
-                    if (addIndex % 2 == (front?0:1))
-                    {
-                        fighterIndex = fightersToAdd + fightersToAdd - ((addIndex>>1) + 1);
-                    }
+                    var oldFighterIndex = fighters.IndexOf(matchedFighters[addIndex<<1]);
+                    var newFighterIndex = (fightersToAdd<<1) - (oldFighterIndex +1 );
                     Person fighter = null;
-                    if (fighters.Count > fighterIndex)
+                    if (newFighterIndex < fighters.Count)
                     {
-                        fighter = fighters[fighterIndex];
+                        fighter = fighters[newFighterIndex];
                     }
-                    if (back)
+                    if (addIndex % 2 == 1)
                     {
-                        matchedFighters.Insert(matchedFighters.Count-index, fighter);
+                        //before
+                        matchedFighters.Insert(addIndex << 1, fighter);
                     }
                     else
                     {
-                        matchedFighters.Insert(index, fighter);
-                    }
-
-                    if (addIndex % 4 == 1)
-                    {
-                        back = !back;
-                    }
-                    if (addIndex % 4 == 3)
-                    {
-                        index += 4;
-                        front = !front;
+                        //after
+                        matchedFighters.Insert((addIndex << 1) + 1, fighter);
                     }
                 }
             }

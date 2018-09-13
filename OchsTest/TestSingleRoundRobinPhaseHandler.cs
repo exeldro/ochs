@@ -87,8 +87,7 @@ namespace OchsTest
         [TestMethod]
         public void TestGeneratePoolsOf9()
         {
-            var fighters = new List<Person>
-                {new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}};
+            var fighters = Enumerable.Range(0, 9).Select(x => new Person{Id = Guid.NewGuid()}).ToList();
             Assert.AreEqual(9, fighters.Count);
             var matches = _singleRoundRobinPhaseHandler.GenerateMatches(fighters.Count, null, null);
             Assert.AreEqual(36, matches.Count);
@@ -100,8 +99,7 @@ namespace OchsTest
         [TestMethod]
         public void TestGeneratePoolsOf10()
         {
-            var fighters = new List<Person>
-                {new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}};
+            var fighters = Enumerable.Range(0, 10).Select(x => new Person{Id = Guid.NewGuid()}).ToList();
             Assert.AreEqual(10, fighters.Count);
             var matches = _singleRoundRobinPhaseHandler.GenerateMatches(fighters.Count, null, null);
             Assert.AreEqual(45, matches.Count);

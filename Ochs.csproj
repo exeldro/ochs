@@ -998,7 +998,11 @@
     <Content Include="Content\style.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="hibernate.cfg.xml">
+    <Content Include="hibernate.cfg.MsSql.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="hibernate.cfg.SQLite.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Scripts\angular-cookies.js">

@@ -18,6 +18,10 @@ namespace Ochs
             get
             {
                 if (_sessionFactory != null) return _sessionFactory;
+                if (!File.Exists("hibernate.cfg.xml") && File.Exists("hibernate.cfg.SQLite.xml"))
+                {
+                    File.Copy("hibernate.cfg.SQLite.xml", "hibernate.cfg.xml");
+                }
                 _sessionFactory = Fluently.Configure(new Configuration().Configure())
                     .Mappings(m =>m.FluentMappings.AddFromAssemblyOf<Program>())
                     .ExposeConfiguration(c => new SchemaUpdate(c).Execute(true,true))

@@ -128,6 +128,7 @@
   <ItemGroup>
     <Compile Include="Controller\PersonController.cs" />
     <Compile Include="Service\EliminationRoundNames.cs" />
+    <Compile Include="Service\IRankingPhaseTypeHandler.cs" />
     <Compile Include="Service\Service.cs" />
     <Compile Include="Controller\CompetitionController.cs" />
     <Compile Include="Controller\AuthController.cs" />

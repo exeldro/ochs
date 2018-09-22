@@ -5,9 +5,10 @@ using NHibernate;
 
 namespace Ochs
 {
-    public class SingleEliminationPhaseHandler : IPhaseTypeHandler
+    public class SingleEliminationPhaseHandler : IPhaseTypeHandler, IRankingPhaseTypeHandler
     {
         public PhaseType PhaseType => PhaseType.SingleElimination;
+
         public IList<Match> GenerateMatches(int fighterCount, Phase phase, Pool pool)
         {
             var matches = new List<Match>();
@@ -179,6 +180,59 @@ namespace Ochs
                 }
             }
             return updatedMatches;
+        }
+
+        public int? GetRank(Person rankingPerson, IList<Match> matches)
+        {
+            int? rank = null;
+            foreach (var match in matches)
+            {
+                if(match.FighterRed != rankingPerson && match.FighterBlue != rankingPerson)
+                    continue;
+                var round = EliminationRoundNames.GetRound(match.Name);
+                bool win;
+                if (match.Result == MatchResult.WinBlue || match.Result == MatchResult.DisqualificationRed ||
+                    match.Result == MatchResult.ForfeitRed)
+                {
+                    win = match.FighterBlue == rankingPerson;
+                }
+                else if (match.Result == MatchResult.WinRed || match.Result == MatchResult.DisqualificationBlue ||
+                         match.Result == MatchResult.ForfeitBlue)
+                {
+                    win = match.FighterRed == rankingPerson;
+                }
+                else
+                {
+                    continue;
+                }
+                if (round == 0)
+                {
+                    if (match.Name.Trim() == EliminationRoundNames.GetMatchName(round, 2).Trim())
+                    {
+                        rank = win ? 3 : 4;
+                    }
+                    else
+                    {
+                        rank = win ? 1 : 2;
+                    }
+                }
+                else if(win)
+                {
+                    if (rank == null || rank > 1 << round)
+                    {
+                        rank = 1 << round;
+                    }
+                }
+                else if(round != 1)
+                {
+                    if (rank == null || rank > (1 << round) + 1)
+                    {
+                        rank = (1 << round) + 1;
+                    }
+                }
+
+            }
+            return rank;
         }
 
         private static IList<Person> SingleEliminationMatchedFighters(IList<Person> fighters)

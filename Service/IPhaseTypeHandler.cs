@@ -12,5 +12,6 @@ namespace Ochs
         void AssignFightersToMatches(IList<Match> matches, IList<Person> sortedByRankFighters);
         IList<IList<Match>> GetMatchesPerRound(IList<Match> matches);
         IList<Match> UpdateMatchesAfterFinishedMatch(Match match, IList<Match> matches);
+
     }
 }

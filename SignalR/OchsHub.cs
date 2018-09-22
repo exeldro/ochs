@@ -412,7 +412,7 @@ namespace Ochs
         {
             var rankings = session.QueryOver<PhaseRanking>().Where(x => x.Phase == phase).List().Cast<Ranking>().ToList();
             UpdateRankingsInternal(session, rankings, phase.Matches, () => new PhaseRanking {Phase = phase},
-                phase.Elimination);
+                Service.GetPhaseTypeHandler(phase.PhaseType));
             Clients.All.updateRankings(phase.Id);
         }
 
@@ -440,7 +440,7 @@ namespace Ochs
         private void UpdatePoolRankingsInternal(ISession session, Pool pool)
         {
             var rankings = session.QueryOver<PoolRanking>().Where(x => x.Pool == pool).List().Cast<Ranking>().ToList();
-            UpdateRankingsInternal(session, rankings, pool.Matches, () => new PoolRanking {Pool = pool}, pool.Phase.Elimination);
+            UpdateRankingsInternal(session, rankings, pool.Matches, () => new PoolRanking {Pool = pool}, Service.GetPhaseTypeHandler(pool.Phase.PhaseType));
             Clients.All.updateRankings(pool.Id);
         }
 
@@ -466,7 +466,7 @@ namespace Ochs
         }
 
 
-        private void UpdateRankingsInternal(ISession session, IList<Ranking> rankings, IList<Match> matches, Func<Ranking> createRanking, bool elimination)
+        private void UpdateRankingsInternal(ISession session, IList<Ranking> rankings, IList<Match> matches, Func<Ranking> createRanking, IPhaseTypeHandler phaseTypeHandler)
         {
             var rankingRules = new RankingRules();
             // clear ranking stats
@@ -499,7 +499,7 @@ namespace Ochs
                     rankings.Add(rankingBlue);
                 }
 
-                UpdateRankingMatch(rankingBlue, rankingRules, match, true, elimination);
+                UpdateRankingMatch(rankingBlue, rankingRules, match, true);
                 var rankingRed = rankings.SingleOrDefault(x => x.Person == match.FighterRed);
                 if (rankingRed == null)
                 {
@@ -507,15 +507,16 @@ namespace Ochs
                     rankingRed.Person = match.FighterRed;
                     rankings.Add(rankingRed);
                 }
-                UpdateRankingMatch(rankingRed, rankingRules, match, false, elimination);
+                UpdateRankingMatch(rankingRed, rankingRules, match, false);
             }
 
-            if (elimination)
+            if (phaseTypeHandler is IRankingPhaseTypeHandler)
             {
                 using (var transaction = session.BeginTransaction())
                 {
                     foreach (var ranking in rankings)
                     {
+                        ranking.Rank = ((IRankingPhaseTypeHandler) phaseTypeHandler).GetRank(ranking.Person, matches);
                         session.SaveOrUpdate(ranking);
                     }
                     transaction.Commit();
@@ -605,7 +606,7 @@ namespace Ochs
             }
         }
 
-        private void UpdateRankingMatch(Ranking ranking, RankingRules rankingRules, Match match, bool blue, bool elimination)
+        private void UpdateRankingMatch(Ranking ranking, RankingRules rankingRules, Match match, bool blue)
         {
             if(match.Result == MatchResult.Skipped)
                 return;
@@ -684,35 +685,6 @@ namespace Ochs
                     ranking.Disqualified = true;
                 }
             }
-            /*if (elimination && match.Finished)
-            {
-                var round = Service.GetRound(match.Name);
-                if (round == 0)
-                {
-                    if (match.Name.Trim() == Service.GetMatchName(round, 2).Trim())
-                    {
-                        ranking.Rank = win ? 3 : 4;
-                    }
-                    else
-                    {
-                        ranking.Rank = win ? 1 : 2;
-                    }
-                }
-                else if(win)
-                {
-                    if (ranking.Rank == null || ranking.Rank > 1 << round)
-                    {
-                        ranking.Rank = 1 << round;
-                    }
-                }
-                else
-                {
-                    if (ranking.Rank == null || ranking.Rank > (1 << round) + 1)
-                    {
-                        ranking.Rank = (1 << round) + 1;
-                    }
-                }
-            }*/
 
             if (rankingRules.DoubleReduction > 0 && match.DoubleCount> rankingRules.DoubleReduction)
             {

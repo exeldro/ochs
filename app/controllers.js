@@ -126,6 +126,18 @@ app.controller("EditPersonController", function ($scope, $http, $routeParams) {
                 $scope.currentPerson = response.data;
             });
     };
+    $scope.addOrganization = function() {
+        $http.post("api/Person/AddOrganization", { PersonId: $scope.currentPerson.Id, Organization:  $scope.personOrganization})
+            .then(function(response) {
+                $scope.currentPerson = response.data;
+            });
+    };
+    $scope.removeOrganization = function() {
+        $http.post("api/Person/RemoveOrganization", { PersonId: $scope.currentPerson.Id, Organization:  $scope.personOrganization})
+            .then(function(response) {
+                $scope.currentPerson = response.data;
+            });
+    };
 });
 
 app.controller("ListOrganizationsController", function ($scope, $http) {

@@ -120,7 +120,12 @@ app.controller("EditPersonController", function ($scope, $http, $routeParams) {
     $http.get("api/Country/All").then(function (response) {
         $scope.countries = response.data;
     });
-
+    $scope.savePerson = function() {
+        $http.post("api/Person/Save", $scope.currentPerson)
+            .then(function(response) {
+                $scope.currentPerson = response.data;
+            });
+    };
 });
 
 app.controller("ListOrganizationsController", function ($scope, $http) {

@@ -8,3 +8,4 @@ Full name: <input placeholder="Full name" type="text" ng-model="currentPerson.Fu
 Country: <select ng-model="currentPerson.CountryCode">
     <option ng-repeat="(countryCode,country) in countries" data-image="Content/flags/{{countryCode}}.svg" value="{{countryCode}}">{{country}}</option>
 </select><br />
+<button ng-click="savePerson()"><i class="fa fa-save" aria-hidden="true"></i> Save</button>

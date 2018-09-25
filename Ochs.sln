@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2042
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ochs", "Ochs.csproj", "{A1EDCC7D-51B8-4C7B-A836-760EDCB6477D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ochs", "Ochs\Ochs.csproj", "{A1EDCC7D-51B8-4C7B-A836-760EDCB6477D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OchsTest", "OchsTest\OchsTest.csproj", "{1E45A4AF-596E-4C37-AA28-25C68DE06995}"
 EndProject

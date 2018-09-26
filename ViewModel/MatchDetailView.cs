@@ -3,9 +3,9 @@ using System.Linq;
 
 namespace Ochs
 {
-    public class MatchWithEventsView : MatchView
+    public class MatchDetailView : MatchView
     {
-        public MatchWithEventsView(Match match) : base(match)
+        public MatchDetailView(Match match) : base(match)
         {
             var exchanges = 0;
             Events = _match.Events.OrderBy(x=>x.MatchTime).ThenBy(x=>x.CreatedDateTime).Select(x => new MatchEventView(x, x.IsExchange?++exchanges:(int?)null)).OrderByDescending(x=>x.Time).ThenByDescending(x=>x.CreatedDateTime).ToList();

@@ -20,7 +20,7 @@ namespace Ochs
         }
 
         [HttpGet]
-        public MatchWithEventsView Get(Guid id)
+        public MatchDetailView Get(Guid id)
         {
             using (var session = NHibernateHelper.OpenSession())
             {
@@ -33,7 +33,7 @@ namespace Ochs
                 if(match.FighterRed != null)
                     NHibernateUtil.Initialize(match.FighterRed.Organizations);
 
-                return new MatchWithEventsView(match);
+                return new MatchDetailView(match);
             }
         }
 

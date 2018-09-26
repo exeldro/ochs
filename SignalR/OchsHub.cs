@@ -82,7 +82,7 @@ namespace Ochs
                     match.UpdateMatchData();
                     session.Update(match);
                     transaction.Commit();
-                    Clients.All.updateMatch(new MatchWithEventsView(match));
+                    Clients.All.updateMatch(new MatchDetailView(match));
                 }
             }
         }
@@ -121,7 +121,7 @@ namespace Ochs
                     match.UpdateMatchData();
                     session.Update(match);
                     transaction.Commit();
-                    Clients.All.updateMatch(new MatchWithEventsView(match));
+                    Clients.All.updateMatch(new MatchDetailView(match));
                 }
             }
         }
@@ -163,7 +163,7 @@ namespace Ochs
                     match.UpdateMatchData();
                     session.Update(match);
                     transaction.Commit();
-                    Clients.All.updateMatch(new MatchWithEventsView(match));
+                    Clients.All.updateMatch(new MatchDetailView(match));
                 }
             }
         }
@@ -242,7 +242,7 @@ namespace Ochs
                     match.TimeRunningSince = null;
                     session.Update(match);
                     transaction.Commit();
-                    Clients.All.updateMatch(new MatchWithEventsView(match));
+                    Clients.All.updateMatch(new MatchDetailView(match));
                 }
             }
         }
@@ -280,7 +280,7 @@ namespace Ochs
                     }
                     session.Update(match);
                     transaction.Commit();
-                    Clients.All.updateMatch(new MatchWithEventsView(match));
+                    Clients.All.updateMatch(new MatchDetailView(match));
                 }
             }
         }
@@ -309,7 +309,7 @@ namespace Ochs
                     match.Time = time;
                     session.Update(match);
                     transaction.Commit();
-                    Clients.All.updateMatch(new MatchWithEventsView(match));
+                    Clients.All.updateMatch(new MatchDetailView(match));
                 }
             }
         }
@@ -370,7 +370,7 @@ namespace Ochs
                     session.Update(match);
                     transaction.Commit();
                 }
-                Clients.All.updateMatch(new MatchWithEventsView(match));
+                Clients.All.updateMatch(new MatchDetailView(match));
 
 
                 var phaseTypeHandler = (match.Phase == null?null:Service.GetPhaseTypeHandler(match.Phase.PhaseType));

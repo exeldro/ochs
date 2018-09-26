@@ -194,7 +194,6 @@
     <Compile Include="ViewModel\PoolView.cs" />
     <Compile Include="ViewModel\PhaseView.cs" />
     <Compile Include="ViewModel\RankingView.cs" />
-    <Compile Include="ViewModel\RulesView.cs" />
     <Compile Include="ViewModel\UserDetailView.cs" />
     <Compile Include="ViewModel\UserRoleView.cs" />
     <Compile Include="ViewModel\UserView.cs" />

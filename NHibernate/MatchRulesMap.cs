@@ -12,7 +12,7 @@ namespace Ochs
             Map(x => x.PointsMax);
             Map(x => x.ExchangePointsMax);
             Map(x => x.TimeMax);
-            Map(x => x.ExhangesMax);
+            Map(x => x.ExchangesMax);
             Map(x => x.SuddenDeath);
         }
     }

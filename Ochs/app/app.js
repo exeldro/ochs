@@ -24,6 +24,27 @@ app.filter('timespanmili', function () {
     };
 });
 
+app.filter('range', function () {
+    return function (input, start, end) {
+        var direction;
+        start = parseInt(start);
+        end = parseInt(end);
+        if (start === end) { return [start]; }
+        direction = (start <= end) ? 1 : -1;
+        while (start != end) {
+            input.push(start);
+            if (direction < 0 && start === end + 1) {
+                input.push(end);
+            }
+            if (direction > 0 && start === end - 1) {
+                input.push(end);
+            }
+            start += direction;
+        }
+        return input;
+    };
+});
+
 app.config(['$routeProvider', '$locationProvider',
     function ($routeProvider, $locationProvider) {
         $routeProvider.

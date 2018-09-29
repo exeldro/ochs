@@ -636,6 +636,9 @@ app.controller("MatchController", function($scope, $http, $routeParams, $interva
             $scope.matchResult = response.data.Result;
             $scope.editTime = new Date(1970, 1, 1, 0, 0, response.data.LiveTime);
         });
+        $http.get("api/Match/GetRules/" + $routeParams.matchId).then(function(response) {
+            $scope.rules = response.data;
+        });
         $http.get("api/Match/GetNext/" + $routeParams.matchId).then(function(response) {
             $scope.nextMatch = response.data;
         });
@@ -678,7 +681,23 @@ app.controller("MatchController", function($scope, $http, $routeParams, $interva
         }
     }, 10);
     $scope.addMatchEvent = function($pointsBlue, $pointsRed, $eventType) {
+        $scope.addEventPointBlue = 0;
+        $scope.addEventPointRed = 0;
         $scope.$parent.ochsHub.invoke("AddMatchEvent", $scope.matchId, $pointsBlue, $pointsRed, $eventType);
+    };
+    $scope.setScoreBlue = function($points) {
+        if ($scope.rules && $scope.rules.ConfirmScores) {
+            $scope.addEventPointBlue = $points;
+        } else {
+            $scope.addMatchEvent($points, 0, 'Score');
+        }
+    };
+    $scope.setScoreRed = function($points) {
+        if ($scope.rules && $scope.rules.ConfirmScores) {
+            $scope.addEventPointRed = $points;
+        } else {
+            $scope.addMatchEvent(0, $points, 'Score');
+        }
     };
     $scope.undoLastMatchEvent = function() {
         $scope.$parent.ochsHub.invoke("UndoLastMatchEvent", $scope.matchId);

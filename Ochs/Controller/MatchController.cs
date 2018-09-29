@@ -87,6 +87,10 @@ namespace Ochs
             }
         }
 
-
+        [HttpGet]
+        public MatchRules GetRules(Guid id)
+        {
+            return new MatchRules();
+        }
     }
 }

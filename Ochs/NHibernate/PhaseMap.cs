@@ -8,7 +8,7 @@ namespace Ochs
         public PhaseMap()
         {
             Id(x => x.Id);
-            References(x => x.Competition).Not.LazyLoad();
+            References(x => x.Competition);
             Map(x => x.PhaseOrder);
             Map(x => x.Name);
             Map(x => x.PhaseType);

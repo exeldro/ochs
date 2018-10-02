@@ -17,13 +17,18 @@ namespace Ochs
                 var phase = session.QueryOver<Phase>().Where(x => x.Id == id).SingleOrDefault();
                 if (phase == null)
                     return null;
-                NHibernateUtil.Initialize(phase.Fighters);
                 foreach (var person in phase.Fighters)
                 {
                     NHibernateUtil.Initialize(person.Organizations);
                 }
-                NHibernateUtil.Initialize(phase.Matches);
-                NHibernateUtil.Initialize(phase.Pools);
+                NHibernateUtil.Initialize(phase.Competition);
+                foreach (var match in phase.Matches)
+                {
+                    NHibernateUtil.Initialize(match.FighterBlue?.Organizations);
+                    NHibernateUtil.Initialize(match.FighterRed?.Organizations);
+                    NHibernateUtil.Initialize(match.Competition.Organization);
+                    NHibernateUtil.Initialize(match.Pool);
+                }
                 foreach (var phasePool in phase.Pools)
                 {
                     NHibernateUtil.Initialize(phasePool.Fighters);
@@ -61,6 +66,8 @@ namespace Ochs
                 {
                     NHibernateUtil.Initialize(match.FighterBlue?.Organizations);
                     NHibernateUtil.Initialize(match.FighterRed?.Organizations);
+                    NHibernateUtil.Initialize(match.Competition.Organization);
+                    NHibernateUtil.Initialize(match.Pool);
                     fighterViews.Add(match.FighterBlue == null ? null : new PersonView(match.FighterBlue));
                     fighterViews.Add(match.FighterRed == null ? null : new PersonView(match.FighterRed));
                 }

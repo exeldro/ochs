@@ -60,7 +60,11 @@ namespace Ochs
         {
             using (var session = NHibernateHelper.OpenSession())
             {
-                return session.QueryOver<User>().List().Select(x => new UserView(x)).ToList();
+                return session.QueryOver<User>().List().Select(x =>
+                {
+                    NHibernateUtil.Initialize(x.Roles);
+                    return new UserView(x);
+                }).ToList();
             }
         }
 
@@ -73,7 +77,10 @@ namespace Ochs
                 var user = session.QueryOver<User>().Where(x => x.Id == id).SingleOrDefault();
                 if (user == null)
                     return null;
-                NHibernateUtil.Initialize(user.Roles);
+                foreach (var userRole in user.Roles)
+                {
+                    NHibernateUtil.Initialize(userRole.Organization);
+                }
                 return new UserDetailView(user);
             }
         }

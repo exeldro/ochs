@@ -15,7 +15,15 @@ namespace Ochs
         {
             using (var session = NHibernateHelper.OpenSession())
             {
-                return session.QueryOver<Match>().List().Select(x => new MatchView(x)).ToList();
+                return session.QueryOver<Match>().List().Select(x =>
+                {
+                    NHibernateUtil.Initialize(x.FighterBlue?.Organizations);
+                    NHibernateUtil.Initialize(x.FighterRed?.Organizations);
+                    NHibernateUtil.Initialize(x.Competition?.Organization);
+                    NHibernateUtil.Initialize(x.Phase);
+                    NHibernateUtil.Initialize(x.Pool);
+                    return new MatchView(x);
+                }).ToList();
             }
         }
 
@@ -27,14 +35,21 @@ namespace Ochs
                 var match = session.QueryOver<Match>().Where(x => x.Id == id).Fetch(x => x.Events).Eager.TransformUsing(Transformers.DistinctRootEntity).SingleOrDefault();
                 if(match == null)
                     return null;
-
-                if(match.FighterBlue != null)
-                    NHibernateUtil.Initialize(match.FighterBlue.Organizations);
-                if(match.FighterRed != null)
-                    NHibernateUtil.Initialize(match.FighterRed.Organizations);
-
+                InitializeMatch(match);
                 return new MatchDetailView(match);
             }
+        }
+
+        private static void InitializeMatch(Match match)
+        {
+            NHibernateUtil.Initialize(match.FighterBlue);
+            NHibernateUtil.Initialize(match.FighterBlue?.Organizations);
+            NHibernateUtil.Initialize(match.FighterRed);
+            NHibernateUtil.Initialize(match.FighterRed?.Organizations);
+            NHibernateUtil.Initialize(match.Competition);
+            NHibernateUtil.Initialize(match.Competition?.Organization);
+            NHibernateUtil.Initialize(match.Phase);
+            NHibernateUtil.Initialize(match.Pool);
         }
 
         [HttpGet]
@@ -78,19 +93,26 @@ namespace Ochs
                 if (nextMatch == null)
                     return null;
 
-                if (nextMatch.FighterBlue != null)
-                    NHibernateUtil.Initialize(nextMatch.FighterBlue.Organizations);
-                if (nextMatch.FighterRed != null)
-                    NHibernateUtil.Initialize(nextMatch.FighterRed.Organizations);
+                InitializeMatch(nextMatch);
 
                 return new MatchView(nextMatch);
             }
         }
 
         [HttpGet]
+        public IList<MatchRules> GetRules()
+        {
+            return new List<MatchRules>();
+        }
+
+        [HttpGet]
         public MatchRules GetRules(Guid id)
         {
-            return new MatchRules();
+            using (var session = NHibernateHelper.OpenSession())
+            {
+                var match = session.QueryOver<Match>().Where(x => x.Id == id).SingleOrDefault();
+                return match?.GetRules()??new MatchRules();
+            }
         }
     }
 }

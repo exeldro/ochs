@@ -10,7 +10,7 @@ namespace Ochs
             Map(x => x.Name);
             HasMany(x => x.Matches).Inverse();
             HasManyToMany(x => x.Fighters);
-            References(x => x.Phase).Not.LazyLoad();
+            References(x => x.Phase);
             Map(x => x.Location);
             Map(x => x.PlannedDateTime);
         }

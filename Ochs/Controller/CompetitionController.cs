@@ -20,7 +20,11 @@ namespace Ochs
         {
             using (var session = NHibernateHelper.OpenSession())
             {
-                return session.QueryOver<Competition>().List().Select(x => new CompetitionView(x)).ToList();
+                return session.QueryOver<Competition>().List().Select(x =>
+                {
+                    NHibernateUtil.Initialize(x.Organization);
+                    return new CompetitionView(x);
+                }).ToList();
             }
         }
 
@@ -37,23 +41,15 @@ namespace Ochs
                 {
                     NHibernateUtil.Initialize(person.Organizations);
                 }
-                NHibernateUtil.Initialize(competition.Matches);
-                NHibernateUtil.Initialize(competition.Phases);
-                return new CompetitionDetailView(competition);
-            }
-        }
-        [HttpGet]
-        public CompetitionDetailView GetRules(Guid id)
-        {
-            using (var session = NHibernateHelper.OpenSession())
-            {
-                var competition = session.QueryOver<Competition>().Where(x => x.Id == id).SingleOrDefault();
-                if (competition == null)
-                    return null;
-                NHibernateUtil.Initialize(competition.Fighters);
-                foreach (var person in competition.Fighters)
+
+                foreach (var match in competition.Matches)
                 {
-                    NHibernateUtil.Initialize(person.Organizations);
+                    NHibernateUtil.Initialize(match.FighterBlue);
+                    NHibernateUtil.Initialize(match.FighterBlue?.Organizations);
+                    NHibernateUtil.Initialize(match.FighterRed);
+                    NHibernateUtil.Initialize(match.FighterRed?.Organizations);
+                    NHibernateUtil.Initialize(match.Phase);
+                    NHibernateUtil.Initialize(match.Pool);
                 }
                 NHibernateUtil.Initialize(competition.Matches);
                 NHibernateUtil.Initialize(competition.Phases);

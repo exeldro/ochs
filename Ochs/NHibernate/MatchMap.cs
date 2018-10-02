@@ -10,8 +10,8 @@ namespace Ochs
             Id(x => x.Id);
             Map(x => x.Name);
             Map(x => x.Location);
-            References(x => x.FighterRed).Not.LazyLoad();
-            References(x => x.FighterBlue).Not.LazyLoad();
+            References(x => x.FighterRed);
+            References(x => x.FighterBlue);
             Map(x => x.Round);
             Map(x => x.ScoreBlue);
             Map(x => x.ScoreRed);
@@ -24,9 +24,10 @@ namespace Ochs
             Map(x => x.StartedDateTime).Index("index_StartedDateTime");
             Map(x => x.FinishedDateTime).Index("index_FinishedDateTime");
             HasMany(x => x.Events).Cascade.AllDeleteOrphan().Inverse();
-            References(x => x.Competition).Not.LazyLoad();
-            References(x => x.Phase).Not.LazyLoad();
-            References(x => x.Pool).Not.LazyLoad();
+            References(x => x.Competition);
+            References(x => x.Phase);
+            References(x => x.Pool);
+            References(x => x.Rules);
         }
 
     }

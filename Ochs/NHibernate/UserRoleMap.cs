@@ -8,7 +8,7 @@ namespace Ochs
         {
             Id(x => x.Id);
             References(x => x.User);
-            References(x => x.Organization).Not.LazyLoad();
+            References(x => x.Organization);
             Map(x => x.Role);
         }
         

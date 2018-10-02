@@ -35,6 +35,9 @@ namespace Ochs
         public virtual Pool Pool { get; set; }
         public virtual TimeSpan LiveTime => Time + (TimeRunningSince.HasValue ? DateTime.Now.Subtract(TimeRunningSince.Value) : TimeSpan.Zero);
 
+        public virtual MatchRules Rules { get; set; }
+        public virtual MatchRules GetRules() => Rules ?? Phase?.MatchRules ?? Competition.MatchRules;
+
         public virtual string GetLocation()
         {
                 return !string.IsNullOrWhiteSpace(Location)? Location

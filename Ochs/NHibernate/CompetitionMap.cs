@@ -14,7 +14,7 @@ namespace Ochs
             //References(x => x.RankingRules);
             HasMany(x => x.Phases).Cascade.DeleteOrphan().Inverse();
             HasMany(x => x.Matches).Inverse();
-            References(x => x.Organization).Not.LazyLoad();
+            References(x => x.Organization);
             HasManyToMany(x => x.Fighters);
         }
     }

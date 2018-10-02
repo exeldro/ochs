@@ -17,7 +17,9 @@ namespace Ochs
                 var pool = session.QueryOver<Pool>().Where(x => x.Id == id).SingleOrDefault();
                 if (pool == null)
                     return null;
+                NHibernateUtil.Initialize(pool.Phase?.Competition);
                 NHibernateUtil.Initialize(pool.Fighters);
+                
                 foreach (var person in pool.Fighters)
                 {
                     NHibernateUtil.Initialize(person.Organizations);

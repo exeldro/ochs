@@ -285,13 +285,6 @@ app.controller("CompetitionController", function ($scope, $http, $routeParams) {
     };
 });
 
-app.controller("CompetitionRulesController", function ($scope, $http, $routeParams) {
-    $scope.competitionId = $routeParams.competitionId;
-    $http.get("api/Competition/GetRules/" + $routeParams.competitionId).then(function (response) {
-        $scope.currentCompetition = response.data;
-    });
-});
-
 app.controller("PhaseController", function ($scope, $http, $routeParams) {
     $scope.phaseId = $routeParams.phaseId;
     $http.get("api/Phase/Get/" + $routeParams.phaseId).then(function (response) {
@@ -645,7 +638,7 @@ app.controller("MatchController", function($scope, $http, $routeParams, $interva
     }
     $scope.$on('updateMatch', function (event, args) {
         if ($scope.matchId && $scope.matchId === args.Id) {
-            if (!$scope.currentMatch.Finished && args.Finished) {
+            if ($scope.currentMatch && !$scope.currentMatch.Finished && args.Finished) {
                 if ($scope.nextMatch && ($location.path().length < 10 || $location.path().substring(0, 10) !== '/EditMatch')) {
                     if ($location.path().length >= 12 && $location.path().substring(0, 12) === '/ScoreKeeper') {
                         $location.path("ScoreKeeper/" + $scope.nextMatch.Id);

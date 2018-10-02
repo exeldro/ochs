@@ -76,10 +76,6 @@ app.config(['$routeProvider', '$locationProvider',
                 templateUrl: 'templates/ShowCompetition.html',
                 controller: 'CompetitionController'
             }).
-            when('/ShowCompetitionRules/:competitionId', {
-                templateUrl: 'templates/ShowCompetitionRules.html',
-                controller: 'CompetitionRulesController'
-            }).
             when('/ShowPhase/:phaseId', {
                 templateUrl: 'templates/ShowPhase.html',
                 controller: 'PhaseController'

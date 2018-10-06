@@ -724,3 +724,21 @@ app.controller("MatchController", function($scope, $http, $routeParams, $interva
 
 
 });
+
+app.controller("EditMatchRulesController", function ($scope, $http, $routeParams) {
+    $scope.matchRulesId = $routeParams.matchRulesId;
+    
+    $http.get("api/MatchRules/Get"+($scope.matchRulesId?"/"+ $routeParams.matchRulesId:"")).then(function(response) {
+        $scope.rules = response.data;
+        delete $scope.rules.TimeMax;
+        $scope.editTimeMax = new Date(1970, 1, 1, 0, 0, response.data.TimeMaxSeconds);
+    });
+    $scope.saveMatchRules = function() {
+        $http.post("api/MatchRules/Save", $scope.rules)
+            .then(function(response) {
+                $scope.rules = response.data;
+                delete $scope.rules.TimeMax;
+                $scope.editTimeMax = new Date(1970, 1, 1, 0, 0, response.data.TimeMaxSeconds);
+            });
+    };
+});

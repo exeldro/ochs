@@ -16,7 +16,7 @@ namespace Ochs
         public virtual int PointsBlue { get; set; }
         public virtual Match Match { get; set; }
 
-        public virtual bool IsExchange => Type == MatchEventType.Score || Type == MatchEventType.AfterBlow ||
+        public virtual bool IsExchange => Type == MatchEventType.Score || Type == MatchEventType.Afterblow ||
                                           Type == MatchEventType.DoubleHit || Type == MatchEventType.UnclearExchange;
     }
 
@@ -27,7 +27,7 @@ namespace Ochs
         WarningBlue,
         Penalty,
         DoubleHit,
-        AfterBlow,
+        Afterblow,
         UnclearExchange,
         ProtestBlue,
         ProtestRed,

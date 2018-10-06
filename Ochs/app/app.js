@@ -128,6 +128,14 @@ app.config(['$routeProvider', '$locationProvider',
                 templateUrl: 'templates/EditPerson.html',
                 controller: 'EditPersonController'
             }).
+            when('/EditMatchRules', {
+                templateUrl: 'templates/EditMatchRules.html',
+                controller: 'EditMatchRulesController'
+            }).
+            when('/EditMatchRules/:matchRulesId', {
+                templateUrl: 'templates/EditMatchRules.html',
+                controller: 'EditMatchRulesController'
+            }).
             otherwise({
                 redirectTo: '/Welcome'
             });

@@ -8,7 +8,7 @@ namespace Ochs
         public OrganizationMap()
         {
             Id(x => x.Id);
-            Map(x => x.Name).Unique();
+            Map(x => x.Name).Unique().Not.Nullable();
             HasMany(x => x.Competitions).Cascade.DeleteOrphan().Inverse();
             HasMany(x => x.Aliases).Element("Alias").Not.KeyNullable();
         }

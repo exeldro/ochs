@@ -7,9 +7,9 @@ namespace Ochs
         public UserRoleMap()
         {
             Id(x => x.Id);
-            References(x => x.User);
-            References(x => x.Organization);
-            Map(x => x.Role);
+            References(x => x.User).Not.Nullable();
+            References(x => x.Organization).Not.Nullable();
+            Map(x => x.Role).Not.Nullable();
         }
         
     }

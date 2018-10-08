@@ -725,6 +725,12 @@ app.controller("MatchController", function($scope, $http, $routeParams, $interva
 
 });
 
+app.controller("ListRulesController", function($scope, $http) {
+    $http.get("api/MatchRules/All").then(function(response) {
+        $scope.matchRules = response.data;
+    });
+});
+
 app.controller("EditMatchRulesController", function ($scope, $http, $routeParams) {
     $scope.matchRulesId = $routeParams.matchRulesId;
     

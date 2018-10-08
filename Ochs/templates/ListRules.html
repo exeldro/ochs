@@ -1,0 +1,8 @@
+﻿<h2>Rules</h2>
+<table>
+    <tr ng-repeat="matchRule in matchRules">
+        <td>{{ matchRule.Name }}</td>
+        <td><a href="#!EditMatchRules/{{matchRule.Id}}"><i class="fa fa-pencil" aria-hidden="true"></i></a></td>
+    </tr>
+</table>
+<a href="#!EditMatchRules"><i class="fa fa-plus" aria-hidden="true"></i></a>

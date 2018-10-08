@@ -132,6 +132,10 @@ app.config(['$routeProvider', '$locationProvider',
                 templateUrl: 'templates/EditMatchRules.html',
                 controller: 'EditMatchRulesController'
             }).
+            when('/ListRules', {
+                templateUrl: 'templates/ListRules.html',
+                controller: 'ListRulesController'
+            }).
             when('/EditMatchRules/:matchRulesId', {
                 templateUrl: 'templates/EditMatchRules.html',
                 controller: 'EditMatchRulesController'

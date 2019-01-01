@@ -102,7 +102,10 @@ namespace Ochs
         [HttpGet]
         public IList<MatchRules> GetRules()
         {
-            return new List<MatchRules>();
+            using (var session = NHibernateHelper.OpenSession())
+            {
+                return session.QueryOver<MatchRules>().List();
+            }
         }
 
         [HttpGet]
@@ -111,7 +114,10 @@ namespace Ochs
             using (var session = NHibernateHelper.OpenSession())
             {
                 var match = session.QueryOver<Match>().Where(x => x.Id == id).SingleOrDefault();
-                return match?.GetRules()??new MatchRules();
+                var rules = match?.GetRules();
+                NHibernateUtil.Initialize(rules);
+                rules = (MatchRules) session.GetSessionImplementation().PersistenceContext.Unproxy(rules);
+                return rules??new MatchRules();
             }
         }
     }

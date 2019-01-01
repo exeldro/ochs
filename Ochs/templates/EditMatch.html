@@ -22,7 +22,7 @@ Score red <h1>{{currentMatch.ScoreRed}}</h1>
     <tr><th>Exchange</th><th>Time</th><th>Event</th><th>Blue</th><th>Red</th></tr>
     <tr>
         <td></td>
-        <td><input type="time" name="addEventTime" ng-model="addEventTime" step="1" required="required"/></td>
+        <td><input type="time" name="addEventTime" ng-model="addEventTime" step="1" required="required" /></td>
         <td>
             <select ng-model="addEventType" bs-selectbox>
                 <option value="Score">Score</option>
@@ -63,3 +63,9 @@ Result: <select ng-model="matchResult" bs-selectbox>
     <option value="Skipped">Skipped</option>
 </select>
 <button type="button" class="btn" ng-click="setMatchResult()">Submit</button>
+<br />
+Match rules:<select ng-model="newMatchRules">
+    <option value="00000000-0000-0000-0000-000000000000" selected="selected"></option>
+    <option ng-repeat="matchRule in matchRules" value="{{matchRule.Id}}">{{matchRule.Name}}</option>
+</select>
+<button ng-click="matchSaveMatchRules()">Switch</button>

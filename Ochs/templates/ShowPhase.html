@@ -69,3 +69,11 @@
 <matches-table context="currentPhase"></matches-table>
 <button ng-show="rights == 'Admin' && currentPhase.PoolsTotal == 0 && currentPhase.FightersTotal > 1" ng-click="generateMatches()">Generate Matches</button>
 <button ng-show="rights == 'Admin' && currentPhase.MatchesTotal > 0 && currentPhase.FightersTotal > 1" ng-click="fillMatches()">Fill Matches</button>
+
+<h3>Rules</h3>
+Match: {{currentPhase.MatchRules}}
+<select ng-model="newMatchRules">
+    <option value="00000000-0000-0000-0000-000000000000" selected="selected"></option>
+    <option ng-repeat="matchRule in matchRules" value="{{matchRule.Id}}">{{matchRule.Name}}</option>
+</select>
+<button ng-click="phaseSaveMatchRules()">Switch</button>

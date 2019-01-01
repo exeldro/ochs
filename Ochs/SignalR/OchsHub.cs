@@ -854,6 +854,35 @@ namespace Ochs
                 Clients.All.updatePhase(new PhaseDetailView(phase));
             }
         }
+
+        public void PhaseSetMatchRules(Guid phaseId, Guid matchRuleId)
+        {
+            using (var session = NHibernateHelper.OpenSession())
+            using (var transaction = session.BeginTransaction())
+            {
+                var phase = session.Get<Phase>(phaseId);
+                if (phase == null)
+                {
+                    Clients.Caller.displayMessage("Phase not found", "warning");
+                    return;
+                }
+
+                if (!HasOrganizationRights(session, phase.Competition.Organization, UserRoles.Admin))
+                {
+                    Clients.Caller.displayMessage("Not logged in as administrator", "warning");
+                    return;
+                }
+
+                var matchRules = matchRuleId == Guid.Empty?null:session.Get<MatchRules>(matchRuleId);
+                if (matchRules != null && matchRules == phase.Competition.MatchRules)
+                    matchRules = null;
+                phase.MatchRules = matchRules;
+                session.Update(phase);
+                transaction.Commit();
+                Clients.All.updatePhase(new PhaseDetailView(phase));
+            }
+        }
+
         public void PhaseAddAllFighters(Guid phaseId)
         {
             using (var session = NHibernateHelper.OpenSession())
@@ -1353,6 +1382,36 @@ namespace Ochs
             }
         }
 
+        public void CompetitionSetMatchRules(Guid competiotionId, Guid matchRuleId)
+        {
+            using (var session = NHibernateHelper.OpenSession())
+            using (var transaction = session.BeginTransaction())
+            {
+                var competition = session.Get<Competition>(competiotionId);
+                if (competition == null)
+                {
+                    Clients.Caller.displayMessage("Competition not found", "warning");
+                    return;
+                }
+
+                if (!HasOrganizationRights(session, competition.Organization, UserRoles.Admin))
+                {
+                    Clients.Caller.displayMessage("Not logged in as administrator", "warning");
+                    return;
+                }
+
+                var matchRules = session.Get<MatchRules>(matchRuleId);
+                if (matchRules == null)
+                {
+                    Clients.Caller.displayMessage("Match Rules not found", "warning");
+                    return;
+                }
+                competition.MatchRules = matchRules;
+                session.Update(competition);
+                transaction.Commit();
+                Clients.All.updateCompetition(new CompetitionDetailView(competition));
+            }
+        }
         public void CompetitionAddFight(Guid competiotionId, string matchName, DateTime? plannedDateTime, Guid blueFighterId, Guid redFighterId)
         {
             using (var session = NHibernateHelper.OpenSession())
@@ -1566,6 +1625,36 @@ namespace Ochs
                 Clients.All.addMatch(new MatchView(match));
                 matchCounter++;
                 plannedDateTime = plannedDateTime?.AddSeconds(secondsPerMatch);
+            }
+        }
+
+        public void MatchSetMatchRules(Guid matchId, Guid matchRuleId)
+        {
+            using (var session = NHibernateHelper.OpenSession())
+            using (var transaction = session.BeginTransaction())
+            {
+                var match = session.Get<Match>(matchId);
+                if (match == null)
+                {
+                    Clients.Caller.displayMessage("Match not found", "warning");
+                    return;
+                }
+
+                if (!HasOrganizationRights(session, match.Competition.Organization, UserRoles.Admin))
+                {
+                    Clients.Caller.displayMessage("Not logged in as administrator", "warning");
+                    return;
+                }
+
+                var matchRules = matchRuleId == Guid.Empty?null:session.Get<MatchRules>(matchRuleId);
+                if (matchRules != null && matchRules == (match.Phase?.MatchRules??match.Competition.MatchRules))
+                    matchRules = null;
+
+                match.Rules = matchRules;
+                match.UpdateMatchData();
+                session.Update(match);
+                transaction.Commit();
+                Clients.All.updateMatch(new MatchDetailView(match));
             }
         }
     }

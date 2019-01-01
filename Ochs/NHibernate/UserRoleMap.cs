@@ -8,7 +8,7 @@ namespace Ochs
         {
             Id(x => x.Id);
             References(x => x.User).Not.Nullable();
-            References(x => x.Organization).Not.Nullable();
+            References(x => x.Organization);
             Map(x => x.Role).Not.Nullable();
         }
         

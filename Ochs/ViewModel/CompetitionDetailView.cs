@@ -22,5 +22,6 @@ namespace Ochs
         public virtual int MatchesTotal => _competition.Matches.Count;
         public virtual int FightersTotal => _competition.Fighters.Count;
         public virtual int PhasesTotal => _competition.Phases.Count;
+        public virtual string MatchRules => _competition.MatchRules?.Name;
     }
 }

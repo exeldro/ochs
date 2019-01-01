@@ -40,11 +40,11 @@
     </tr>
     <tr ng-repeat="fighter in currentCompetition.Fighters | filter:searchFighterText | orderBy:fighterSortType:fighterSortReverse">
         <td ng-show="rights == 'Admin'"><input type="checkbox" name="fightersSelected[]" ng-model="fighter.Selected" value="{{fighter.Id}}" /></td>
-        <td ng-show="rights == 'Admin'"><input type="radio" name="newFightBlueFighterId" ng-model="$parent.newFightBlueFighterId" value="{{fighter.Id}}"/></td>
-        <td ng-show="rights == 'Admin'"><input type="radio" name="newFightRedFighterId" ng-model="$parent.newFightRedFighterId" value="{{fighter.Id}}"/></td>
+        <td ng-show="rights == 'Admin'"><input type="radio" name="newFightBlueFighterId" ng-model="$parent.newFightBlueFighterId" value="{{fighter.Id}}" /></td>
+        <td ng-show="rights == 'Admin'"><input type="radio" name="newFightRedFighterId" ng-model="$parent.newFightRedFighterId" value="{{fighter.Id}}" /></td>
         <td colspan="2">{{fighter.DisplayName}}</td>
         <td>{{fighter.Organization}}</td>
-        <td align="center"><img alt="{{fighter.CountryCode}}" title="{{fighter.CountryName}}" ng-src="Content/flags/{{fighter.CountryCode?fighter.CountryCode:'none'}}.svg" height="20" width="30"/> </td>
+        <td align="center"><img alt="{{fighter.CountryCode}}" title="{{fighter.CountryName}}" ng-src="Content/flags/{{fighter.CountryCode?fighter.CountryCode:'none'}}.svg" height="20" width="30" /> </td>
         <td><i class="fa fa-calendar" aria-hidden="true"></i> {{fighter.MatchesTodo}}</td>
         <td><i class="fa fa-play" aria-hidden="true"></i> {{fighter.MatchesBusy}}</td>
         <td><i class="fa fa-check" aria-hidden="true"></i> {{fighter.MatchesFinished}}</td>
@@ -86,9 +86,18 @@
 <matches-table context="currentCompetition"></matches-table>
 <table ng-show="rights == 'Admin'">
     <tr>
-        <td>Fight name</td><td><input placeholder="Fight name" type="text" ng-model="newFightName" /></td>
-        <td>Planned</td><td><input placeholder="yyyy-MM-ddTHH:mm:ss" type="datetime-local" ng-model="newFightPlanned" /></td>
+        <td>Fight name</td>
+        <td><input placeholder="Fight name" type="text" ng-model="newFightName" /></td>
+        <td>Planned</td>
+        <td><input placeholder="yyyy-MM-ddTHH:mm:ss" type="datetime-local" ng-model="newFightPlanned" /></td>
         <td colspan="2">Select fighters in fighter list</td>
         <td><button ng-click="competitionAddFight()">Add</button></td>
     </tr>
 </table>
+
+<h3>Rules</h3>
+Match: {{currentCompetition.MatchRules}}
+<select ng-model="newMatchRules">
+    <option ng-repeat="matchRule in matchRules" value="{{matchRule.Id}}">{{matchRule.Name}}</option>
+</select>
+<button ng-click="competitionSaveMatchRules()">Switch</button>

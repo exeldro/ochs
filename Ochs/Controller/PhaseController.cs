@@ -34,7 +34,10 @@ namespace Ochs
                     NHibernateUtil.Initialize(phasePool.Fighters);
                     NHibernateUtil.Initialize(phasePool.Matches);
                 }
-                return new PhaseDetailView(phase);
+
+                var view = new PhaseDetailView(phase);
+                NHibernateUtil.Initialize(view.MatchRules);
+                return view;
             }
         }
 

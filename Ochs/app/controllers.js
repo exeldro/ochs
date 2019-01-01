@@ -183,6 +183,9 @@ app.controller("CompetitionController", function ($scope, $http, $routeParams) {
     $http.get("api/Country/All").then(function (response) {
         $scope.countries = response.data;
     });
+    $http.get("api/MatchRules/All").then(function (response) {
+        $scope.matchRules = response.data;
+    });
     $scope.$on('updateCompetition', function (event, args) {
         if ($scope.competitionId === args.Id) {
             $scope.currentCompetition = args;
@@ -283,6 +286,11 @@ app.controller("CompetitionController", function ($scope, $http, $routeParams) {
             }
         }
     };
+    $scope.competitionSaveMatchRules = function () {
+        if ($scope.newMatchRules) {
+            $scope.$parent.ochsHub.invoke("CompetitionSetMatchRules", $scope.competitionId, $scope.newMatchRules);
+        }
+    };
 });
 
 app.controller("PhaseController", function ($scope, $http, $routeParams) {
@@ -294,6 +302,10 @@ app.controller("PhaseController", function ($scope, $http, $routeParams) {
             $scope.currentPhase.Rights = $scope.rights;
         });
     });
+    $http.get("api/MatchRules/All").then(function (response) {
+        $scope.matchRules = response.data;
+    });
+    $scope.newMatchRules = '00000000-0000-0000-0000-000000000000';
     $scope.$on('updatePhase', function (event, args) {
         if ($scope.phaseId === args.Id) {
             $scope.currentPhase = args;
@@ -370,28 +382,33 @@ app.controller("PhaseController", function ($scope, $http, $routeParams) {
     };
     $scope.phaseRemoveFighters = function() {
         var fighterIds = [];
-        angular.forEach($scope.currentPhase.Fighters, function (fighter) {
-            if (fighter.Selected && fighter.MatchesTotal === 0) {
-                fighterIds.push(fighter.Id);
-            }
-        });
-        if (fighterIds.length > 0) {
-            $scope.$parent.ochsHub.invoke("PhaseRemoveFighters", $scope.phaseId, fighterIds);
-        }
-    }
-    $scope.poolAddFighters = function() {
-        if ($scope.addFightersPool) {
-            var fighterIds = [];
-            angular.forEach($scope.currentPhase.Fighters, function (fighter) {
+        angular.forEach($scope.currentPhase.Fighters,
+            function(fighter) {
                 if (fighter.Selected && fighter.MatchesTotal === 0) {
                     fighterIds.push(fighter.Id);
                 }
             });
+        if (fighterIds.length > 0) {
+            $scope.$parent.ochsHub.invoke("PhaseRemoveFighters", $scope.phaseId, fighterIds);
+        }
+    };
+    $scope.poolAddFighters = function() {
+        if ($scope.addFightersPool) {
+            var fighterIds = [];
+            angular.forEach($scope.currentPhase.Fighters,
+                function(fighter) {
+                    if (fighter.Selected && fighter.MatchesTotal === 0) {
+                        fighterIds.push(fighter.Id);
+                    }
+                });
             if (fighterIds.length > 0) {
                 $scope.$parent.ochsHub.invoke("PoolAddFighters", $scope.addFightersPool, fighterIds);
             }
         }
-    }
+    };
+    $scope.phaseSaveMatchRules = function () {
+        $scope.$parent.ochsHub.invoke("PhaseSetMatchRules", $scope.phaseId, $scope.newMatchRules?$scope.newMatchRules:'00000000-0000-0000-0000-000000000000');
+    };
 });
 
 
@@ -631,9 +648,15 @@ app.controller("MatchController", function($scope, $http, $routeParams, $interva
         });
         $http.get("api/Match/GetRules/" + $routeParams.matchId).then(function(response) {
             $scope.rules = response.data;
+            $scope.newMatchRules = $scope.rules.Id;
         });
         $http.get("api/Match/GetNext/" + $routeParams.matchId).then(function(response) {
             $scope.nextMatch = response.data;
+        });
+    }
+    if ($location.path().substring(0, 10) === '/EditMatch') {
+        $http.get("api/MatchRules/All").then(function(response) {
+            $scope.matchRules = response.data;
         });
     }
     $scope.$on('updateMatch', function (event, args) {
@@ -720,6 +743,9 @@ app.controller("MatchController", function($scope, $http, $routeParams, $interva
     $scope.setMatchResult = function() {
         if ($scope.matchResult)
             $scope.$parent.ochsHub.invoke("SetMatchResult", $scope.matchId, $scope.matchResult);
+    };
+    $scope.matchSaveMatchRules = function () {
+        $scope.$parent.ochsHub.invoke("MatchSetMatchRules", $scope.matchId, $scope.newMatchRules?$scope.newMatchRules:'00000000-0000-0000-0000-000000000000');
     };
 
 

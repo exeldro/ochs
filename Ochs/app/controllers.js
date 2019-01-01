@@ -766,6 +766,7 @@ app.controller("EditMatchRulesController", function ($scope, $http, $routeParams
         $scope.editTimeMax = new Date(1970, 1, 1, 0, 0, response.data.TimeMaxSeconds);
     });
     $scope.saveMatchRules = function() {
+        $scope.rules.TimeMaxSeconds = ($scope.editTimeMax - new Date(1970, 1, 1, 0, 0, 0))/1000.0;
         $http.post("api/MatchRules/Save", $scope.rules)
             .then(function(response) {
                 $scope.rules = response.data;

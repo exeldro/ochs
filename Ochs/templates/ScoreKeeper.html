@@ -52,7 +52,7 @@
     </div>
     <div class="d-flex justify-content-center">
         <div class="p-1" ng-show="rules.RecordDoubleHits">
-            <button type="button" class="btn" ng-click="addMatchEvent(0,0,'DoubleHit')">Double</button>
+            <button type="button" class="btn" ng-class="{'disabled': rules.DoubleHitScores && addEventPointBlue == 0 && addEventPointRed == 0}" ng-click="addMatchEvent(0,0,'DoubleHit')">Double</button>
         </div>
         <div class="p-1" ng-show="rules.RecordUnclearExchanges">
             <button type="button" class="btn" ng-class="{'disabled': addEventPointBlue != 0 || addEventPointRed != 0}" ng-click="addMatchEvent(0,0,'UnclearExchange')">Unclear exchange</button>

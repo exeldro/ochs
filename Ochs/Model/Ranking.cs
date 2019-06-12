@@ -8,6 +8,7 @@ namespace Ochs
         public virtual Person Person { get; set; }
         public virtual int? Rank { get; set; }
         public virtual bool Disqualified { get; set; }
+        public virtual bool Forfeited { get; set; }
         public virtual int MatchPoints { get; set; }
         public virtual int Matches { get; set; }
         public virtual int Wins { get; set; }

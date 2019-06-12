@@ -21,6 +21,8 @@ namespace Ochs
             Map(x => x.HitsGiven);
             Map(x => x.HitsReceived);
             Map(x => x.SportsmanshipPoints);
+            Map(x => x.Disqualified);
+            Map(x => x.Forfeited);
         }
         
     }

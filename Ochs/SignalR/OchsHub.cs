@@ -466,58 +466,78 @@ namespace Ochs
         }
 
 
-        private void UpdateRankingsInternal(ISession session, IList<Ranking> rankings, IList<Match> matches, Func<Ranking> createRanking, IPhaseTypeHandler phaseTypeHandler)
+        private void UpdateRankingsInternal(ISession session, IList<Ranking> oldRankings, IList<Match> matches, Func<Ranking> createRanking, IPhaseTypeHandler phaseTypeHandler)
         {
             var rankingRules = new RankingRules();
-            // clear ranking stats
-            foreach (var ranking in rankings)
+            IList<Ranking> rankings = new List<Ranking>();
+
+            //calc forfeited and disqualified
+            foreach (var match in matches)
             {
-                ranking.Rank = null;
-                ranking.Matches = 0;
-                ranking.DoubleHits = 0;
-                ranking.Exchanges = 0;
-                ranking.HitsGiven = 0;
-                ranking.HitsReceived = 0;
-                ranking.Losses = 0;
-                ranking.Draws = 0;
-                ranking.Wins = 0;
-                ranking.Warnings = 0;
-                ranking.Penalties = 0;
-                ranking.MatchPoints = 0;
-                ranking.SportsmanshipPoints = 0;
+                if (!match.Finished)
+                    continue;
+                if (match.Result == MatchResult.DisqualificationBlue)
+                {
+                    var rankingBlue = rankings.SingleOrDefault(x => x.Person == match.FighterBlue);
+                    if (rankingBlue == null)
+                    {
+                        rankingBlue = createRanking();
+                        rankingBlue.Person = match.FighterBlue;
+                        rankings.Add(rankingBlue);
+                    }
+                    rankingBlue.Disqualified = true;
+                }else if (match.Result == MatchResult.DisqualificationRed)
+                {
+                    var rankingRed = rankings.SingleOrDefault(x => x.Person == match.FighterRed);
+                    if (rankingRed == null)
+                    {
+                        rankingRed = createRanking();
+                        rankingRed.Person = match.FighterRed;
+                        rankings.Add(rankingRed);
+                    }
+                    rankingRed.Disqualified = true;
+                }
             }
+            var rankingPhaseTypeHandler = phaseTypeHandler as IRankingPhaseTypeHandler;
             //calc ranking stats
             foreach (var match in matches)
             {
                 if(!match.Finished)
                     continue;
                 var rankingBlue = rankings.SingleOrDefault(x => x.Person == match.FighterBlue);
+                var rankingRed = rankings.SingleOrDefault(x => x.Person == match.FighterRed);
+                if(rankingPhaseTypeHandler == null && rankingRules.RemoveDisqualifiedFromRanking && ((rankingRed?.Disqualified??false) || (rankingBlue?.Disqualified??false)))
+                    continue;
+                if(rankingPhaseTypeHandler == null && rankingRules.RemoveForfeitedFromRanking && ((rankingRed?.Forfeited??false) || (rankingBlue?.Forfeited??false)))
+                    continue;
                 if (rankingBlue == null)
                 {
                     rankingBlue = createRanking();
                     rankingBlue.Person = match.FighterBlue;
                     rankings.Add(rankingBlue);
                 }
-
-                UpdateRankingMatch(rankingBlue, rankingRules, match, true);
-                var rankingRed = rankings.SingleOrDefault(x => x.Person == match.FighterRed);
                 if (rankingRed == null)
                 {
                     rankingRed = createRanking();
                     rankingRed.Person = match.FighterRed;
                     rankings.Add(rankingRed);
                 }
+                UpdateRankingMatch(rankingBlue, rankingRules, match, true);
                 UpdateRankingMatch(rankingRed, rankingRules, match, false);
             }
 
-            if (phaseTypeHandler is IRankingPhaseTypeHandler)
+            if (rankingPhaseTypeHandler != null)
             {
                 using (var transaction = session.BeginTransaction())
                 {
+                    foreach (var oldRanking in oldRankings)
+                    {
+                        session.Delete(oldRanking);
+                    }
                     foreach (var ranking in rankings)
                     {
-                        ranking.Rank = ((IRankingPhaseTypeHandler) phaseTypeHandler).GetRank(ranking.Person, matches);
-                        session.SaveOrUpdate(ranking);
+                        ranking.Rank = rankingPhaseTypeHandler.GetRank(ranking.Person, matches);
+                        session.Save(ranking);
                     }
                     transaction.Commit();
                 }
@@ -550,6 +570,10 @@ namespace Ochs
 
             using (var transaction = session.BeginTransaction())
             {
+                foreach (var oldRanking in oldRankings)
+                {
+                    session.Delete(oldRanking);
+                }
                 var orderedRankings = order.ToList();
                 orderedRankings[0].Rank = 1;
                 session.SaveOrUpdate(orderedRankings[0]);
@@ -600,7 +624,7 @@ namespace Ochs
                     {
                         orderedRankings[rankingIndex].Rank = rankingIndex + 1;
                     }
-                    session.SaveOrUpdate(orderedRankings[rankingIndex]);
+                    session.Save(orderedRankings[rankingIndex]);
                 }
                 transaction.Commit();
             }
@@ -652,6 +676,10 @@ namespace Ochs
                     ranking.MatchPoints += rankingRules.ForfeitPoints;
                     win = true;
                 }
+                else
+                {
+                    ranking.Forfeited = true;
+                }
             }
             else if (match.Result == MatchResult.ForfeitRed)
             {
@@ -659,6 +687,10 @@ namespace Ochs
                 {
                     ranking.MatchPoints += rankingRules.ForfeitPoints;
                     win = true;
+                }
+                else
+                {
+                    ranking.Forfeited = true;
                 }
             }
             else if (match.Result == MatchResult.DisqualificationBlue)
@@ -686,9 +718,9 @@ namespace Ochs
                 }
             }
 
-            if (rankingRules.DoubleReduction > 0 && match.DoubleCount> rankingRules.DoubleReduction)
+            if (rankingRules.DoubleReductionFactor > 0 && match.DoubleCount > rankingRules.DoubleReductionThreshold)
             {
-                ranking.MatchPoints -= match.DoubleCount - rankingRules.DoubleReduction;
+                ranking.MatchPoints -= (match.DoubleCount - rankingRules.DoubleReductionThreshold) / rankingRules.DoubleReductionFactor;
             }
 
             foreach (var matchEvent in match.Events)

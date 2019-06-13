@@ -19,7 +19,7 @@ Score red <h1>{{currentMatch.ScoreRed}}</h1>
 <strong>{{currentMatch.ExchangeCount}}</strong> Exchanges<br />
 <strong>{{currentMatch.DoubleCount}}</strong> Doubles<br />
 <table>
-    <tr><th>Exchange</th><th>Time</th><th>Event</th><th>Blue</th><th>Red</th></tr>
+    <tr><th>Exchange</th><th>Time</th><th>Event</th><th>Blue</th><th>Red</th><th>Note</th></tr>
     <tr>
         <td></td>
         <td><input type="time" name="addEventTime" ng-model="addEventTime" step="1" required="required" /></td>
@@ -38,7 +38,8 @@ Score red <h1>{{currentMatch.ScoreRed}}</h1>
         </td>
         <td><input type="number" ng-model="addEventPointBlue" /></td>
         <td><input type="number" ng-model="addEventPointRed" /></td>
-        <td><button type="button" class="btn" ng-click="addMatchEvent(addEventPointBlue,addEventPointRed,addEventType)">Add</button></td>
+        <td><input type="text" ng-model="note" /></td>
+        <td><button type="button" class="btn" ng-click="addMatchEvent(addEventPointBlue,addEventPointRed,addEventType,note)">Add</button></td>
     </tr>
     <tr ng-repeat="event in currentMatch.Events">
         <td align="center">{{ event.ExchangeNumber }}</td>
@@ -46,6 +47,7 @@ Score red <h1>{{currentMatch.ScoreRed}}</h1>
         <td>{{ event.Type }}</td>
         <td class="bg-blue" align="center">{{ event.PointsBlue }}</td>
         <td class="bg-red" align="center">{{ event.PointsRed }}</td>
+        <td>{{ event.Note }}</td>
         <td><button type="button" class="btn" ng-click="deleteMatchEvent(event.Id)"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
     </tr>
 </table>

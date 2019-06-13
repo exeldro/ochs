@@ -14,6 +14,7 @@ namespace Ochs
             Map(x => x.PointsRed);
             Map(x => x.Round);
             Map(x => x.Type);
+            Map(x => x.Note);
             References(x => x.Match);
         }
     }

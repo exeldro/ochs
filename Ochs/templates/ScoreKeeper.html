@@ -34,6 +34,11 @@
             <button type="button" class="btn" ng-click="stopTime()"><i class="fa fa-pause" aria-hidden="true"></i></button>
         </div>
     </div>
+    <div class="row" ng-show="rules.RecordNotes">
+        <div class="col-12" align="center">
+            <input type="text" ng-model="note"/>
+        </div>
+    </div>
     <div class="d-flex justify-content-center">
         <div class="btn-group btn-group-toggle" data-toggle="buttons">
             <div ng-repeat="n in [] | range:(rules.ExchangePointsMax?rules.ExchangePointsMax:1):(rules.ConfirmScores?0:1)" class="p-1 bg-blue">
@@ -52,36 +57,36 @@
     </div>
     <div class="d-flex justify-content-center">
         <div class="p-1" ng-show="rules.RecordDoubleHits">
-            <button type="button" class="btn" ng-class="{'disabled': rules.DoubleHitScores && addEventPointBlue == 0 && addEventPointRed == 0}" ng-click="addMatchEvent(0,0,'DoubleHit')">Double</button>
+            <button type="button" class="btn" ng-class="{'disabled': rules.DoubleHitScores && addEventPointBlue == 0 && addEventPointRed == 0}" ng-click="addMatchEvent(0,0,'DoubleHit',note)">Double</button>
         </div>
         <div class="p-1" ng-show="rules.RecordUnclearExchanges">
-            <button type="button" class="btn" ng-class="{'disabled': addEventPointBlue != 0 || addEventPointRed != 0}" ng-click="addMatchEvent(0,0,'UnclearExchange')">Unclear exchange</button>
+            <button type="button" class="btn" ng-class="{'disabled': addEventPointBlue != 0 || addEventPointRed != 0}" ng-click="addMatchEvent(0,0,'UnclearExchange',note)">Unclear exchange</button>
         </div>
         <div class="p-1" ng-show="rules.ConfirmScores">
-            <button type="button" class="btn" ng-class="{'disabled': addEventPointBlue == 0 && addEventPointRed == 0}" ng-click="addMatchEvent(addEventPointBlue,addEventPointRed,'Score')">Exchange</button>
+            <button type="button" class="btn" ng-class="{'disabled': addEventPointBlue == 0 && addEventPointRed == 0}" ng-click="addMatchEvent(addEventPointBlue,addEventPointRed,'Score',note)">Exchange</button>
         </div>
         <div class="p-1" ng-show="rules.RecordAfterblow">
-            <button type="button" class="btn" ng-click="addMatchEvent(addEventPointBlue,addEventPointRed,'Afterblow')">After blow</button>
+            <button type="button" class="btn" ng-click="addMatchEvent(addEventPointBlue,addEventPointRed,'Afterblow',note)">After blow</button>
         </div>
     </div>
     <div class="d-flex justify-content-center">
         <div class="p-1" ng-show="rules.RecordSportsmanship">
-            <button type="button" class="btn bg-lightblue" ng-click="addMatchEvent(0,0,'SportsmanshipBlue')">Sportsmanship</button>
+            <button type="button" class="btn bg-lightblue" ng-click="addMatchEvent(0,0,'SportsmanshipBlue',note)">Sportsmanship</button>
         </div>
         <div class="p-1" ng-show="rules.RecordPenalties">
-            <button type="button" class="btn bg-lightblue" ng-click="addMatchEvent(-1*rules.PenaltyPoints,0,'Penalty')">Penalty</button>
+            <button type="button" class="btn bg-lightblue" ng-click="addMatchEvent(-1*rules.PenaltyPoints,0,'Penalty',note)">Penalty</button>
         </div>
         <div class="p-1" ng-show="rules.RecordWarnings">
-            <button type="button" class="btn bg-lightblue" ng-click="addMatchEvent(0,0,'WarningBlue')">Warning</button>
+            <button type="button" class="btn bg-lightblue" ng-click="addMatchEvent(0,0,'WarningBlue',note)">Warning</button>
         </div>
         <div class="p-1" ng-show="rules.RecordWarnings">
-            <button type="button" class="btn bg-lightred" ng-click="addMatchEvent(0,0,'WarningRed')">Warning</button>
+            <button type="button" class="btn bg-lightred" ng-click="addMatchEvent(0,0,'WarningRed',note)">Warning</button>
         </div>
         <div class="p-1" ng-show="rules.RecordPenalties">
-            <button type="button" class="btn bg-lightred" ng-click="addMatchEvent(0,-1*rules.PenaltyPoints,'Penalty')">Penalty</button>
+            <button type="button" class="btn bg-lightred" ng-click="addMatchEvent(0,-1*rules.PenaltyPoints,'Penalty',note)">Penalty</button>
         </div>
         <div class="p-1" ng-show="rules.RecordSportsmanship">
-            <button type="button" class="btn bg-lightred" ng-click="addMatchEvent(0,0,'SportsmanshipRed')">Sportsmanship</button>
+            <button type="button" class="btn bg-lightred" ng-click="addMatchEvent(0,0,'SportsmanshipRed',note)">Sportsmanship</button>
         </div>
     </div>
     <div class="row">
@@ -89,7 +94,7 @@
             <span ng-class="{'warning': rules.ExchangesMax > 0 && currentMatch.ExchangeCount >= rules.ExchangesMax}"><strong>{{currentMatch.ExchangeCount}}</strong> Exchanges <br/></span>
             <span ng-show="rules.RecordDoubleHits" ng-class="{'warning': rules.DoubleHitMax > 0 && currentMatch.DoubleCount > rules.DoubleHitMax}"><strong>{{currentMatch.DoubleCount}}</strong> Doubles<br/></span>
             <table>
-                <tr><th>Exchange</th><th ng-show="rules.Rounds > 1">Round</th><th>Time</th><th>Event</th><th>Blue</th><th>Red</th></tr>
+                <tr><th>Exchange</th><th ng-show="rules.Rounds > 1">Round</th><th>Time</th><th>Event</th><th>Blue</th><th>Red</th><th ng-show="rules.RecordNotes">Notes</th></tr>
                 <tr ng-repeat="event in currentMatch.Events">
                     <td align="center">{{ event.ExchangeNumber }}</td>
                     <td ng-show="rules.Rounds > 1">{{ event.Round }}</td>
@@ -97,6 +102,7 @@
                     <td>{{ event.Type }}</td>
                     <td class="bg-blue" align="center">{{ event.PointsBlue }}</td>
                     <td class="bg-red" align="center">{{ event.PointsRed }}</td>
+                    <td ng-show="rules.RecordNotes">{{ event.Note }}</td>
                     <td ng-show="$first"><button type="button" class="btn" ng-click="undoLastMatchEvent()"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
                 </tr>
             </table>

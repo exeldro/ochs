@@ -41,7 +41,7 @@ namespace Ochs
 
         public virtual bool RecordPenalties { get; set; } = true;
         public virtual int PenaltyPoints { get; set; } = 1;
-
+        public virtual bool RecordNotes { get; set; } = true;
     }
 
 }

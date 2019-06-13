@@ -26,6 +26,7 @@ namespace Ochs
             Map(x => x.RecordUnclearExchanges);
             Map(x => x.RecordPenalties);
             Map(x => x.PenaltyPoints);
+            Map(x => x.RecordNotes);
         }
     }
 }

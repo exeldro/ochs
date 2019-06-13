@@ -32,7 +32,7 @@ namespace Ochs
             }
         }
         
-        public void AddMatchEvent(Guid matchGuid, int pointsBlue, int pointsRed, MatchEventType eventType)
+        public void AddMatchEvent(Guid matchGuid, int pointsBlue, int pointsRed, MatchEventType eventType, string note = null)
         {
             //Context.Request.User
             using (var session = NHibernateHelper.OpenSession())
@@ -77,6 +77,7 @@ namespace Ochs
                         MatchTime = match.LiveTime,
                         Round = match.Round,
                         Type = eventType,
+                        Note = note,
                         Match = match
                     });
                     match.UpdateMatchData();

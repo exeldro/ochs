@@ -111,6 +111,12 @@
             </div>
             <label class="col col-sm-9 p-sm-0"  ng-class="{'disabled':!rules.RecordDoubleHits}" ng-disabled="!rules.RecordDoubleHits" for="DoubleHitMax"><strong>Maximum</strong> number of double hits per match<br /><small>(0 for no maximum)</small></label>
         </div>
+        <div class="form-group row">
+            <div class="col-auto col-sm-2 text-sm-right">
+                <input type="checkbox" id="RecordNotes" ng-model="rules.RecordNotes"/>
+            </div>
+            <label class="col col-sm-10 p-sm-0" for="RecordNotes">Record exchange <strong>notes</strong></label>
+        </div>
     </div>
 </div>
 <button type="button" class="btn" ng-click="saveMatchRules()">Submit</button>

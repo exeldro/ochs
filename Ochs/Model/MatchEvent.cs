@@ -18,6 +18,7 @@ namespace Ochs
 
         public virtual bool IsExchange => Type == MatchEventType.Score || Type == MatchEventType.Afterblow ||
                                           Type == MatchEventType.DoubleHit || Type == MatchEventType.UnclearExchange;
+        public virtual string Note { get; set; }
     }
 
     public enum MatchEventType

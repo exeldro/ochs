@@ -696,10 +696,11 @@ app.controller("MatchController", function($scope, $http, $routeParams, $interva
             $scope.editingTime = false;
         }
     }, 10);
-    $scope.addMatchEvent = function($pointsBlue, $pointsRed, $eventType) {
+    $scope.addMatchEvent = function($pointsBlue, $pointsRed, $eventType, $note) {
         $scope.addEventPointBlue = 0;
         $scope.addEventPointRed = 0;
-        $scope.$parent.ochsHub.invoke("AddMatchEvent", $scope.matchId, $pointsBlue, $pointsRed, $eventType);
+        $scope.note = "";
+        $scope.$parent.ochsHub.invoke("AddMatchEvent", $scope.matchId, $pointsBlue, $pointsRed, $eventType, $note);
     };
     $scope.setScoreBlue = function($points) {
         if ($scope.rules && $scope.rules.ConfirmScores) {

@@ -18,6 +18,7 @@ namespace Ochs
         public virtual int PointsBlue => _matchEvent.PointsBlue;
         public virtual int PointsRed => _matchEvent.PointsRed;
         public virtual DateTime CreatedDateTime => _matchEvent.CreatedDateTime;
+        public virtual string Note => _matchEvent.Note;
         public virtual int? ExchangeNumber { get; }
     }
 }

@@ -48,8 +48,15 @@ namespace Ochs
         {
             ExchangeCount = Events.Count(x => x.IsExchange);
             DoubleCount = Events.Count(x => x.Type == MatchEventType.DoubleHit);
-            ScoreRed = Events.Sum(x => (x.PointsRed < 0 || x.PointsBlue < 0) ? x.PointsRed : (x.PointsRed > x.PointsBlue ? x.PointsRed - x.PointsBlue : 0));
-            ScoreBlue = Events.Sum(x => (x.PointsBlue < 0 || x.PointsRed < 0) ? x.PointsBlue : (x.PointsBlue > x.PointsRed ? x.PointsBlue - x.PointsRed : 0));
+            if(GetRules().SubtractPoints){
+                ScoreRed = Events.Sum(x => (x.PointsRed < 0 || x.PointsBlue < 0) ? x.PointsRed : (x.PointsRed > x.PointsBlue ? x.PointsRed - x.PointsBlue : 0));
+                ScoreBlue = Events.Sum(x => (x.PointsBlue < 0 || x.PointsRed < 0) ? x.PointsBlue : (x.PointsBlue > x.PointsRed ? x.PointsBlue - x.PointsRed : 0));
+            }
+            else
+            {
+                ScoreRed = Events.Sum(x => x.PointsRed);
+                ScoreBlue = Events.Sum(x => x.PointsBlue);
+            }
         }
     }
 

@@ -48,12 +48,26 @@ namespace Ochs
                 var rankings = session.QueryOver<PhaseRanking>().Where(x => x.Phase.Id == id).List();
                 foreach (var ranking in rankings)
                 {
-                    if(ranking.Person != null)
+                    if (ranking.Person != null)
                         NHibernateUtil.Initialize(ranking.Person.Organizations);
                 }
-                return rankings.Select(x => new RankingView(x)).OrderBy(x=>x.Disqualified).ThenBy(x=>x.Rank).ToList();
+                return rankings.Select(x => new RankingView(x)).OrderBy(x => x.Disqualified).ThenBy(x => x.Rank).ToList();
             }
         }
+
+        [HttpGet]
+        public MatchRules GetRules(Guid id)
+        {
+            using (var session = NHibernateHelper.OpenSession())
+            {
+                var phase = session.QueryOver<Phase>().Where(x => x.Id == id).SingleOrDefault();
+                var rules = phase.MatchRules ?? phase.Competition?.MatchRules;
+                NHibernateUtil.Initialize(rules);
+                rules = (MatchRules)session.GetSessionImplementation().PersistenceContext.Unproxy(rules);
+                return rules ?? new MatchRules();
+            }
+        }
+
         public BracketView GetElimination(Guid id)
         {
             using (var session = NHibernateHelper.OpenSession())
@@ -77,9 +91,9 @@ namespace Ochs
                 var matchViewsPerRound = new List<IList<MatchView>>();
                 foreach (var matches in matchesPerRound)
                 {
-                    matchViewsPerRound.Add(matches.Select(x=> new MatchView(x)).ToList());
+                    matchViewsPerRound.Add(matches.Select(x => new MatchView(x)).ToList());
                 }
-                return new BracketView{Fighters = fighterViews, Matches = matchViewsPerRound};
+                return new BracketView { Fighters = fighterViews, Matches = matchViewsPerRound };
             }
         }
     }

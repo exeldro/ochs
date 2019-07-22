@@ -23,7 +23,8 @@ namespace Ochs
             Map(x => x.SportsmanshipPoints);
             Map(x => x.Disqualified);
             Map(x => x.Forfeited);
+            Map(x => x.Notes);
         }
-        
+
     }
 }

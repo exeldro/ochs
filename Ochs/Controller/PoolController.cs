@@ -19,7 +19,7 @@ namespace Ochs
                     return null;
                 NHibernateUtil.Initialize(pool.Phase?.Competition);
                 NHibernateUtil.Initialize(pool.Fighters);
-                
+
                 foreach (var person in pool.Fighters)
                 {
                     NHibernateUtil.Initialize(person.Organizations);
@@ -35,10 +35,25 @@ namespace Ochs
                 var rankings = session.QueryOver<PoolRanking>().Where(x => x.Pool.Id == id).List();
                 foreach (var ranking in rankings)
                 {
-                    if(ranking.Person != null)
+                    if (ranking.Person != null)
                         NHibernateUtil.Initialize(ranking.Person.Organizations);
                 }
-                return rankings.Select(x => new RankingView(x)).OrderBy(x=>x.Disqualified).ThenBy(x=>x.Rank).ToList();
+                return rankings.Select(x => new RankingView(x)).OrderBy(x => x.Disqualified).ThenBy(x => x.Rank).ToList();
+            }
+        }
+
+        [HttpGet]
+        public MatchRules GetRules(Guid id)
+        {
+            using (var session = NHibernateHelper.OpenSession())
+            {
+                var pool = session.QueryOver<Pool>().Where(x => x.Id == id).SingleOrDefault();
+                if (pool == null)
+                    return null;
+                var rules = pool.Phase?.MatchRules ?? pool.Phase?.Competition?.MatchRules;
+                NHibernateUtil.Initialize(rules);
+                rules = (MatchRules)session.GetSessionImplementation().PersistenceContext.Unproxy(rules);
+                return rules ?? new MatchRules();
             }
         }
     }

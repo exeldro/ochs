@@ -20,7 +20,7 @@ namespace Ochs
                 return;
             }
             var idstring = i.Claims.SingleOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
-            if(idstring == null)
+            if (idstring == null)
             {
                 Clients.Caller.authorizationException(false);
                 return;
@@ -31,7 +31,7 @@ namespace Ochs
                 Clients.Caller.updateUser(session.QueryOver<User>().Where(x => x.Id == id).SingleOrDefault());
             }
         }
-        
+
         public void AddMatchEvent(Guid matchGuid, int pointsBlue, int pointsRed, MatchEventType eventType, string note = null)
         {
             //Context.Request.User
@@ -52,11 +52,11 @@ namespace Ochs
                         return;
                     }
 
-                    if(!HasMatchEditRights(session, match))
+                    if (!HasMatchEditRights(session, match))
                         return;
 
                     //check for doubleclick
-                    if(match.Events.Any(x=>DateTime.Now.Subtract(x.CreatedDateTime).TotalSeconds < 0.5))
+                    if (match.Events.Any(x => DateTime.Now.Subtract(x.CreatedDateTime).TotalSeconds < 0.5))
                         return;
 
                     if (!match.StartedDateTime.HasValue)
@@ -80,6 +80,49 @@ namespace Ochs
                         Note = note,
                         Match = match
                     });
+                    match.UpdateMatchData();
+                    session.Update(match);
+                    transaction.Commit();
+                    Clients.All.updateMatch(new MatchDetailView(match));
+                }
+            }
+        }
+
+        public void UpdateMatchEventNote(Guid matchGuid, Guid eventGuid, string note)
+        {
+            using (var session = NHibernateHelper.OpenSession())
+            {
+                using (var transaction = session.BeginTransaction())
+                {
+                    var match = session.Get<Match>(matchGuid);
+                    if (match == null)
+                    {
+                        Clients.Caller.displayMessage("Match not found", "warning");
+                        return;
+                    }
+                    if (match.Finished || match.Validated)
+                    {
+                        Clients.Caller.displayMessage("Match finished", "warning");
+                        return;
+                    }
+                    if (!match.Events.Any())
+                    {
+                        Clients.Caller.displayMessage("No match events found", "warning");
+                        return;
+                    }
+
+                    var eventToUpdate = match.Events.SingleOrDefault(x => x.Id == eventGuid);
+                    if (eventToUpdate == null)
+                    {
+                        Clients.Caller.displayMessage("Match event not found", "warning");
+                        return;
+                    }
+
+                    if (!HasMatchEditRights(session, match))
+                        return;
+
+                    eventToUpdate.Note = note;
+
                     match.UpdateMatchData();
                     session.Update(match);
                     transaction.Commit();
@@ -115,7 +158,7 @@ namespace Ochs
                     //if(lastEvent.CreatedDateTime < DateTime.Now.AddSeconds(-300))
                     //    return;
 
-                    if(!HasMatchEditRights(session, match))
+                    if (!HasMatchEditRights(session, match))
                         return;
 
                     match.Events.Remove(lastEvent);
@@ -157,7 +200,7 @@ namespace Ochs
                         return;
                     }
 
-                    if(!HasMatchEditRights(session, match))
+                    if (!HasMatchEditRights(session, match))
                         return;
 
                     match.Events.Remove(deleteEvent);
@@ -207,7 +250,7 @@ namespace Ochs
                 return false;
             }
             var idstring = i.Claims.SingleOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
-            if(idstring == null)
+            if (idstring == null)
             {
                 Clients.Caller.authorizationException(false);
                 return false;
@@ -336,7 +379,7 @@ namespace Ochs
                     {
                         match.FinishedDateTime = null;
                     }
-                } 
+                }
                 else
                 {
                     if (matchResult == MatchResult.Skipped && (match.ScoreBlue != 0 || match.ScoreRed != 0 || match.Events.Count > 0))
@@ -374,8 +417,8 @@ namespace Ochs
                 Clients.All.updateMatch(new MatchDetailView(match));
 
 
-                var phaseTypeHandler = (match.Phase == null?null:Service.GetPhaseTypeHandler(match.Phase.PhaseType));
-                if(phaseTypeHandler == null)
+                var phaseTypeHandler = (match.Phase == null ? null : Service.GetPhaseTypeHandler(match.Phase.PhaseType));
+                if (phaseTypeHandler == null)
                     return;
 
                 var updatedMatches =
@@ -412,7 +455,7 @@ namespace Ochs
         private void UpdatePhaseRankingsInternal(ISession session, Phase phase)
         {
             var rankings = session.QueryOver<PhaseRanking>().Where(x => x.Phase == phase).List().Cast<Ranking>().ToList();
-            UpdateRankingsInternal(session, rankings, phase.Matches, () => new PhaseRanking {Phase = phase},
+            UpdateRankingsInternal(session, rankings, phase.Matches, () => new PhaseRanking { Phase = phase },
                 Service.GetPhaseTypeHandler(phase.PhaseType));
             Clients.All.updateRankings(phase.Id);
         }
@@ -441,7 +484,7 @@ namespace Ochs
         private void UpdatePoolRankingsInternal(ISession session, Pool pool)
         {
             var rankings = session.QueryOver<PoolRanking>().Where(x => x.Pool == pool).List().Cast<Ranking>().ToList();
-            UpdateRankingsInternal(session, rankings, pool.Matches, () => new PoolRanking {Pool = pool}, Service.GetPhaseTypeHandler(pool.Phase.PhaseType));
+            UpdateRankingsInternal(session, rankings, pool.Matches, () => new PoolRanking { Pool = pool }, Service.GetPhaseTypeHandler(pool.Phase.PhaseType));
             Clients.All.updateRankings(pool.Id);
         }
 
@@ -487,7 +530,8 @@ namespace Ochs
                         rankings.Add(rankingBlue);
                     }
                     rankingBlue.Disqualified = true;
-                }else if (match.Result == MatchResult.DisqualificationRed)
+                }
+                else if (match.Result == MatchResult.DisqualificationRed)
                 {
                     var rankingRed = rankings.SingleOrDefault(x => x.Person == match.FighterRed);
                     if (rankingRed == null)
@@ -503,13 +547,13 @@ namespace Ochs
             //calc ranking stats
             foreach (var match in matches)
             {
-                if(!match.Finished)
+                if (!match.Finished)
                     continue;
                 var rankingBlue = rankings.SingleOrDefault(x => x.Person == match.FighterBlue);
                 var rankingRed = rankings.SingleOrDefault(x => x.Person == match.FighterRed);
-                if(rankingPhaseTypeHandler == null && rankingRules.RemoveDisqualifiedFromRanking && ((rankingRed?.Disqualified??false) || (rankingBlue?.Disqualified??false)))
+                if (rankingPhaseTypeHandler == null && rankingRules.RemoveDisqualifiedFromRanking && ((rankingRed?.Disqualified ?? false) || (rankingBlue?.Disqualified ?? false)))
                     continue;
-                if(rankingPhaseTypeHandler == null && rankingRules.RemoveForfeitedFromRanking && ((rankingRed?.Forfeited??false) || (rankingBlue?.Forfeited??false)))
+                if (rankingPhaseTypeHandler == null && rankingRules.RemoveForfeitedFromRanking && ((rankingRed?.Forfeited ?? false) || (rankingBlue?.Forfeited ?? false)))
                     continue;
                 if (rankingBlue == null)
                 {
@@ -550,20 +594,25 @@ namespace Ochs
             {
                 if (rankingStat == RankingStat.MatchPoints)
                 {
-                    order = order.ThenByDescending(x=>x.MatchPointsPerMatch);
-                }else if (rankingStat == RankingStat.DoubleHits)
+                    order = order.ThenByDescending(x => x.MatchPointsPerMatch);
+                }
+                else if (rankingStat == RankingStat.DoubleHits)
                 {
                     order = order.ThenBy(x => x.DoubleHitsPerMatch);
-                }else if (rankingStat == RankingStat.HitRatio)
+                }
+                else if (rankingStat == RankingStat.HitRatio)
                 {
                     order = order.ThenByDescending(x => x.HitRatio);
-                }else if (rankingStat == RankingStat.WinRatio)
+                }
+                else if (rankingStat == RankingStat.WinRatio)
                 {
                     order = order.ThenByDescending(x => x.WinRatio);
-                }else if (rankingStat == RankingStat.Penalties)
+                }
+                else if (rankingStat == RankingStat.Penalties)
                 {
                     order = order.ThenBy(x => x.Penalties);
-                }else if (rankingStat == RankingStat.Warnings)
+                }
+                else if (rankingStat == RankingStat.Warnings)
                 {
                     order = order.ThenBy(x => x.Warnings);
                 }
@@ -574,6 +623,10 @@ namespace Ochs
                 foreach (var oldRanking in oldRankings)
                 {
                     session.Delete(oldRanking);
+                }
+                if (rankings.Count == 0){
+                    transaction.Commit();
+                    return;
                 }
                 var orderedRankings = order.ToList();
                 orderedRankings[0].Rank = 1;
@@ -633,7 +686,7 @@ namespace Ochs
 
         private void UpdateRankingMatch(Ranking ranking, RankingRules rankingRules, Match match, bool blue)
         {
-            if(match.Result == MatchResult.Skipped)
+            if (match.Result == MatchResult.Skipped)
                 return;
             var win = false;
             ranking.Matches++;
@@ -738,24 +791,34 @@ namespace Ochs
                         ranking.HitsGiven += matchEvent.PointsRed;
                         ranking.HitsReceived += matchEvent.PointsBlue;
                     }
+                    if (!string.IsNullOrWhiteSpace(matchEvent.Note))
+                        ranking.Notes++;
                     ranking.Exchanges++;
                 }
                 else if (matchEvent.Type == MatchEventType.Penalty)
                 {
-                    if (blue)
+                    if (blue && matchEvent.PointsBlue != 0)
                     {
                         ranking.Penalties += Math.Abs(matchEvent.PointsBlue);
+                        if (!string.IsNullOrWhiteSpace(matchEvent.Note))
+                            ranking.Notes++;
                     }
-                    else
+                    else if (!blue && matchEvent.PointsRed != 0)
                     {
                         ranking.Penalties += Math.Abs(matchEvent.PointsRed);
+                        if (!string.IsNullOrWhiteSpace(matchEvent.Note))
+                            ranking.Notes++;
                     }
+                    else if (!string.IsNullOrWhiteSpace(matchEvent.Note))
+                        ranking.Notes++;
                 }
                 else if (matchEvent.Type == MatchEventType.SportsmanshipBlue)
                 {
                     if (blue)
                     {
                         ranking.SportsmanshipPoints++;
+                        if (!string.IsNullOrWhiteSpace(matchEvent.Note))
+                            ranking.Notes++;
                     }
                 }
                 else if (matchEvent.Type == MatchEventType.SportsmanshipRed)
@@ -763,6 +826,8 @@ namespace Ochs
                     if (!blue)
                     {
                         ranking.SportsmanshipPoints++;
+                        if (!string.IsNullOrWhiteSpace(matchEvent.Note))
+                            ranking.Notes++;
                     }
                 }
                 else if (matchEvent.Type == MatchEventType.WarningBlue)
@@ -770,6 +835,8 @@ namespace Ochs
                     if (blue)
                     {
                         ranking.Warnings++;
+                        if (!string.IsNullOrWhiteSpace(matchEvent.Note))
+                            ranking.Notes++;
                     }
                 }
                 else if (matchEvent.Type == MatchEventType.WarningRed)
@@ -777,23 +844,29 @@ namespace Ochs
                     if (!blue)
                     {
                         ranking.Warnings++;
+                        if (!string.IsNullOrWhiteSpace(matchEvent.Note))
+                            ranking.Notes++;
                     }
                 }
                 else if (matchEvent.Type == MatchEventType.DoubleHit)
                 {
                     ranking.DoubleHits++;
                     ranking.Exchanges++;
+                    if (!string.IsNullOrWhiteSpace(matchEvent.Note))
+                        ranking.Notes++;
                 }
                 else if (matchEvent.Type == MatchEventType.UnclearExchange)
                 {
                     ranking.Exchanges++;
+                    if (!string.IsNullOrWhiteSpace(matchEvent.Note))
+                        ranking.Notes++;
                 }
             }
         }
 
         public void CreateCompetitionPhase(Guid competiotionId, string phaseName, PhaseType phaseType, string location = null)
         {
-            if(string.IsNullOrWhiteSpace(phaseName))
+            if (string.IsNullOrWhiteSpace(phaseName))
                 return;
             using (var session = NHibernateHelper.OpenSession())
             {
@@ -827,7 +900,8 @@ namespace Ochs
                         session.Save(phase);
                         transaction.Commit();
                         Clients.All.addPhase(new PhaseView(phase));
-                    }else if (phase.Location != location || phase.PhaseType != phaseType)
+                    }
+                    else if (phase.Location != location || phase.PhaseType != phaseType)
                     {
                         phase.Location = location;
                         phase.PhaseType = phaseType;
@@ -906,7 +980,7 @@ namespace Ochs
                     return;
                 }
 
-                var matchRules = matchRuleId == Guid.Empty?null:session.Get<MatchRules>(matchRuleId);
+                var matchRules = matchRuleId == Guid.Empty ? null : session.Get<MatchRules>(matchRuleId);
                 if (matchRules != null && matchRules == phase.Competition.MatchRules)
                     matchRules = null;
                 phase.MatchRules = matchRules;
@@ -936,7 +1010,7 @@ namespace Ochs
 
                 if (phase.Fighters.Count > 0)
                 {
-                    Clients.Caller.displayMessage("Phase "+phase.Name+" already has fighters", "warning");
+                    Clients.Caller.displayMessage("Phase " + phase.Name + " already has fighters", "warning");
                     return;
                 }
 
@@ -1013,7 +1087,7 @@ namespace Ochs
                         .ThenBy(x => x.Fighters.Count(y => y.CountryCode == fighter.CountryCode))
                         .ThenBy(x => x.Fighters.Count)
                         .FirstOrDefault();
-                    if(pool == null)
+                    if (pool == null)
                         continue;
                     pool.Fighters.Add(fighter);
                     session.Update(pool);
@@ -1024,7 +1098,7 @@ namespace Ochs
                     var toPool = phase.Pools.OrderBy(x => x.Fighters.Count).First();
                     var fromPool = phase.Pools.OrderBy(x => x.Fighters.Count).Last();
                     var fighter = fromPool.Fighters
-                        .OrderBy(x =>x.Organizations.Sum(y => toPool.Fighters.Sum(z => z.Organizations.Count(a => a.Id == z.Id))))
+                        .OrderBy(x => x.Organizations.Sum(y => toPool.Fighters.Sum(z => z.Organizations.Count(a => a.Id == z.Id))))
                         .ThenBy(x => toPool.Fighters.Count(y => y.CountryCode == x.CountryCode))
                         .First();
 
@@ -1107,10 +1181,10 @@ namespace Ochs
                 foreach (var fighterId in fighterIds)
                 {
                     var fighter = competition.Fighters.SingleOrDefault(x => x.Id == fighterId);
-                    if(fighter == null)
+                    if (fighter == null)
                         continue;
 
-                    if(competition.Matches.Any(x=>x.FighterBlue?.Id == fighterId || x.FighterRed?.Id == fighterId))
+                    if (competition.Matches.Any(x => x.FighterBlue?.Id == fighterId || x.FighterRed?.Id == fighterId))
                         continue;
                     deleted++;
                     competition.Fighters.Remove(fighter);
@@ -1126,7 +1200,7 @@ namespace Ochs
 
                         foreach (var pool in phase.Pools)
                         {
-                            if(!pool.Fighters.Contains(fighter))
+                            if (!pool.Fighters.Contains(fighter))
                                 continue;
                             pool.Fighters.Remove(fighter);
                             if (!poolsToUpdate.Contains(pool))
@@ -1168,7 +1242,7 @@ namespace Ochs
                 }
             }
         }
-        
+
         public void PhaseRemoveFighters(Guid phaseId, IList<Guid> fighterIds)
         {
             using (var session = NHibernateHelper.OpenSession())
@@ -1285,7 +1359,7 @@ namespace Ochs
                 Clients.All.updatePhase(new PhaseDetailView(pool.Phase));
 
             }
-        
+
         }
         public void PoolRemoveFighters(Guid poolId, IList<Guid> fighterIds)
         {
@@ -1386,7 +1460,7 @@ namespace Ochs
                         }
                         session.Save(person);
                     }
-                    if(competition.Fighters.All(x => x.Id != person.Id))
+                    if (competition.Fighters.All(x => x.Id != person.Id))
                     {
                         competition.Fighters.Add(person);
                         session.Update(competition);
@@ -1524,7 +1598,8 @@ namespace Ochs
                     return;
                 }
 
-                if (!HasOrganizationRights(session, phase.Competition.Organization, UserRoles.Admin)){
+                if (!HasOrganizationRights(session, phase.Competition.Organization, UserRoles.Admin))
+                {
                     Clients.Caller.displayMessage("Not logged in as administrator", "warning");
                     return;
                 }
@@ -1551,7 +1626,7 @@ namespace Ochs
 
                 if (pool.Fighters.Count <= 1)
                 {
-                    Clients.Caller.displayMessage("Pool "+pool.Name+" has not enough fighter to generate matches", "warning");
+                    Clients.Caller.displayMessage("Pool " + pool.Name + " has not enough fighter to generate matches", "warning");
                     return;
                 }
 
@@ -1570,7 +1645,8 @@ namespace Ochs
 
         private void GenerateMatches(ISession session, PhaseType phaseType, IList<Match> matches, IList<Person> fighters, Phase phase, Pool pool = null)
         {
-            if(fighters.Count <= 1){
+            if (fighters.Count <= 1)
+            {
                 Clients.Caller.displayMessage("Not enough fighter to generate matches", "warning");
                 return;
             }
@@ -1596,7 +1672,7 @@ namespace Ochs
 
 
             var phaseTypeHandler = Service.GetPhaseTypeHandler(phaseType);
-            if(phaseTypeHandler == null)
+            if (phaseTypeHandler == null)
                 return;
             matches = phaseTypeHandler.GenerateMatches(fighters.Count, phase, pool);
             var sortedFighters = Service.SortFightersByRanking(session, fighters, Service.GetPreviousPhase(matches[0].Phase));
@@ -1679,8 +1755,8 @@ namespace Ochs
                     return;
                 }
 
-                var matchRules = matchRuleId == Guid.Empty?null:session.Get<MatchRules>(matchRuleId);
-                if (matchRules != null && matchRules == (match.Phase?.MatchRules??match.Competition.MatchRules))
+                var matchRules = matchRuleId == Guid.Empty ? null : session.Get<MatchRules>(matchRuleId);
+                if (matchRules != null && matchRules == (match.Phase?.MatchRules ?? match.Competition.MatchRules))
                     matchRules = null;
 
                 match.Rules = matchRules;

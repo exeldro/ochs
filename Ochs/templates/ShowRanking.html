@@ -1,5 +1,5 @@
 ﻿<button type="button" class="btn" ng-click="updateRankings()">Update</button>
-<table class="table-header-rotated" >
+<table class="table-header-rotated">
     <tr>
         <th>#</th>
         <th>Fighter</th>
@@ -10,15 +10,16 @@
         <th class="rotate-45"><div><span>Win ratio</span></div></th>
         <th class="rotate-45"><div><span>Match points</span></div></th>
         <th class="rotate-45"><div><span>Match points per match</span></div></th>
-        <th class="rotate-45"><div><span>Double hits</span></div></th>
-        <th class="rotate-45"><div><span>Double hits per match</span></div></th>
-        <th class="rotate-45"><div><span>Penalties</span></div></th>
-        <th class="rotate-45"><div><span>Warnings</span></div></th>
+        <th class="rotate-45" ng-show="rules.RecordDoubleHits"><div><span>Double hits</span></div></th>
+        <th class="rotate-45" ng-show="rules.RecordDoubleHits"><div><span>Double hits per match</span></div></th>
+        <th class="rotate-45" ng-show="rules.RecordPenalties"><div><span>Penalties</span></div></th>
+        <th class="rotate-45" ng-show="rules.RecordWarnings"><div><span>Warnings</span></div></th>
         <th class="rotate-45"><div><span>Exchanges</span></div></th>
         <th class="rotate-45"><div><span>Hits given</span></div></th>
-        <th class="rotate-45"><div><span>Hits recieved</span></div></th>
+        <th class="rotate-45"><div><span>Hits received</span></div></th>
         <th class="rotate-45"><div><span>Hit ratio</span></div></th>
-        <th class="rotate-45"><div><span>Sportsmanship</span></div></th>
+        <th class="rotate-45" ng-show="rules.RecordSportsmanship"><div><span>Sportsmanship</span></div></th>
+        <th class="rotate-45" ng-show="rules.RecordNotes"><div><span>Notes</span></div></th>
     </tr>
     <tr ng-repeat="ranking in rankings">
         <td>{{ranking.Rank}}</td>
@@ -30,14 +31,15 @@
         <td class="rotate-45">{{ranking.WinRatio | number : 2}}</td>
         <td class="rotate-45">{{ranking.MatchPoints}}</td>
         <td class="rotate-45">{{ranking.MatchPointsPerMatch | number : 2}}</td>
-        <td class="rotate-45">{{ranking.DoubleHits}}</td>
-        <td class="rotate-45">{{ranking.DoubleHitsPerMatch | number : 2}}</td>
-        <td class="rotate-45">{{ranking.Penalties}}</td>
-        <td class="rotate-45">{{ranking.Warnings}}</td>
+        <td class="rotate-45" ng-show="rules.RecordDoubleHits">{{ranking.DoubleHits}}</td>
+        <td class="rotate-45" ng-show="rules.RecordDoubleHits">{{ranking.DoubleHitsPerMatch | number : 2}}</td>
+        <td class="rotate-45" ng-show="rules.RecordPenalties">{{ranking.Penalties}}</td>
+        <td class="rotate-45" ng-show="rules.RecordWarnings">{{ranking.Warnings}}</td>
         <td class="rotate-45">{{ranking.Exchanges}}</td>
         <td class="rotate-45">{{ranking.HitsGiven}}</td>
         <td class="rotate-45">{{ranking.HitsReceived}}</td>
         <td class="rotate-45">{{ranking.HitRatio | number : 2}}</td>
-        <td class="rotate-45">{{ranking.SportsmanshipPoints}}</td>
+        <td class="rotate-45" ng-show="rules.RecordSportsmanship">{{ranking.SportsmanshipPoints}}</td>
+        <td class="rotate-45" ng-show="rules.RecordNotes">{{ranking.Notes}}</td>
     </tr>
 </table>

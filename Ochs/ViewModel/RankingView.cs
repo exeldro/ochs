@@ -32,5 +32,6 @@ namespace Ochs
         public virtual int HitsReceived => _ranking.HitsReceived;
         public virtual double HitRatio => _ranking.HitRatio;
         public virtual int SportsmanshipPoints => _ranking.SportsmanshipPoints;
+        public virtual int Notes => _ranking.Notes;
     }
 }

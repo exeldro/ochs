@@ -54,6 +54,11 @@ namespace OchsTest
             Assert.AreEqual(2, changedMatches.Count);
             Assert.AreEqual(matches[4].FighterBlue, matches[7].FighterBlue);
             Assert.AreEqual(matches[4].FighterRed, matches[6].FighterBlue);
+
+            Assert.AreEqual(2, _singleEliminationPhaseHandler.GetRank(matches[4].FighterBlue, matches));
+            Assert.AreEqual(4, _singleEliminationPhaseHandler.GetRank(matches[4].FighterRed, matches));
+            Assert.AreEqual(5, _singleEliminationPhaseHandler.GetRank(matches[0].FighterBlue, matches));
+            Assert.AreEqual(5, _singleEliminationPhaseHandler.GetRank(matches[1].FighterRed, matches));
         }
 
 
@@ -94,6 +99,9 @@ namespace OchsTest
             changedMatches = _singleEliminationPhaseHandler.UpdateMatchesAfterFinishedMatch(matches[8], matches);
             Assert.AreEqual(1, changedMatches.Count);
             Assert.AreEqual(matches[8].FighterBlue, matches[12].FighterBlue);
+
+            Assert.AreEqual(9, _singleEliminationPhaseHandler.GetRank(matches[0].FighterBlue, matches));
+            Assert.AreEqual(9, _singleEliminationPhaseHandler.GetRank(matches[1].FighterRed, matches));
         }
         
         [TestMethod]
@@ -133,6 +141,9 @@ namespace OchsTest
             changedMatches = _singleEliminationPhaseHandler.UpdateMatchesAfterFinishedMatch(matches[16], matches);
             Assert.AreEqual(1, changedMatches.Count);
             Assert.AreEqual(matches[16].FighterBlue, matches[24].FighterBlue);
+
+            Assert.AreEqual(17, _singleEliminationPhaseHandler.GetRank(matches[0].FighterBlue, matches));
+            Assert.AreEqual(17, _singleEliminationPhaseHandler.GetRank(matches[1].FighterRed, matches));
         }
 
         [TestMethod]

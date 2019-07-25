@@ -541,6 +541,27 @@ namespace Ochs
                         rankings.Add(rankingRed);
                     }
                     rankingRed.Disqualified = true;
+                }else if (match.Result == MatchResult.ForfeitBlue)
+                {
+                    var rankingBlue = rankings.SingleOrDefault(x => x.Person == match.FighterBlue);
+                    if (rankingBlue == null)
+                    {
+                        rankingBlue = createRanking();
+                        rankingBlue.Person = match.FighterBlue;
+                        rankings.Add(rankingBlue);
+                    }
+                    rankingBlue.Forfeited = true;
+                }
+                else if (match.Result == MatchResult.ForfeitRed)
+                {
+                    var rankingRed = rankings.SingleOrDefault(x => x.Person == match.FighterRed);
+                    if (rankingRed == null)
+                    {
+                        rankingRed = createRanking();
+                        rankingRed.Person = match.FighterRed;
+                        rankings.Add(rankingRed);
+                    }
+                    rankingRed.Forfeited = true;
                 }
             }
             var rankingPhaseTypeHandler = phaseTypeHandler as IRankingPhaseTypeHandler;

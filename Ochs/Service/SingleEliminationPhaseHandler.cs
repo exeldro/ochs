@@ -106,17 +106,17 @@ namespace Ochs
                 var matchRound = EliminationRoundNames.GetRound(match.Name);
                 if (matchRound != -1 && matchRound != round)
                 {
-                    round = matchRound;
                     if (matches.Any())
                     {
-                        matchesPerRound.Add(matches);
+                        matchesPerRound.Add(matches.OrderBy(x=>EliminationRoundNames.GetMatchNumber(x.Name, round)).ToList());
                         matches = new List<Match>();
                     }
+                    round = matchRound;
                 }
                 matches.Add(match);
             }
             if(matches.Any())
-                matchesPerRound.Add(matches);
+                matchesPerRound.Add(matches.OrderBy(x=>EliminationRoundNames.GetMatchNumber(x.Name, round)).ToList());
             return matchesPerRound;
         }
 

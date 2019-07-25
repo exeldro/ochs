@@ -36,6 +36,7 @@ namespace Ochs
                 var competition = session.QueryOver<Competition>().Where(x => x.Id == id).SingleOrDefault();
                 if (competition == null)
                     return null;
+                NHibernateUtil.Initialize(competition.Organization);
                 NHibernateUtil.Initialize(competition.Fighters);
                 foreach (var person in competition.Fighters)
                 {

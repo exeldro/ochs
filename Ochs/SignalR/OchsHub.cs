@@ -1808,5 +1808,68 @@ namespace Ochs
                 Clients.All.updateMatch(new MatchDetailView(match));
             }
         }
+
+        public void UpdateMatchLocation(string location, IList<Guid> matchIds)
+        {
+            using (var session = NHibernateHelper.OpenSession())
+            {
+                foreach (var matchId in matchIds)
+                {
+                    var match = session.Get<Match>(matchId);
+                    if (match == null)
+                    {
+                        Clients.Caller.displayMessage("Match not found", "warning");
+                        return;
+                    }
+
+                    if (!HasOrganizationRights(session, match.Competition.Organization, UserRoles.Admin))
+                    {
+                        Clients.Caller.displayMessage("Not logged in as administrator", "warning");
+                        return;
+                    }
+
+                    using (var transaction = session.BeginTransaction())
+                    {
+                        if (string.IsNullOrWhiteSpace(location))
+                        {
+                            match.Location = null;
+                        }
+                        else if (!string.IsNullOrWhiteSpace(match.Pool?.Location))
+                        {
+                            if (location == match.Pool.Location)
+                            {
+                                match.Location = null;
+                            }
+                            else
+                            {
+                                match.Location = location;
+                            }
+                        }
+                        else if (!string.IsNullOrWhiteSpace(match.Phase?.Location))
+                        {
+                            if (location == match.Phase.Location)
+                            {
+                                match.Location = null;
+                            }
+                            else
+                            {
+                                match.Location = location;
+                            }
+                        }
+                        else
+                        {
+                            match.Location = location;
+                        }
+                        match.UpdateMatchData();
+                        session.Update(match);
+                        transaction.Commit();
+                        Clients.All.updateMatch(new MatchDetailView(match));
+
+                    }
+
+                }
+            }
+
+        }
     }
 }

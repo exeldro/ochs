@@ -33,4 +33,6 @@
         <td><a ng-show="context.Rights =='Admin' || context.Rights == 'ScoreValidator'" href="#!EditMatch/{{match.Id}}"><i class="fa fa-pencil" aria-hidden="true"></i></a> <a href="#!ShowMatch/{{match.Id}}"><i class="fa fa-eye" aria-hidden="true"></i></a> <a ng-show="!match.Finished && (context.Rights =='Admin' || context.Rights == 'ScoreKeeper')" href="#!ScoreKeeper/{{match.Id}}"><i class="fa fa-play" aria-hidden="true"></i></a></td>
     </tr>
 </table>
+<input type="text" placeholder="Location" ng-model="location" ng-show="context.Rights =='Admin'" />
+<button ng-click="updateLocation()" ng-show="context.Rights =='Admin'">Update</button>
 

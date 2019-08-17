@@ -10,15 +10,15 @@
 </h2>
 <div class="container">
     <div class="row">
-        <div class="col-12 col-sm-6 bg-blue  text-nowrap" align="left" style="overflow:hidden;">
-            <img class="flag pull-left" alt="{{currentMatch.FighterBlueCountryCode}}" title="{{currentMatch.FighterBlueCountryName}}" ng-src="Content/flags/{{currentMatch.FighterBlueCountryCode?currentMatch.FighterBlueCountryCode:'none'}}.svg" />
+        <div class="col-12 col-sm-6 bg-blue text-nowrap" style="overflow:hidden;" ng-class="{'order-2':mirror,'text-left':!mirror,'text-right':mirror}">
+            <img class="flag" ng-class="{'pull-left':!mirror,'pull-right':mirror}" alt="{{currentMatch.FighterBlueCountryCode}}" title="{{currentMatch.FighterBlueCountryName}}" ng-src="Content/flags/{{currentMatch.FighterBlueCountryCode?currentMatch.FighterBlueCountryCode:'none'}}.svg" />
             <strong>{{currentMatch.FighterBlue}}</strong>
-            <span align="left" class="d-none d-sm-block" style="overflow:hidden;">{{currentMatch.FighterBlueOrganization || '-'}}</span>
+            <span class="d-none d-sm-block" style="overflow:hidden;">{{currentMatch.FighterBlueOrganization || '-'}}</span>
         </div>
-        <div class="col-12 col-sm-6 bg-red text-nowrap" align="right" style="overflow:hidden;">
-            <img class="flag pull-right" alt="{{currentMatch.FighterRedCountryCode}}" title="{{currentMatch.FighterRedCountryName}}" ng-src="Content/flags/{{currentMatch.FighterRedCountryCode?currentMatch.FighterRedCountryCode:'none'}}.svg" />
+        <div class="col-12 col-sm-6 bg-red text-nowrap" style="overflow:hidden;" ng-class="{'order-1':mirror,'text-left':mirror,'text-right':!mirror}">
+            <img class="flag" ng-class="{'pull-left':mirror,'pull-right':!mirror}" alt="{{currentMatch.FighterRedCountryCode}}" title="{{currentMatch.FighterRedCountryName}}" ng-src="Content/flags/{{currentMatch.FighterRedCountryCode?currentMatch.FighterRedCountryCode:'none'}}.svg" />
             <strong>{{currentMatch.FighterRed}}</strong>
-            <span align="right" class="d-none d-sm-block" style="overflow:hidden;">{{currentMatch.FighterRedOrganization || '-'}}</span>
+            <span class="d-none d-sm-block" style="overflow:hidden;">{{currentMatch.FighterRedOrganization || '-'}}</span>
         </div>
     </div>
     <div class="row">
@@ -27,10 +27,10 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-6 bg-blue" align="center">
+        <div class="col-6 bg-blue" align="center" ng-class="{'order-2':mirror}">
             <h1>{{currentMatch.ScoreBlue}}</h1>
         </div>
-        <div class="col-6 bg-red" align="center">
+        <div class="col-6 bg-red" align="center" ng-class="{'order-1':mirror}">
             <h1>{{currentMatch.ScoreRed}}</h1>
         </div>
     </div>
@@ -47,13 +47,14 @@
     <div class="row d-none d-md-flex">
         <div class="col-12" align="center">
             <table>
-                <tr><th>Exchange</th><th>Time</th><th>Event</th><th>Blue</th><th>Red</th></tr>
+                <tr><th>Exchange</th><th>Time</th><th>Event</th><th ng-show="!mirror">Blue</th><th>Red</th><th ng-show="mirror">Blue</th></tr>
                 <tr ng-repeat="event in currentMatch.Events">
                     <td align="center">{{ event.ExchangeNumber }}</td>
                     <td>{{ event.Time | timespan }}</td>
                     <td>{{ event.Type }}</td>
-                    <td class="bg-blue" align="center">{{ event.PointsBlue }}</td>
+                    <td class="bg-blue" ng-show="!mirror" align="center">{{ event.PointsBlue }}</td>
                     <td class="bg-red" align="center">{{ event.PointsRed }}</td>
+                    <td class="bg-blue" ng-show="mirror" align="center">{{ event.PointsBlue }}</td>
                 </tr>
                 <tr ng-show="currentMatch.Events.length == 0">
                     <td colspan="5" align="center">No events yet</td>
@@ -76,10 +77,10 @@
                 <span ng-show="nextMatch.PoolId"><a href="#!ShowPool/{{nextMatch.PoolId}}">{{nextMatch.Pool}}</a> - </span>
             </span>{{nextMatch.Name}}
         </div>
-        <div class="col-12 col-sm-6 bg-blue" align="left">
+        <div class="col-12 col-sm-6 bg-blue" ng-class="{'order-2':mirror,'text-left':!mirror,'text-right':mirror}">
             <strong>{{nextMatch.FighterBlue}}</strong>
         </div>
-        <div class="col-12 col-sm-6 bg-red" align="right">
+        <div class="col-12 col-sm-6 bg-red" ng-class="{'order-1':mirror,'text-left':mirror,'text-right':!mirror}">
             <strong>{{nextMatch.FighterRed}}</strong>
         </div>
     </div>

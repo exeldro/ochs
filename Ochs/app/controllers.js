@@ -4,6 +4,7 @@ app.controller('OchsController',
     function ($scope, $http, $cookies) {
         console.log('trying to connect to service');
         $scope.highcontrast = ($cookies.get('highcontrast') === 'true');
+        $scope.mirror = ($cookies.get('mirror') === 'true');
         $scope.ochsHub = $.connection.ochsHub;
         $scope.ochsHub.client.updateMatch = function (data) {
             $scope.$broadcast('updateMatch', data);
@@ -73,10 +74,13 @@ app.controller("WelcomeController", function ($scope, $http) {
 app.controller("ViewSettingsController", function ($scope, $cookies) {
     $scope.location = $cookies.get('location');
     $scope.highcontrast = ($cookies.get('highcontrast') === 'true');
+    $scope.mirror = ($cookies.get('mirror') === 'true');
     $scope.apply = function () {
         $cookies.put('location', $scope.location);
         $cookies.put('highcontrast', $scope.highcontrast ? 'true' : 'false');
         $scope.$parent.highcontrast = $scope.highcontrast;
+        $cookies.put('mirror', $scope.mirror ? 'true' : 'false');
+        $scope.$parent.mirror = $scope.mirror;
     };
 });
 

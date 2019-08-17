@@ -541,7 +541,8 @@ namespace Ochs
                         rankings.Add(rankingRed);
                     }
                     rankingRed.Disqualified = true;
-                }else if (match.Result == MatchResult.ForfeitBlue)
+                }
+                else if (match.Result == MatchResult.ForfeitBlue)
                 {
                     var rankingBlue = rankings.SingleOrDefault(x => x.Person == match.FighterBlue);
                     if (rankingBlue == null)
@@ -645,7 +646,8 @@ namespace Ochs
                 {
                     session.Delete(oldRanking);
                 }
-                if (rankings.Count == 0){
+                if (rankings.Count == 0)
+                {
                     transaction.Commit();
                     return;
                 }
@@ -827,6 +829,25 @@ namespace Ochs
                     else if (!blue && matchEvent.PointsRed != 0)
                     {
                         ranking.Penalties += Math.Abs(matchEvent.PointsRed);
+                        if (!string.IsNullOrWhiteSpace(matchEvent.Note))
+                            ranking.Notes++;
+                    }
+                    else if (!string.IsNullOrWhiteSpace(matchEvent.Note))
+                        ranking.Notes++;
+                }
+                else if (matchEvent.Type == MatchEventType.MatchPointDeduction)
+                {
+                    if (blue && matchEvent.PointsBlue != 0)
+                    {
+                        ranking.Penalties += Math.Abs(matchEvent.PointsBlue);
+                        ranking.MatchPoints -= Math.Abs(matchEvent.PointsBlue);
+                        if (!string.IsNullOrWhiteSpace(matchEvent.Note))
+                            ranking.Notes++;
+                    }
+                    else if (!blue && matchEvent.PointsRed != 0)
+                    {
+                        ranking.Penalties += Math.Abs(matchEvent.PointsRed);
+                        ranking.MatchPoints -= Math.Abs(matchEvent.PointsRed);
                         if (!string.IsNullOrWhiteSpace(matchEvent.Note))
                             ranking.Notes++;
                     }

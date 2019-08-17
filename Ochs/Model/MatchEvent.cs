@@ -33,6 +33,7 @@ namespace Ochs
         ProtestBlue,
         ProtestRed,
         SportsmanshipBlue,
-        SportsmanshipRed
+        SportsmanshipRed,
+        MatchPointDeduction
     }
 }

@@ -11,7 +11,7 @@
             <label class="col col-sm-9 p-sm-0" for="Rounds">Number of <strong>rounds</strong></label>
         </div>
         <div class="form-group row">
-            <div class="col-auto col-sm-3 text-sm-right"><input type="time" id="TimeMax" class="text-right" ng-model="editTimeMax" step="1" required="required"/></div>
+            <div class="col-auto col-sm-3 text-sm-right"><input type="time" id="TimeMax" class="text-right" ng-model="editTimeMax" step="1" required="required" /></div>
             <label class="col col-sm-9 p-sm-0" for="TimeMax">Maximum <strong>time</strong> per round<br /><small>(0:00 for no maximum)</small></label>
         </div>
         <div class="form-group row">
@@ -22,36 +22,46 @@
         </div>
         <div class="form-group row">
             <div class="col-auto col-sm-3 text-sm-right">
-                <input type="number" class="text-right" min="0" max="99" id="ExchangesMax" ng-model="rules.ExchangesMax"/>
+                <input type="number" class="text-right" min="0" max="99" id="ExchangesMax" ng-model="rules.ExchangesMax" />
             </div>
             <label class="col col-sm-9 p-sm-0" for="ExchangesMax">Maximum number of <strong>exchanges</strong> per round<br /><small>(0 for no maximum)</small></label>
         </div>
         <div class="form-group row">
             <div class="col-auto col-sm-3 text-sm-right">
-                <input type="checkbox" id="RecordProtests" ng-model="rules.RecordProtests"/>
+                <input type="checkbox" id="RecordProtests" ng-model="rules.RecordProtests" />
             </div>
             <label class="col col-sm-9 p-sm-0" for="RecordProtests">Record <strong>protest</strong></label>
         </div>
         <div class="form-group row">
             <div class="col-auto col-sm-3 text-sm-right">
-                <input type="checkbox" id="RecordSportsmanship" ng-model="rules.RecordSportsmanship"/>
+                <input type="checkbox" id="RecordSportsmanship" ng-model="rules.RecordSportsmanship" />
             </div>
             <label class="col col-sm-9 p-sm-0" for="RecordSportsmanship">Record <strong>sportsmanship</strong></label>
         </div>
         <div class="form-group row">
             <div class="col-auto col-sm-3 text-sm-right">
-                <input type="checkbox" id="RecordWarnings" ng-model="rules.RecordWarnings"/>
+                <input type="checkbox" id="RecordWarnings" ng-model="rules.RecordWarnings" />
             </div>
             <label class="col col-sm-9 p-sm-0" for="RecordWarnings">Record <strong>warning</strong></label>
         </div>
         <div class="form-group row">
             <div class="col-auto col-sm-3 text-sm-right">
-                <input type="checkbox" id="RecordPenalties" ng-model="rules.RecordPenalties"/>
+                <input type="checkbox" id="RecordPenalties" ng-model="rules.RecordPenalties" />
             </div>
             <div class="col col-sm-9 p-sm-0">
                 <label for="RecordPenalties">Record <strong>penalties</strong></label>
-                for <input type="number" class="text-right" min="0" max="9" id="PenaltyPoints" ng-model="rules.PenaltyPoints"/>
-                <label for="PenaltyPoints">points <strong>reduction</strong></label>
+                for <input type="number" class="text-right" min="0" max="9" id="PenaltyPoints" ng-model="rules.PenaltyPoints" />
+                <label for="PenaltyPoints">points <strong>deduction</strong></label>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-auto col-sm-3 text-sm-right">
+                <input type="checkbox" id="RecordMatchPointDeductions" ng-model="rules.RecordMatchPointDeductions" />
+            </div>
+            <div class="col col-sm-9 p-sm-0">
+                <label for="RecordMatchPointDeductions">Record <strong>penalties</strong></label>
+                for <input type="number" class="text-right" min="0" max="9" id="MatchPointDeductionPoints" ng-model="rules.MatchPointDeductionPoints" />
+                <label for="MatchPointDeductionPoints">match points <strong>deduction</strong></label>
             </div>
         </div>
     </div>
@@ -65,55 +75,55 @@
         </div>
         <div class="form-group row">
             <div class="col-auto col-sm-2 text-sm-right">
-                <input type="checkbox" id="BothCanScore" ng-model="rules.BothCanScore"/>
+                <input type="checkbox" id="BothCanScore" ng-model="rules.BothCanScore" />
             </div>
             <label class="col col-sm-10 p-sm-0" for="BothCanScore"><strong>Both</strong> fighters can score points in an exchange</label>
         </div>
         <div class="form-group row">
             <div class="col-auto col-sm-2 text-sm-right">
-                <input type="checkbox" id="SubtractPoints" ng-model="rules.SubtractPoints"/>
+                <input type="checkbox" id="SubtractPoints" ng-model="rules.SubtractPoints" />
             </div>
             <label class="col col-sm-10 p-sm-0" for="SubtractPoints"><strong>Subtract</strong> the points in an exchange</label>
         </div>
         <div class="form-group row">
             <div class="col-auto col-sm-2 text-sm-right">
-                <input type="checkbox" id="RecordUnclearExchanges" ng-model="rules.RecordUnclearExchanges"/>
+                <input type="checkbox" id="RecordUnclearExchanges" ng-model="rules.RecordUnclearExchanges" />
             </div>
             <label class="col col-sm-10 p-sm-0" for="RecordUnclearExchanges">Record <strong>unclear</strong> exchanges</label>
         </div>
         <div class="form-group row">
             <div class="col-auto col-sm-2 text-sm-right">
-                <input type="checkbox" id="RecordAfterblow" ng-model="rules.RecordAfterblow"/>
+                <input type="checkbox" id="RecordAfterblow" ng-model="rules.RecordAfterblow" />
             </div>
             <label class="col col-sm-10 p-sm-0" for="RecordAfterblow">Record <strong>afterblow</strong></label>
         </div>
         <div class="form-group row">
             <div class="col-auto col-sm-3 text-sm-right">
-                <input type="checkbox" id="AfterblowScores" ng-model="rules.AfterblowScores" ng-disabled="!rules.RecordAfterblow"/>
+                <input type="checkbox" id="AfterblowScores" ng-model="rules.AfterblowScores" ng-disabled="!rules.RecordAfterblow" />
             </div>
             <label class="col col-sm-9 p-sm-0" for="AfterblowScores">Afterblow <strong>scores</strong> points</label>
         </div>
         <div class="form-group row">
             <div class="col-auto col-sm-2 text-sm-right">
-                <input type="checkbox" id="RecordDoubleHits" ng-model="rules.RecordDoubleHits"/>
+                <input type="checkbox" id="RecordDoubleHits" ng-model="rules.RecordDoubleHits" />
             </div>
             <label class="col col-sm-10 p-sm-0" for="RecordDoubleHits">Record <strong>double</strong> hits</label>
         </div>
         <div class="form-group row">
             <div class="col-auto col-sm-3 text-sm-right">
-                <input type="checkbox" id="DoubleHitScores" ng-model="rules.DoubleHitScores" ng-disabled="!rules.RecordDoubleHits"/>
+                <input type="checkbox" id="DoubleHitScores" ng-model="rules.DoubleHitScores" ng-disabled="!rules.RecordDoubleHits" />
             </div>
             <label class="col col-sm-9 p-sm-0" for="DoubleHitScores">Double hits <strong>scores</strong> points</label>
         </div>
         <div class="form-group row">
             <div class="col-auto col-sm-3 text-sm-right">
-                <input type="number" class="text-right" min="1" max="9" id="DoubleHitMax" ng-model="rules.DoubleHitMax" ng-disabled="!rules.RecordDoubleHits"/>
+                <input type="number" class="text-right" min="0" max="9" id="DoubleHitMax" ng-model="rules.DoubleHitMax" ng-disabled="!rules.RecordDoubleHits" />
             </div>
-            <label class="col col-sm-9 p-sm-0"  ng-class="{'disabled':!rules.RecordDoubleHits}" ng-disabled="!rules.RecordDoubleHits" for="DoubleHitMax"><strong>Maximum</strong> number of double hits per match<br /><small>(0 for no maximum)</small></label>
+            <label class="col col-sm-9 p-sm-0" ng-class="{'disabled':!rules.RecordDoubleHits}" ng-disabled="!rules.RecordDoubleHits" for="DoubleHitMax"><strong>Maximum</strong> number of double hits per match<br /><small>(0 for no maximum)</small></label>
         </div>
         <div class="form-group row">
             <div class="col-auto col-sm-2 text-sm-right">
-                <input type="checkbox" id="RecordNotes" ng-model="rules.RecordNotes"/>
+                <input type="checkbox" id="RecordNotes" ng-model="rules.RecordNotes" />
             </div>
             <label class="col col-sm-10 p-sm-0" for="RecordNotes">Record exchange <strong>notes</strong></label>
         </div>

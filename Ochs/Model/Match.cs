@@ -6,7 +6,7 @@ using Newtonsoft.Json.Converters;
 
 namespace Ochs
 {
-    public class Match 
+    public class Match
     {
         public virtual Guid Id { get; set; }
         public virtual string Name { get; set; }
@@ -40,22 +40,24 @@ namespace Ochs
 
         public virtual string GetLocation()
         {
-                return !string.IsNullOrWhiteSpace(Location)? Location
-                    : (!string.IsNullOrWhiteSpace(Pool?.Location) ? Pool.Location : Phase?.Location);
+            return !string.IsNullOrWhiteSpace(Location) ? Location
+                : (!string.IsNullOrWhiteSpace(Pool?.Location) ? Pool.Location : Phase?.Location);
         }
 
         public virtual void UpdateMatchData()
         {
             ExchangeCount = Events.Count(x => x.IsExchange);
             DoubleCount = Events.Count(x => x.Type == MatchEventType.DoubleHit);
-            if(GetRules().SubtractPoints){
-                ScoreRed = Events.Sum(x => (x.PointsRed < 0 || x.PointsBlue < 0) ? x.PointsRed : (x.PointsRed > x.PointsBlue ? x.PointsRed - x.PointsBlue : 0));
-                ScoreBlue = Events.Sum(x => (x.PointsBlue < 0 || x.PointsRed < 0) ? x.PointsBlue : (x.PointsBlue > x.PointsRed ? x.PointsBlue - x.PointsRed : 0));
+            var rules = GetRules();
+            if (rules != null && rules.SubtractPoints)
+            {
+                ScoreRed = Events.Where(x => x.Type != MatchEventType.MatchPointDeduction).Sum(x => (x.PointsRed < 0 || x.PointsBlue < 0) ? x.PointsRed : (x.PointsRed > x.PointsBlue ? x.PointsRed - x.PointsBlue : 0));
+                ScoreBlue = Events.Where(x => x.Type != MatchEventType.MatchPointDeduction).Sum(x => (x.PointsBlue < 0 || x.PointsRed < 0) ? x.PointsBlue : (x.PointsBlue > x.PointsRed ? x.PointsBlue - x.PointsRed : 0));
             }
             else
             {
-                ScoreRed = Events.Sum(x => x.PointsRed);
-                ScoreBlue = Events.Sum(x => x.PointsBlue);
+                ScoreRed = Events.Where(x => x.Type != MatchEventType.MatchPointDeduction).Sum(x => x.PointsRed);
+                ScoreBlue = Events.Where(x => x.Type != MatchEventType.MatchPointDeduction).Sum(x => x.PointsBlue);
             }
         }
     }

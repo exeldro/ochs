@@ -11,11 +11,12 @@ namespace Ochs
         public virtual int Rounds { get; set; } = 1;
         public virtual int PointsMax { get; set; } = 0;
         public virtual int ExchangePointsMax { get; set; } = 3;
-    
+
         public virtual TimeSpan TimeMax { get; set; } = new TimeSpan(0, 3, 0);
-        public virtual double TimeMaxSeconds {
+        public virtual double TimeMaxSeconds
+        {
             get => TimeMax.TotalSeconds;
-            set => TimeMax = new TimeSpan(0, 0, (int) value);
+            set => TimeMax = new TimeSpan(0, 0, (int)value);
         }
         public virtual int ExchangesMax { get; set; } = 0;
         public virtual int DoubleHitMax { get; set; } = 2;
@@ -41,6 +42,8 @@ namespace Ochs
 
         public virtual bool RecordPenalties { get; set; } = true;
         public virtual int PenaltyPoints { get; set; } = 1;
+        public virtual bool RecordMatchPointDeductions { get; set; } = false;
+        public virtual int MatchPointDeductionPoints { get; set; } = 1;
         public virtual bool RecordNotes { get; set; } = true;
     }
 

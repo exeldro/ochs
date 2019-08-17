@@ -13,7 +13,7 @@ namespace Ochs
         public virtual bool RemoveDisqualifiedFromRanking { get; set; } = true;
         public virtual int DoubleReductionThreshold { get; set; } = 0;
         public virtual int DoubleReductionFactor { get; set; } = 2;
-        public virtual IList<RankingStat> Sorting { get; set; } = new List<RankingStat>{RankingStat.MatchPoints, RankingStat.WinRatio, RankingStat.HitRatio, RankingStat.DoubleHits, RankingStat.Penalties, RankingStat.Warnings};
+        public virtual IList<RankingStat> Sorting { get; set; } = new List<RankingStat> { RankingStat.MatchPoints, RankingStat.Penalties, RankingStat.WinRatio, RankingStat.Warnings, RankingStat.HitRatio, RankingStat.DoubleHits };
     }
 
     public enum RankingStat

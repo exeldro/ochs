@@ -68,6 +68,9 @@
         <div class="p-1" ng-show="rules.RecordSportsmanship">
             <button type="button" class="btn bg-lightblue" ng-click="addMatchEvent(0,0,'SportsmanshipBlue',note)">Sportsmanship</button>
         </div>
+        <div class="p-1" ng-show="rules.RecordMatchPointDeductions">
+            <button type="button" class="btn bg-lightblue" ng-click="addMatchEvent(-1*rules.MatchPointDeductionPoints,0,'MatchPointDeduction',note)">Penalty</button>
+        </div>
         <div class="p-1" ng-show="rules.RecordPenalties">
             <button type="button" class="btn bg-lightblue" ng-click="addMatchEvent(-1*rules.PenaltyPoints,0,'Penalty',note)">Penalty</button>
         </div>
@@ -79,6 +82,9 @@
         </div>
         <div class="p-1" ng-show="rules.RecordPenalties">
             <button type="button" class="btn bg-lightred" ng-click="addMatchEvent(0,-1*rules.PenaltyPoints,'Penalty',note)">Penalty</button>
+        </div>
+        <div class="p-1" ng-show="rules.RecordMatchPointDeductions">
+            <button type="button" class="btn bg-lightred" ng-click="addMatchEvent(0,-1*rules.MatchPointDeductionPoints,'MatchPointDeduction',note)">Penalty</button>
         </div>
         <div class="p-1" ng-show="rules.RecordSportsmanship">
             <button type="button" class="btn bg-lightred" ng-click="addMatchEvent(0,0,'SportsmanshipRed',note)">Sportsmanship</button>

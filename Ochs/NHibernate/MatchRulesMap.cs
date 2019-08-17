@@ -2,7 +2,7 @@
 
 namespace Ochs
 {
-    public class MatchRulesMap :ClassMap<MatchRules>
+    public class MatchRulesMap : ClassMap<MatchRules>
     {
         public MatchRulesMap()
         {
@@ -26,6 +26,8 @@ namespace Ochs
             Map(x => x.RecordUnclearExchanges);
             Map(x => x.RecordPenalties);
             Map(x => x.PenaltyPoints);
+            Map(x => x.RecordMatchPointDeductions);
+            Map(x => x.MatchPointDeductionPoints);
             Map(x => x.RecordNotes);
         }
     }

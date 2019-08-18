@@ -522,6 +522,11 @@ app.controller("EliminationController", function ($scope, $http, $routeParams, $
                                 0, -1,
                                 response.data.Matches[i][j]
                             ]);
+                        } else if (response.data.Matches[i][j].RoundsBlue > 0 || response.data.Matches[i][j].RoundsRed > 0) {
+                            bracketdata.results[0][i].push([
+                                response.data.Matches[i][j].RoundsBlue, response.data.Matches[i][j].RoundsRed,
+                                response.data.Matches[i][j]
+                            ]);
                         } else {
                             bracketdata.results[0][i].push([
                                 response.data.Matches[i][j].ScoreBlue, response.data.Matches[i][j].ScoreRed,

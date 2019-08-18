@@ -26,7 +26,21 @@
             <h2>{{currentMatch.LiveTime | timespan}}</h2>
         </div>
     </div>
-    <div class="row">
+    <div class="row" ng-show="rules.Rounds > 1 && rules.SplitRounds">
+        <div class="col-4 bg-blue" align="center" ng-class="{'order-4':mirror}">
+            <h1>{{currentMatch.ScoreBlue}}</h1>
+        </div>
+        <div class="col-2 bg-lightblue" align="center" ng-class="{'order-3':mirror}">
+            <h3>{{currentMatch.RoundsBlue}}</h3>
+        </div>
+        <div class="col-2 bg-lightred" align="center" ng-class="{'order-2':mirror}">
+            <h3>{{currentMatch.RoundsRed}}</h3>
+        </div>
+        <div class="col-4 bg-red" align="center" ng-class="{'order-1':mirror}">
+            <h1>{{currentMatch.ScoreRed}}</h1>
+        </div>
+    </div>
+    <div class="row" ng-show="rules.Rounds <= 1 || !rules.SplitRounds">
         <div class="col-6 bg-blue" align="center" ng-class="{'order-2':mirror}">
             <h1>{{currentMatch.ScoreBlue}}</h1>
         </div>

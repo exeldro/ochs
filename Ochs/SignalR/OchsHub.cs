@@ -411,6 +411,7 @@ namespace Ochs
                 }
                 using (var transaction = session.BeginTransaction())
                 {
+                    match.UpdateMatchData();
                     session.Update(match);
                     transaction.Commit();
                 }

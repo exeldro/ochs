@@ -43,6 +43,12 @@
         <div style="width: 90px;" class="bg-blue text-center" ng-class="{'warning': rules.PointsMax > 0 && currentMatch.ScoreBlue >= rules.PointsMax}">
             <h1>{{currentMatch.ScoreBlue}}</h1>
         </div>
+        <div style="width: 40px;" class="bg-lightblue text-center" ng-show="rules.Rounds > 1 && rules.SplitRounds">
+            <h3>{{currentMatch.RoundsBlue}}</h3>
+        </div>
+        <div style="width: 40px;" class="bg-lightred text-center" ng-show="rules.Rounds > 1 && rules.SplitRounds">
+            <h3>{{currentMatch.RoundsRed}}</h3>
+        </div>
         <div style="width: 90px;" class="bg-red text-center" ng-class="{'warning': rules.PointsMax > 0 && currentMatch.ScoreRed >= rules.PointsMax}">
             <h1>{{currentMatch.ScoreRed}}</h1>
         </div>

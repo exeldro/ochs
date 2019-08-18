@@ -3,7 +3,7 @@ using FluentNHibernate.Mapping;
 
 namespace Ochs
 {
-    public class MatchMap :ClassMap<Match>
+    public class MatchMap : ClassMap<Match>
     {
         public MatchMap()
         {
@@ -13,6 +13,8 @@ namespace Ochs
             References(x => x.FighterRed);
             References(x => x.FighterBlue);
             Map(x => x.Round);
+            Map(x => x.RoundsBlue);
+            Map(x => x.RoundsRed);
             Map(x => x.ScoreBlue);
             Map(x => x.ScoreRed);
             Map(x => x.ExchangeCount);

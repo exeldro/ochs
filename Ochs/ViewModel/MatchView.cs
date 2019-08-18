@@ -38,6 +38,8 @@ namespace Ochs
         public virtual Guid? PhaseId => _match.Phase?.Id;
         public virtual string Pool => _match.Pool?.Name;
         public virtual Guid? PoolId => _match.Pool?.Id;
+        public virtual int RoundsRed => _match.RoundsRed;
+        public virtual int RoundsBlue => _match.RoundsBlue;
         public virtual int ScoreRed => _match.ScoreRed;
         public virtual int ScoreBlue => _match.ScoreBlue;
         public virtual int ExchangeCount => _match.ExchangeCount;

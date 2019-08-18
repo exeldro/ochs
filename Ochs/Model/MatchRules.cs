@@ -9,6 +9,7 @@ namespace Ochs
         public virtual Guid Id { get; set; }
         //public virtual Organization Organization { get; set; }
         public virtual int Rounds { get; set; } = 1;
+        public virtual bool SplitRounds { get; set; } = true;
         public virtual int PointsMax { get; set; } = 0;
         public virtual int ExchangePointsMax { get; set; } = 3;
 

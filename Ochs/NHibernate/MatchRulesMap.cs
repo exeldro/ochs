@@ -9,6 +9,7 @@ namespace Ochs
             Id(x => x.Id);
             Map(x => x.Name).Unique().Not.Nullable();
             Map(x => x.Rounds);
+            Map(x => x.SplitRounds);
             Map(x => x.PointsMax);
             Map(x => x.ExchangePointsMax);
             Map(x => x.TimeMax);

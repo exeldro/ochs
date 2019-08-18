@@ -822,13 +822,13 @@ namespace Ochs
                 {
                     if (blue && matchEvent.PointsBlue != 0)
                     {
-                        ranking.Penalties += Math.Abs(matchEvent.PointsBlue);
+                        ranking.Penalties++;
                         if (!string.IsNullOrWhiteSpace(matchEvent.Note))
                             ranking.Notes++;
                     }
                     else if (!blue && matchEvent.PointsRed != 0)
                     {
-                        ranking.Penalties += Math.Abs(matchEvent.PointsRed);
+                        ranking.Penalties++;
                         if (!string.IsNullOrWhiteSpace(matchEvent.Note))
                             ranking.Notes++;
                     }
@@ -839,14 +839,14 @@ namespace Ochs
                 {
                     if (blue && matchEvent.PointsBlue != 0)
                     {
-                        ranking.Penalties += Math.Abs(matchEvent.PointsBlue);
+                        ranking.Penalties++;
                         ranking.MatchPoints -= Math.Abs(matchEvent.PointsBlue);
                         if (!string.IsNullOrWhiteSpace(matchEvent.Note))
                             ranking.Notes++;
                     }
                     else if (!blue && matchEvent.PointsRed != 0)
                     {
-                        ranking.Penalties += Math.Abs(matchEvent.PointsRed);
+                        ranking.Penalties++;
                         ranking.MatchPoints -= Math.Abs(matchEvent.PointsRed);
                         if (!string.IsNullOrWhiteSpace(matchEvent.Note))
                             ranking.Notes++;

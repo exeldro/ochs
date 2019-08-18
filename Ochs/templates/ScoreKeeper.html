@@ -69,10 +69,10 @@
             <button type="button" class="btn bg-lightblue" ng-click="addMatchEvent(0,0,'SportsmanshipBlue',note)">Sportsmanship</button>
         </div>
         <div class="p-1" ng-show="rules.RecordMatchPointDeductions">
-            <button type="button" class="btn bg-lightblue" ng-click="addMatchEvent(-1*rules.MatchPointDeductionPoints,0,'MatchPointDeduction',note)">Penalty</button>
+            <button type="button" class="btn bg-lightblue" ng-click="addMatchEvent(-1*rules.MatchPointDeductionPoints,0,'MatchPointDeduction',note)">MP Penalty</button>
         </div>
         <div class="p-1" ng-show="rules.RecordPenalties">
-            <button type="button" class="btn bg-lightblue" ng-click="addMatchEvent(-1*rules.PenaltyPoints,0,'Penalty',note)">Penalty</button>
+            <button type="button" class="btn bg-lightblue" ng-click="addMatchEvent(-1*rules.PenaltyPoints,0,'Penalty',note)">Penalty hit</button>
         </div>
         <div class="p-1" ng-show="rules.RecordWarnings">
             <button type="button" class="btn bg-lightblue" ng-click="addMatchEvent(0,0,'WarningBlue',note)">Warning</button>
@@ -81,10 +81,10 @@
             <button type="button" class="btn bg-lightred" ng-click="addMatchEvent(0,0,'WarningRed',note)">Warning</button>
         </div>
         <div class="p-1" ng-show="rules.RecordPenalties">
-            <button type="button" class="btn bg-lightred" ng-click="addMatchEvent(0,-1*rules.PenaltyPoints,'Penalty',note)">Penalty</button>
+            <button type="button" class="btn bg-lightred" ng-click="addMatchEvent(0,-1*rules.PenaltyPoints,'Penalty',note)">Penalty hit</button>
         </div>
         <div class="p-1" ng-show="rules.RecordMatchPointDeductions">
-            <button type="button" class="btn bg-lightred" ng-click="addMatchEvent(0,-1*rules.MatchPointDeductionPoints,'MatchPointDeduction',note)">Penalty</button>
+            <button type="button" class="btn bg-lightred" ng-click="addMatchEvent(0,-1*rules.MatchPointDeductionPoints,'MatchPointDeduction',note)">MP Penalty</button>
         </div>
         <div class="p-1" ng-show="rules.RecordSportsmanship">
             <button type="button" class="btn bg-lightred" ng-click="addMatchEvent(0,0,'SportsmanshipRed',note)">Sportsmanship</button>

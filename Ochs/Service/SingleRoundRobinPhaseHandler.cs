@@ -33,8 +33,9 @@ namespace Ochs
 
         public void AssignFightersToMatches(IList<Match> matches, IList<Person> fighters)
         {
-            var matchCounter = 0;
-            while (matchCounter < matches.Count)
+            matches = matches.OrderByDescending(y => y.Name).ToList();
+
+            for (var matchCounter = 0; matchCounter < matches.Count; matchCounter++)
             {
                 Person fighterBlue = null;
 
@@ -43,19 +44,16 @@ namespace Ochs
                     fighterBlue = fighters
                         .OrderBy(x => MatchCount(x, matches))
                         .ThenBy(x => BlueCount(x, matches))
-                        .ThenBy(x =>
-                            matches.OrderBy(y => y.Name)
-                                .LastOrDefault(y => y.FighterBlue?.Id == x.Id || y.FighterRed?.Id == x.Id)?.Name)
-
+                        .ThenBy(x => matches.LastOrDefault(y => y.FighterBlue?.Id == x.Id || y.FighterRed?.Id == x.Id) != null)
+                        .ThenByDescending(x => matches.LastOrDefault(y => y.FighterBlue?.Id == x.Id || y.FighterRed?.Id == x.Id)?.Name)
                         .First();
                 }
                 else
                 {
 
                     fighterBlue = fighters
-                        .OrderBy(x =>
-                            matches.OrderBy(y => y.Name)
-                                .LastOrDefault(y => y.FighterBlue?.Id == x.Id || y.FighterRed?.Id == x.Id)?.Name)
+                        .OrderBy(x => matches.LastOrDefault(y => y.FighterBlue?.Id == x.Id || y.FighterRed?.Id == x.Id) != null)
+                        .ThenByDescending(x => matches.LastOrDefault(y => y.FighterBlue?.Id == x.Id || y.FighterRed?.Id == x.Id)?.Name)
                         .ThenBy(x => MatchCount(x, matches))
                         .ThenBy(x => BlueCount(x, matches))
                         .First();
@@ -65,16 +63,14 @@ namespace Ochs
                         x.Id != fighterBlue.Id && !matches.Any(y =>
                             (y.FighterBlue?.Id == fighterBlue.Id && y.FighterRed?.Id == x.Id) ||
                             (y.FighterRed?.Id == fighterBlue.Id && y.FighterBlue?.Id == x.Id)))
-                    .OrderBy(x =>
-                        matches.OrderBy(y => y.Name)
-                            .LastOrDefault(y => y.FighterBlue?.Id == x.Id || y.FighterRed?.Id == x.Id)?.Name)
+                    .OrderBy(x => matches.LastOrDefault(y => y.FighterBlue?.Id == x.Id || y.FighterRed?.Id == x.Id) != null)
+                    .ThenByDescending(x => matches.LastOrDefault(y => y.FighterBlue?.Id == x.Id || y.FighterRed?.Id == x.Id)?.Name)
                     .ThenBy(x => MatchCount(x, matches))
                     .ThenBy(x => RedCount(x, matches))
                     .First();
                 var match = matches[matchCounter];
                 match.FighterBlue = fighterBlue;
                 match.FighterRed = fighterRed;
-                matchCounter++;
             }
         }
 
@@ -85,7 +81,7 @@ namespace Ochs
 
         public IList<IList<Match>> GetMatchesPerRound(IList<Match> matches)
         {
-            return new List<IList<Match>> {matches};
+            return new List<IList<Match>> { matches };
         }
 
         public IList<Match> UpdateMatchesAfterFinishedMatch(Match match, IList<Match> matches)

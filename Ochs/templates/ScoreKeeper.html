@@ -94,6 +94,7 @@
         <div class="col-12" align="center">
             <span ng-class="{'warning': rules.ExchangesMax > 0 && currentMatch.ExchangeCount >= rules.ExchangesMax}"><strong>{{currentMatch.ExchangeCount}}</strong> Exchanges <br /></span>
             <span ng-show="rules.RecordDoubleHits" ng-class="{'warning': rules.DoubleHitMax > 0 && currentMatch.DoubleCount > rules.DoubleHitMax}"><strong>{{currentMatch.DoubleCount}}</strong> Doubles<br /></span>
+            <span ng-show="rules.Rounds > 1">Round <select ng-model="round" ng-options="x for x in range(1, rules.Rounds)" ng-change="updateRound()"></select></span>
             <table>
                 <tr><th>Exchange</th><th ng-show="rules.Rounds > 1">Round</th><th>Time</th><th>Event</th><th>Blue</th><th>Red</th><th ng-show="rules.RecordNotes">Notes</th></tr>
                 <tr ng-repeat="event in currentMatch.Events">

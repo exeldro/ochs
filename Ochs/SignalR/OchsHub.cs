@@ -1809,6 +1809,45 @@ namespace Ochs
             }
         }
 
+        public void UpdateMatchRound(Guid matchId, int round)
+        {
+            using (var session = NHibernateHelper.OpenSession())
+            using (var transaction = session.BeginTransaction())
+            {
+                var match = session.Get<Match>(matchId);
+                if (match == null)
+                {
+                    Clients.Caller.displayMessage("Match not found", "warning");
+                    return;
+                }
+                if (!HasOrganizationRights(session, match.Competition.Organization, UserRoles.Scorekeeper))
+                {
+                    Clients.Caller.displayMessage("Not logged in as scorekeeper", "warning");
+                    return;
+                }
+                if (match.Round == round)
+                    return;
+                if (match.Finished)
+                {
+                    Clients.Caller.displayMessage("Match finished", "warning");
+                    return;
+                }
+                var rules = match.GetRules();
+                if (rules == null || round > rules.Rounds)
+                {
+                    Clients.Caller.displayMessage("Round not allowed", "warning");
+                    return;
+                }
+                match.TimeRunningSince = null;
+                match.Time = TimeSpan.Zero;
+                match.Round = round;
+                match.UpdateMatchData();
+                session.Update(match);
+                transaction.Commit();
+                Clients.All.updateMatch(new MatchDetailView(match));
+            }
+        }
+
         public void UpdateMatchLocation(string location, IList<Guid> matchIds)
         {
             using (var session = NHibernateHelper.OpenSession())

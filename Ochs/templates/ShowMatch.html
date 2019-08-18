@@ -44,12 +44,18 @@
             <strong>{{currentMatch.DoubleCount}}</strong> Doubles<br />
         </div>
     </div>
+    <div class="row d-none d-sm-flex" ng-show="rules.Rounds > 1">
+        <div class="col-12" align="center">
+            Round <strong>{{currentMatch.Round}}</strong><br />
+        </div>
+    </div>
     <div class="row d-none d-md-flex">
         <div class="col-12" align="center">
             <table>
-                <tr><th>Exchange</th><th>Time</th><th>Event</th><th ng-show="!mirror">Blue</th><th>Red</th><th ng-show="mirror">Blue</th></tr>
+                <tr><th>Exchange</th><th ng-show="rules.Rounds > 1">Round</th><th>Time</th><th>Event</th><th ng-show="!mirror">Blue</th><th>Red</th><th ng-show="mirror">Blue</th></tr>
                 <tr ng-repeat="event in currentMatch.Events">
                     <td align="center">{{ event.ExchangeNumber }}</td>
+                    <td ng-show="rules.Rounds > 1">{{ event.Round }}</td>
                     <td>{{ event.Time | timespan }}</td>
                     <td>{{ event.Type }}</td>
                     <td class="bg-blue" ng-show="!mirror" align="center">{{ event.PointsBlue }}</td>

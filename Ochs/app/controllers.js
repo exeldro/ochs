@@ -655,6 +655,7 @@ app.controller("MatchController", function ($scope, $http, $routeParams, $interv
         $http.get("api/Match/Get/" + $routeParams.matchId).then(function (response) {
             $scope.currentMatch = response.data;
             $scope.matchResult = response.data.Result;
+            $scope.round = response.data.Round;
             $scope.editTime = new Date(1970, 1, 1, 0, 0, response.data.LiveTime);
         });
         $http.get("api/Match/GetRules/" + $routeParams.matchId).then(function (response) {
@@ -768,8 +769,18 @@ app.controller("MatchController", function ($scope, $http, $routeParams, $interv
     $scope.matchSaveMatchRules = function () {
         $scope.$parent.ochsHub.invoke("MatchSetMatchRules", $scope.matchId, $scope.newMatchRules ? $scope.newMatchRules : '00000000-0000-0000-0000-000000000000');
     };
-
-
+    $scope.range = function (min, max, step) {
+        step = step || 1;
+        var input = [];
+        for (var i = min; i <= max; i += step) {
+            input.push(i);
+        }
+        return input;
+    };
+    $scope.updateRound = function () {
+        if ($scope.round)
+            $scope.$parent.ochsHub.invoke("UpdateMatchRound", $scope.matchId, $scope.round);
+    };
 });
 
 app.controller("ListRulesController", function ($scope, $http) {

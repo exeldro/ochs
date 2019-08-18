@@ -25,6 +25,13 @@ namespace Ochs
                     NHibernateUtil.Initialize(person.Organizations);
                 }
                 NHibernateUtil.Initialize(pool.Matches);
+                foreach (var match in pool.Matches)
+                {
+                    NHibernateUtil.Initialize(match.FighterBlue?.Organizations);
+                    NHibernateUtil.Initialize(match.FighterRed?.Organizations);
+                    NHibernateUtil.Initialize(match.Competition.Organization);
+                    NHibernateUtil.Initialize(match.Pool);
+                }
                 return new PoolDetailView(pool);
             }
         }

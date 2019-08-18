@@ -369,16 +369,16 @@ app.controller("PhaseController", function ($scope, $http, $routeParams) {
     };
     $scope.addAllFighters = function () {
         $scope.$parent.ochsHub.invoke("PhaseAddAllFighters", $scope.phaseId);
-    }
+    };
     $scope.addTopFighters = function () {
         $scope.$parent.ochsHub.invoke("PhaseAddTopFighters", $scope.phaseId, $scope.topfighters);
-    }
+    };
     $scope.distributeFighters = function () {
         $scope.$parent.ochsHub.invoke("PhaseDistributeFighters", $scope.phaseId);
-    }
+    };
     $scope.generateMatches = function () {
         $scope.$parent.ochsHub.invoke("PhaseGenerateMatches", $scope.phaseId);
-    }
+    };
     $scope.checkAll = function () {
         angular.forEach($scope.currentPhase.Fighters, function (obj) {
             obj.Selected = $scope.select;
@@ -703,6 +703,12 @@ app.controller("MatchController", function ($scope, $http, $routeParams, $interv
     });
     $interval(function () {
         if ($scope.currentMatch && $scope.currentMatch.TimeRunning) {
+            if ($scope.rules && $scope.rules.TimeMaxSeconds > 0 &&
+                $location.path().length >= 12 && $location.path().substring(0, 12) === '/ScoreKeeper' &&
+                $scope.currentMatch.LiveTime < $scope.rules.TimeMaxSeconds &&
+                $scope.currentMatch.LiveTime + 0.01 >= $scope.rules.TimeMaxSeconds) {
+                $scope.$parent.ochsHub.client.displayMessage('Maximum time reached', 'warning');
+            }
             $scope.currentMatch.LiveTime += 0.01;
             $scope.editingTime = false;
         }

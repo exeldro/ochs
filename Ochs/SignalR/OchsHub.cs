@@ -1909,7 +1909,25 @@ namespace Ochs
 
                 }
             }
+        }
 
+        public void ShowMatchOnLocation(Guid matchId, string location)
+        {
+            using (var session = NHibernateHelper.OpenSession())
+            {
+                var match = session.Get<Match>(matchId);
+                if (match == null)
+                {
+                    Clients.Caller.displayMessage("Match not found", "warning");
+                    return;
+                }
+                if (!HasMatchRights(session, match, UserRoles.Scorekeeper))
+                {
+                    Clients.Caller.displayMessage("Not logged in as score keeper", "warning");
+                    return;
+                }
+            }
+            Clients.All.showMatchOnLocation(matchId, location);
         }
     }
 }

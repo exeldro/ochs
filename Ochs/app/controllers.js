@@ -33,10 +33,13 @@ app.controller('OchsController',
         $scope.ochsHub.client.updateRankings = function (data) {
             $scope.$broadcast('updateRankings', data);
         };
+        $scope.ochsHub.client.showMatchOnLocation = function (matchId, location) {
+            $scope.$broadcast('showMatchOnLocation', matchId, location);
+        };
         $scope.ochsHub.client.authorizationException = function (gotsession) {
             //$scope.
             $('#authorizationExceptionModal').modal('show');
-        }
+        };
         $scope.ochsHub.client.displayMessage = function (message, messageType) {
             $('#messagePopupMessage').text(message);
             var popup = $('#messagePopup');
@@ -47,7 +50,7 @@ app.controller('OchsController',
             popup.addClass('alert-' + messageType);
             // add the message element to the body, fadein, wait 3secs, fadeout
             popup.fadeIn(300).delay(3000).fadeOut(500);
-        }
+        };
         $.connection.hub.start()
             .done(function () { console.log('Now connected, connection ID=' + $.connection.hub.id); })
             .fail(function () { console.log('Could not Connect!'); });
@@ -707,6 +710,13 @@ app.controller("MatchController", function ($scope, $http, $routeParams, $interv
             });
         }
     });
+    if ($location.path().length < 12 || $location.path().substring(0, 12) !== '/ScoreKeeper') {
+        $scope.$on('showMatchOnLocation',
+            function (event, matchId, location) {
+                if ($cookies.get('location') && location === $cookies.get('location'))
+                    $location.path("ShowMatch/" + matchId);
+            });
+    }
     $interval(function () {
         if ($scope.currentMatch && $scope.currentMatch.TimeRunning) {
             if ($scope.rules && $scope.rules.TimeMaxSeconds > 0 &&
@@ -786,6 +796,10 @@ app.controller("MatchController", function ($scope, $http, $routeParams, $interv
         if ($scope.round)
             $scope.$parent.ochsHub.invoke("UpdateMatchRound", $scope.matchId, $scope.round);
     };
+    $scope.showMatchOnLocation = function () {
+        if ($scope.matchId && $cookies.get('location'))
+            $scope.$parent.ochsHub.invoke("ShowMatchOnLocation", $scope.matchId, $cookies.get('location'));
+    }
 });
 
 app.controller("ListRulesController", function ($scope, $http) {

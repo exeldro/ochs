@@ -24,22 +24,43 @@
     <tr ng-repeat="ranking in rankings">
         <td>{{ranking.Rank}}</td>
         <td>{{ranking.Fighter.DisplayName}}</td>
-        <td class="rotate-45">{{ranking.Matches}}</td>
-        <td class="rotate-45">{{ranking.Wins}}</td>
-        <td class="rotate-45">{{ranking.Draws}}</td>
-        <td class="rotate-45">{{ranking.Losses}}</td>
+        <td class="rotate-45" ng-init="$parent.totalMatches = $parent.totalMatches + ranking.Matches">{{ranking.Matches}}</td>
+        <td class="rotate-45" ng-init="$parent.totalWins = $parent.totalWins + ranking.Wins">{{ranking.Wins}}</td>
+        <td class="rotate-45" ng-init="$parent.totalDraws = $parent.totalDraws + ranking.Draws">{{ranking.Draws}}</td>
+        <td class="rotate-45" ng-init="$parent.totalLosses = $parent.totalLosses + ranking.Losses">{{ranking.Losses}}</td>
         <td class="rotate-45">{{ranking.WinRatio | number : 2}}</td>
-        <td class="rotate-45">{{ranking.MatchPoints}}</td>
+        <td class="rotate-45" ng-init="$parent.totalMatchPoints = $parent.totalMatchPoints + ranking.MatchPoints">{{ranking.MatchPoints}}</td>
         <td class="rotate-45">{{ranking.MatchPointsPerMatch | number : 2}}</td>
-        <td class="rotate-45" ng-show="rules.RecordDoubleHits">{{ranking.DoubleHits}}</td>
+        <td class="rotate-45" ng-init="$parent.totalDoubleHits = $parent.totalDoubleHits + ranking.DoubleHits" ng-show="rules.RecordDoubleHits">{{ranking.DoubleHits}}</td>
         <td class="rotate-45" ng-show="rules.RecordDoubleHits">{{ranking.DoubleHitsPerMatch | number : 2}}</td>
-        <td class="rotate-45" ng-show="rules.RecordPenalties">{{ranking.Penalties}}</td>
-        <td class="rotate-45" ng-show="rules.RecordWarnings">{{ranking.Warnings}}</td>
-        <td class="rotate-45">{{ranking.Exchanges}}</td>
-        <td class="rotate-45">{{ranking.HitsGiven}}</td>
-        <td class="rotate-45">{{ranking.HitsReceived}}</td>
+        <td class="rotate-45" ng-init="$parent.totalPenalties = $parent.totalPenalties + ranking.Penalties" ng-show="rules.RecordPenalties">{{ranking.Penalties}}</td>
+        <td class="rotate-45" ng-init="$parent.totalWarnings = $parent.totalWarnings + ranking.Warnings" ng-show="rules.RecordWarnings">{{ranking.Warnings}}</td>
+        <td class="rotate-45" ng-init="$parent.totalExchanges = $parent.totalExchanges + ranking.Exchanges">{{ranking.Exchanges}}</td>
+        <td class="rotate-45" ng-init="$parent.totalHitsGiven = $parent.totalHitsGiven + ranking.HitsGiven">{{ranking.HitsGiven}}</td>
+        <td class="rotate-45" ng-init="$parent.totalHitsReceived = $parent.totalHitsReceived + ranking.HitsReceived">{{ranking.HitsReceived}}</td>
         <td class="rotate-45">{{ranking.HitRatio | number : 2}}</td>
-        <td class="rotate-45" ng-show="rules.RecordSportsmanship">{{ranking.SportsmanshipPoints}}</td>
-        <td class="rotate-45" ng-show="rules.RecordNotes">{{ranking.Notes}}</td>
+        <td class="rotate-45" ng-init="$parent.totalSportsmanshipPoints = $parent.totalSportsmanshipPoints + ranking.SportsmanshipPoints" ng-show="rules.RecordSportsmanship">{{ranking.SportsmanshipPoints}}</td>
+        <td class="rotate-45" ng-init="$parent.totalNotes = $parent.totalNotes+ ranking.Notes" ng-show="rules.RecordNotes">{{ranking.Notes}}</td>
+    </tr>
+    <tr class="total">
+        <td></td>
+        <td>Total</td>
+        <td class="rotate-45">{{totalMatches}}</td>
+        <td class="rotate-45">{{totalWins}}</td>
+        <td class="rotate-45">{{totalDraws}}</td>
+        <td class="rotate-45">{{totalLosses}}</td>
+        <td class="rotate-45">{{totalWins / totalMatches | number : 2}}</td>
+        <td class="rotate-45">{{totalMatchPoints}}</td>
+        <td class="rotate-45">{{totalMatchPoints / totalMatches | number : 2}}</td>
+        <td class="rotate-45" ng-show="rules.RecordDoubleHits">{{totalDoubleHits}}</td>
+        <td class="rotate-45" ng-show="rules.RecordDoubleHits">{{totalDoubleHits / totalMatches | number : 2}}</td>
+        <td class="rotate-45" ng-show="rules.RecordPenalties">{{totalPenalties}}</td>
+        <td class="rotate-45" ng-show="rules.RecordWarnings">{{totalWarnings}}</td>
+        <td class="rotate-45">{{totalExchanges}}</td>
+        <td class="rotate-45">{{totalHitsGiven}}</td>
+        <td class="rotate-45">{{totalHitsReceived}}</td>
+        <td class="rotate-45">{{(totalHitsGiven - totalHitsReceived) / totalMatches | number : 2}}</td>
+        <td class="rotate-45" ng-show="rules.RecordSportsmanship">{{totalSportsmanshipPoints}}</td>
+        <td class="rotate-45" ng-show="rules.RecordNotes">{{totalNotes}}</td>
     </tr>
 </table>

@@ -1,4 +1,6 @@
-﻿namespace Ochs
+﻿using System;
+
+namespace Ochs
 {
     public class OrganizationView
     {
@@ -8,7 +10,7 @@
         {
             _organization = organization;
         }
-
+        public virtual Guid Id => _organization.Id;
         public virtual string Name => _organization.Name;
         public virtual string CountryCode => _organization.CountryCode;
 

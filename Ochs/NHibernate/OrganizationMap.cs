@@ -12,6 +12,7 @@ namespace Ochs
             HasMany(x => x.Competitions).Cascade.DeleteOrphan().Inverse();
             HasMany(x => x.Aliases).Element("Alias").Not.KeyNullable();
             Map(x => x.CountryCode);
+            HasManyToMany(x => x.Persons).Table("OrganizationToPerson");
         }
     }
 }

@@ -13,7 +13,7 @@ namespace Ochs
             Map(x => x.FullName);
             Map(x => x.CountryCode);
             Map(x => x.Gender);
-            HasManyToMany(x => x.Organizations);
+            HasManyToMany(x => x.Organizations).Table("OrganizationToPerson");
         }
         
     }

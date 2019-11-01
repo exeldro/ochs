@@ -157,6 +157,14 @@ app.controller("ListOrganizationsController", function ($scope, $http) {
                 $scope.organizations = response.data;
             });
     };
+    $scope.mergeOrganizations = function() {
+        if (!$scope.mergeOrganizationToId || !$scope.mergeOrganizationFromId || $scope.mergeOrganizationToId === $scope.mergeOrganizationFromId)
+            return;
+        $http.post("api/Organization/MergeOrganizations", { FromId: $scope.mergeOrganizationFromId, ToId: $scope.mergeOrganizationToId })
+            .then(function (response) {
+                $scope.organizations = response.data;
+            });
+    };
 });
 
 app.controller("ListCompetitionsController", function ($scope, $http) {

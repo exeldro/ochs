@@ -9,5 +9,6 @@ namespace Ochs
         public virtual string Name { get; set; }   
         public virtual IList<Competition> Competitions { get; set; } = new List<Competition>();
         public virtual IList<string> Aliases { get; set; } = new List<string>();
+        public virtual string CountryCode { get; set; }
     }
 }

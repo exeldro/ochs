@@ -76,6 +76,10 @@ app.config(['$routeProvider', '$locationProvider',
                 templateUrl: 'templates/ShowCompetition.html',
                 controller: 'CompetitionController'
             }).
+            when('/ExportHemaRatings/:competitionId', {
+                templateUrl: 'templates/ExportHemaRatings.html',
+                controller: 'CompetitionController'
+            }).
             when('/ShowPhase/:phaseId', {
                 templateUrl: 'templates/ShowPhase.html',
                 controller: 'PhaseController'

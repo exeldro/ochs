@@ -11,6 +11,7 @@ namespace Ochs
             Map(x => x.Name).Unique().Not.Nullable();
             HasMany(x => x.Competitions).Cascade.DeleteOrphan().Inverse();
             HasMany(x => x.Aliases).Element("Alias").Not.KeyNullable();
+            Map(x => x.CountryCode);
         }
     }
 }

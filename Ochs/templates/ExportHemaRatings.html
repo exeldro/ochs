@@ -1,0 +1,43 @@
+﻿<h2>Competition {{currentCompetition.Name}}</h2>
+<h3>Clubs</h3>
+<table>
+    <tr>
+        <th>Organization</th>
+        <th>Country</th>
+    </tr>
+    <tr ng-repeat="organization in currentCompetition.FighterOrganizations">
+        <td>{{organization.Name}}</td>
+        <td>{{organization.CountryCode}}</td>
+    </tr>
+</table>
+<h3>Fighters {{currentCompetition.FightersTotal}}</h3>
+<table>
+    <tr>
+        <th ng-click="fighterSortType = 'DisplayName'; fighterSortReverse=!fighterSortReverse">Name</th>
+        <th ng-click="fighterSortType = 'Organization'; fighterSortReverse=!fighterSortReverse">Organization</th>
+        <th ng-click="fighterSortType = 'CountryCode'; fighterSortReverse=!fighterSortReverse">Country</th>
+    </tr>
+    <tr ng-repeat="fighter in currentCompetition.Fighters | orderBy:fighterSortType:fighterSortReverse">
+        <td>{{fighter.DisplayName}}</td>
+        <td>{{fighter.Organization}}</td>
+        <td>{{fighter.CountryCode}}</td>
+    </tr>
+</table>
+
+<h3>Matches {{currentCompetition.MatchesTotal}}</h3>
+<table>
+    <tr>
+        <th ng-click="matchSortType = 'FighterBlue'; matchSortReverse=!matchSortReverse">Blue</th>
+        <th ng-click="matchSortType = 'FighterRed'; matchSortReverse=!matchSortReverse">Red</th>
+        <th ng-click="matchSortType = 'Result'; matchSortReverse=!matchSortReverse">ResultBlue</th>
+        <th ng-click="matchSortType = 'Result'; matchSortReverse=!matchSortReverse">ResultRed</th>
+        <th ng-click="matchSortType = 'Pool'; matchSortReverse=!matchSortReverse">Round</th>
+    </tr>
+    <tr ng-repeat="match in currentCompetition.Matches | filter:searchMatchText | orderBy:matchSortType:matchSortReverse">
+        <td class="bg-lightblue">{{ match.FighterBlue }}</td>
+        <td class="bg-lightred">{{ match.FighterRed }}</td>
+        <td class="bg-lightblue">{{match.Result == 'WinBlue'?'Win':match.Result == 'WinRed'?'Loss':match.Result == 'Draw'?'Draw':match.Result}}</td>
+        <td class="bg-lightred">{{match.Result == 'WinRed'?'Win':match.Result == 'WinBlue'?'Loss':match.Result == 'Draw'?'Draw':match.Result}}</td>
+        <td>{{match.Pool?match.Pool:match.Name.indexOf(' match ') !== -1?match.Name.substring(0,match.Name.length - 10):match.Name}}</td>
+    </tr>
+</table>

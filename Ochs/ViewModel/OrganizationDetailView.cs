@@ -2,16 +2,11 @@
 
 namespace Ochs
 {
-    public class OrganizationDetailView
+    public class OrganizationDetailView : OrganizationView
     {
-        private readonly Organization _organization;
-
-        public OrganizationDetailView(Organization organization)
+        public OrganizationDetailView(Organization organization) : base(organization)
         {
-            _organization = organization;
         }
-
-        public virtual string Name => _organization.Name;
         public virtual IList<string> Aliases => _organization.Aliases;
     }
 }

@@ -13,7 +13,7 @@ namespace Ochs
         public virtual RankingRules RankingRules { get; set; }
         public virtual IList<Phase> Phases { get; set; } = new List<Phase>();
         public virtual IList<Match> Matches { get; set; } = new List<Match>();
-        public virtual IList<Person> Fighters { get; set; } = new List<Person>();
+        public virtual IList<CompetitionFighter> Fighters { get; set; } = new List<CompetitionFighter>();
         public virtual Organization Organization { get; set; }
     }
 }

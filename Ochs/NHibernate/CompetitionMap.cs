@@ -15,7 +15,7 @@ namespace Ochs
             HasMany(x => x.Phases).Cascade.DeleteOrphan().Inverse().OrderBy(nameof(Phase.PhaseOrder));
             HasMany(x => x.Matches).Inverse();
             References(x => x.Organization);
-            HasManyToMany(x => x.Fighters);
+            HasMany(x => x.Fighters).Cascade.DeleteOrphan().Inverse();
         }
     }
 }

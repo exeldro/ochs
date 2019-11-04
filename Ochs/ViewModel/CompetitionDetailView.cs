@@ -18,13 +18,13 @@ namespace Ochs
 
         public virtual IList<MatchView> Matches => _competition.Matches.OrderBy(x => x.PlannedDateTime).ThenBy(x => x.Name).Select(x => new MatchView(x)).ToList();
         public virtual IList<PhaseView> Phases => _competition.Phases.Select(x => new PhaseView(x)).ToList();
-        public virtual IList<PersonMatchesView> Fighters => _competition.Fighters.Select(x => new PersonMatchesView(x,_competition.Matches)).ToList();        
+        public virtual IList<CompetitionFighterView> Fighters => _competition.Fighters.Select(x => new CompetitionFighterView(x ,_competition.Matches)).ToList();        
         public virtual int MatchesTotal => _competition.Matches.Count;
         public virtual int FightersTotal => _competition.Fighters.Count;
         public virtual int PhasesTotal => _competition.Phases.Count;
         public virtual string MatchRules => _competition.MatchRules?.Name;
 
-        public virtual IList<OrganizationView> FighterOrganizations => _competition.Fighters.SelectMany(x => x.Organizations)
+        public virtual IList<OrganizationView> FighterOrganizations => _competition.Fighters.Select(x=>x.Fighter).SelectMany(x => x.Organizations)
             .Distinct().Select(x => new OrganizationView(x)).ToList();
     }
 }

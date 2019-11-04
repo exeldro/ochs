@@ -979,7 +979,7 @@ namespace Ochs
                     if (phase.Fighters.Any(x => x.Id == fighterId))
                         continue;
 
-                    var fighter = phase.Competition.Fighters.SingleOrDefault(x => x.Id == fighterId);
+                    var fighter = phase.Competition.Fighters.Select(x=>x.Fighter).SingleOrDefault(x => x.Id == fighterId);
                     if (fighter == null)
                         continue;
 
@@ -1057,7 +1057,7 @@ namespace Ochs
                     return;
                 }
 
-                phase.Fighters = phase.Competition.Fighters.ToList();
+                phase.Fighters = phase.Competition.Fighters.Select(x=>x.Fighter).ToList();
                 session.Update(phase);
                 transaction.Commit();
                 Clients.All.updatePhase(new PhaseDetailView(phase));
@@ -1123,7 +1123,8 @@ namespace Ochs
                     return;
                 }
 
-                var fighters = phase.Fighters.Where(x => phase.Pools.All(y => y.Fighters.All(z => z.Id != x.Id))).ToList();
+                IList<Person> fighters = phase.Fighters.Where(x => phase.Pools.All(y => y.Fighters.All(z => z.Id != x.Id))).ToList();
+                fighters = Service.SortFightersByRanking(session, fighters, Service.GetPreviousPhase(phase), phase.Competition.Fighters);
                 foreach (var fighter in fighters)
                 {
                     var pool = phase.Pools.OrderBy(x => x.Fighters.Sum(y => y.Organizations.Count(z => fighter.Organizations.Any(a => a.Id == z.Id))))
@@ -1223,7 +1224,7 @@ namespace Ochs
 
                 foreach (var fighterId in fighterIds)
                 {
-                    var fighter = competition.Fighters.SingleOrDefault(x => x.Id == fighterId);
+                    var fighter = competition.Fighters.SingleOrDefault(x => x.Fighter.Id == fighterId);
                     if (fighter == null)
                         continue;
 
@@ -1233,9 +1234,9 @@ namespace Ochs
                     competition.Fighters.Remove(fighter);
                     foreach (var phase in competition.Phases)
                     {
-                        if (!phase.Fighters.Contains(fighter))
+                        if (!phase.Fighters.Contains(fighter.Fighter))
                             continue;
-                        phase.Fighters.Remove(fighter);
+                        phase.Fighters.Remove(fighter.Fighter);
                         if (!phasesToUpdate.Contains(phase))
                         {
                             phasesToUpdate.Add(phase);
@@ -1243,9 +1244,9 @@ namespace Ochs
 
                         foreach (var pool in phase.Pools)
                         {
-                            if (!pool.Fighters.Contains(fighter))
+                            if (!pool.Fighters.Contains(fighter.Fighter))
                                 continue;
-                            pool.Fighters.Remove(fighter);
+                            pool.Fighters.Remove(fighter.Fighter);
                             if (!poolsToUpdate.Contains(pool))
                             {
                                 poolsToUpdate.Add(pool);
@@ -1452,7 +1453,7 @@ namespace Ochs
                 Clients.All.updatePhase(new PhaseDetailView(pool.Phase));
             }
         }
-        public void CompetitionAddFighter(Guid competiotionId, string firstName, string lastNamePrefix, string lastName, string orgainzationName, string country)
+        public void CompetitionAddFighter(Guid competiotionId, string firstName, string lastNamePrefix, string lastName, string orgainzationName, string country, double? seed)
         {
             using (var session = NHibernateHelper.OpenSession())
             {
@@ -1503,10 +1504,17 @@ namespace Ochs
                         }
                         session.Save(person);
                     }
-                    if (competition.Fighters.All(x => x.Id != person.Id))
+
+                    var fighter = competition.Fighters.SingleOrDefault(x => x.Fighter.Id == person.Id);
+                    if (fighter == null)
                     {
-                        competition.Fighters.Add(person);
-                        session.Update(competition);
+                        fighter = new CompetitionFighter {Competition = competition, Fighter = person, Seed = seed};
+                        session.Save(fighter);
+                        competition.Fighters.Add(fighter);
+                    }else if (fighter.Seed != seed)
+                    {
+                        fighter.Seed = seed;
+                        session.Update(fighter);
                     }
 
                     if (!string.IsNullOrWhiteSpace(orgainzationName))
@@ -1647,7 +1655,7 @@ namespace Ochs
                     return;
                 }
 
-                var fighters = Service.SortFightersByRanking(session, phase.Fighters, Service.GetPreviousPhase(phase));
+                var fighters = Service.SortFightersByRanking(session, phase.Fighters, Service.GetPreviousPhase(phase), phase.Competition.Fighters);
 
                 GenerateMatches(session, phase.PhaseType, phase.Matches, fighters, phase);
             }
@@ -1679,7 +1687,7 @@ namespace Ochs
                     return;
                 }
 
-                var fighters = Service.SortFightersByRanking(session, pool.Fighters, Service.GetPreviousPhase(pool.Phase));
+                var fighters = Service.SortFightersByRanking(session, pool.Fighters, Service.GetPreviousPhase(pool.Phase), pool.Phase.Competition.Fighters);
                 GenerateMatches(session, pool.Phase.PhaseType, pool.Matches, fighters, pool.Phase, pool);
             }
         }
@@ -1718,7 +1726,7 @@ namespace Ochs
             if (phaseTypeHandler == null)
                 return;
             matches = phaseTypeHandler.GenerateMatches(fighters.Count, phase, pool);
-            var sortedFighters = Service.SortFightersByRanking(session, fighters, Service.GetPreviousPhase(matches[0].Phase));
+            var sortedFighters = Service.SortFightersByRanking(session, fighters, Service.GetPreviousPhase(phase), phase.Competition.Fighters);
             phaseTypeHandler.AssignFightersToMatches(matches, sortedFighters);
             var plannedDateTime = pool?.PlannedDateTime;
             foreach (var match in matches)

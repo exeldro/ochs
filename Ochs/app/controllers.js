@@ -58,9 +58,26 @@ app.controller('OchsController',
         $.connection.hub.error(function (error) {
             console.log('SignalR error: ' + error);
         });
+        $scope.handleHttpResponse = function(response) {
+            if (response) {
+                if (response.data) {
+                    if (response.data.Message) {
+                        $scope.ochsHub.client.displayMessage("Error: " + response.data.Message, "danger");
+                    } else {
+                        $scope.ochsHub.client.displayMessage("Error: " + response.data, "danger");
+                    }
+                } else if(response.statusText) {
+                    $scope.ochsHub.client.displayMessage("Error: " + response.statusText, "danger");
+                } else {
+                    $scope.ochsHub.client.displayMessage("Unknown error from server", "danger");
+                }
+            } else {
+                $scope.ochsHub.client.displayMessage("Unknown error from server", "danger");
+            }
+        };
         $http.get("api/Auth/CurrentUser").then(function (response) {
             $scope.username = response.data;
-        });
+        }, $scope.handleHttpResponse);
         $scope.reconnectSignalR = function () {
             $.connection.hub.stop();
             $.connection.hub.start().done(function () {
@@ -89,10 +106,10 @@ app.controller("ViewSettingsController", function ($scope, $cookies) {
 
 app.controller("ListUsersController", function ($scope, $http) {
     $http.get("api/Auth/All")
-        .then(function (response) { $scope.users = response.data; });
+        .then(function (response) { $scope.users = response.data; }, $scope.$parent.handleHttpResponse);
     $scope.createUser = function () {
         $http.post("api/Auth/Create", { Username: $scope.newUsername, Password: $scope.newPassword })
-            .then(function (response) { $scope.users.push(response.data); });
+            .then(function (response) { $scope.users.push(response.data); }, $scope.$parent.handleHttpResponse);
     };
 });
 
@@ -100,19 +117,19 @@ app.controller("EditUserController", function ($scope, $http, $routeParams) {
     $scope.userId = $routeParams.userId;
     $http.get("api/Auth/Get/" + $routeParams.userId).then(function (response) {
         $scope.currentUser = response.data;
-    });
+    }, $scope.$parent.handleHttpResponse);
     $http.get("api/Organization/All").then(function (response) {
         $scope.organizations = response.data;
-    });
+    }, $scope.$parent.handleHttpResponse);
     $scope.addUserRole = function () {
         $http.post("api/Auth/AddRole", { UserId: $scope.userId, Role: $scope.newRole, OrganizationName: $scope.newOrganization })
-            .then(function (response) { $scope.currentUser.Roles.push(response.data); });
+            .then(function (response) { $scope.currentUser.Roles.push(response.data); }, $scope.$parent.handleHttpResponse);
     };
     $scope.deleteUserRole = function ($role) {
         $http.post("api/Auth/DeleteRole", { RoleId: $role.Id })
             .then(function (response) {
                 $scope.currentUser.Roles.splice($scope.currentUser.Roles.indexOf($role), 1);
-            });
+            }, $scope.$parent.handleHttpResponse);
     };
 });
 
@@ -120,42 +137,42 @@ app.controller("EditPersonController", function ($scope, $http, $routeParams) {
     $scope.personId = $routeParams.personId;
     $http.get("api/Person/Get/" + $routeParams.personId).then(function (response) {
         $scope.currentPerson = response.data;
-    });
+    }, $scope.$parent.handleHttpResponse);
     $http.get("api/Organization/All").then(function (response) {
         $scope.organizations = response.data;
-    });
+    }, $scope.$parent.handleHttpResponse);
     $http.get("api/Country/All").then(function (response) {
         $scope.countries = response.data;
-    });
+    }, $scope.$parent.handleHttpResponse);
     $scope.savePerson = function () {
         $http.post("api/Person/Save", $scope.currentPerson)
             .then(function (response) {
                 $scope.currentPerson = response.data;
-            });
+            }, $scope.$parent.handleHttpResponse);
     };
     $scope.addOrganization = function () {
         $http.post("api/Person/AddOrganization", { PersonId: $scope.currentPerson.Id, Organization: $scope.personOrganization })
             .then(function (response) {
                 $scope.currentPerson = response.data;
-            });
+            }, $scope.$parent.handleHttpResponse);
     };
     $scope.removeOrganization = function () {
         $http.post("api/Person/RemoveOrganization", { PersonId: $scope.currentPerson.Id, Organization: $scope.personOrganization })
             .then(function (response) {
                 $scope.currentPerson = response.data;
-            });
+            }, $scope.$parent.handleHttpResponse);
     };
 });
 
 app.controller("ListOrganizationsController", function ($scope, $http) {
     $http.get("api/Organization/AllWithDetails").then(function (response) {
         $scope.organizations = response.data;
-    });
+    }, $scope.$parent.handleHttpResponse);
     $scope.uploadOrganizations = function (organizationFile) {
         $http.post("api/Organization/UploadOrganizations", organizationFile)
             .then(function (response) {
                 $scope.organizations = response.data;
-            });
+            }, $scope.$parent.handleHttpResponse);
     };
     $scope.mergeOrganizations = function() {
         if (!$scope.mergeOrganizationToId || !$scope.mergeOrganizationFromId || $scope.mergeOrganizationToId === $scope.mergeOrganizationFromId)
@@ -163,19 +180,19 @@ app.controller("ListOrganizationsController", function ($scope, $http) {
         $http.post("api/Organization/MergeOrganizations", { FromId: $scope.mergeOrganizationFromId, ToId: $scope.mergeOrganizationToId })
             .then(function (response) {
                 $scope.organizations = response.data;
-            });
+            }, $scope.$parent.handleHttpResponse);
     };
 });
 
 app.controller("ListCompetitionsController", function ($scope, $http) {
     $http.get("api/Competition/All")
-        .then(function (response) { $scope.competitions = response.data; });
+        .then(function (response) { $scope.competitions = response.data; }, $scope.$parent.handleHttpResponse);
     $http.get("api/Organization/All").then(function (response) {
         $scope.organizations = response.data;
-    });
+    }, $scope.$parent.handleHttpResponse);
     $scope.createCompetition = function () {
         $http.post("api/Competition/Create", { CompetitionName: $scope.newCompetitionName, OrganizationName: $scope.newOrganizationName })
-            .then(function (response) { $scope.competitions.push(response.data); });
+            .then(function (response) { $scope.competitions.push(response.data); }, $scope.$parent.handleHttpResponse);
     };
 });
 app.controller("CompetitionController", function ($scope, $http, $routeParams) {
@@ -185,25 +202,25 @@ app.controller("CompetitionController", function ($scope, $http, $routeParams) {
         if ($scope.rights) {
             $scope.currentCompetition.Rights = $scope.rights;
         }
-    });
+    }, $scope.$parent.handleHttpResponse);
     $http.get("api/Auth/CompetitionRights/" + $routeParams.competitionId).then(function (response) {
         $scope.rights = response.data;
         if ($scope.currentCompetition) {
             $scope.currentCompetition.Rights = response.data;
         }
-    });
+    }, $scope.$parent.handleHttpResponse);
     $http.get("api/Organization/All").then(function (response) {
         $scope.organizations = response.data;
     });
     $http.get("api/Country/All").then(function (response) {
         $scope.countries = response.data;
-    });
+    }, $scope.$parent.handleHttpResponse);
     $http.get("api/MatchRules/All").then(function (response) {
         $scope.matchRules = response.data;
-    });
+    }, $scope.$parent.handleHttpResponse);
     $http.get("api/RankingRules/All").then(function (response) {
         $scope.rankingRules = response.data;
-    });
+    }, $scope.$parent.handleHttpResponse);
     $scope.$on('updateCompetition', function (event, args) {
         if ($scope.competitionId === args.Id) {
             $scope.currentCompetition = args;
@@ -271,7 +288,7 @@ app.controller("CompetitionController", function ($scope, $http, $routeParams) {
         $http.post("api/Competition/UploadFighters/" + $scope.competitionId, fighterFile)
             .then(function (response) {
                 $scope.currentCompetition = response.data;
-            });
+            }, $scope.$parent.handleHttpResponse);
     };
     $scope.checkAll = function () {
         angular.forEach($scope.currentCompetition.Fighters, function (obj) {
@@ -324,10 +341,10 @@ app.controller("PhaseController", function ($scope, $http, $routeParams) {
             $scope.rights = response.data;
             $scope.currentPhase.Rights = $scope.rights;
         });
-    });
+    }, $scope.$parent.handleHttpResponse);
     $http.get("api/MatchRules/All").then(function (response) {
         $scope.matchRules = response.data;
-    });
+    }, $scope.$parent.handleHttpResponse);
     $scope.newMatchRules = '00000000-0000-0000-0000-000000000000';
     $scope.$on('updatePhase', function (event, args) {
         if ($scope.phaseId === args.Id) {
@@ -443,7 +460,7 @@ app.controller("PoolController", function ($scope, $http, $routeParams) {
             $scope.rights = response.data;
             $scope.currentPool.Rights = $scope.rights;
         });
-    });
+    }, $scope.$parent.handleHttpResponse);
     $scope.$on('updatePool', function (event, args) {
         if ($scope.poolId === args.Id) {
             $scope.currentPool = args;
@@ -516,7 +533,7 @@ app.controller("EliminationController", function ($scope, $http, $routeParams, $
     }
     $http.get(url).then(function (response) {
         $scope.current = response.data;
-    });
+    }, $scope.$parent.handleHttpResponse);
     $http.get(eliminationUrl).then(function (response) {
         $scope.currentElimination = response.data;
         var bracketdata = {
@@ -606,7 +623,7 @@ app.controller("EliminationController", function ($scope, $http, $routeParams, $
             },
             teamWidth: 200
         });
-    });
+    }, $scope.$parent.handleHttpResponse);
     $scope.$on('updateMatch', function (event, args) {
         if ($scope.currentPhase && $scope.currentPhase.Matches) {
             for (var i = 0; i < $scope.currentPhase.Matches.length; i++) {
@@ -632,10 +649,10 @@ app.controller("RankingController", function ($scope, $http, $routeParams) {
     }
     $http.get(url).then(function (response) {
         $scope.rankings = response.data;
-    });
+    }, $scope.$parent.handleHttpResponse);
     $http.get(rulesUrl).then(function (response) {
         $scope.rules = response.data;
-    });
+    }, $scope.$parent.handleHttpResponse);
     $scope.$on('updateRankings', function (event, args) {
         if (args && (args === $routeParams.poolId || args === $routeParams.phaseId)) {
             $http.get(url).then(function (response) {
@@ -643,18 +660,18 @@ app.controller("RankingController", function ($scope, $http, $routeParams) {
             });
         }
     });
-    $scope.updateRankings = function () {
+    $scope.updateRankings = function() {
         if ($routeParams.poolId) {
             $scope.$parent.ochsHub.invoke("UpdatePoolRankings", $routeParams.poolId);
         } else if ($routeParams.phaseId) {
             $scope.$parent.ochsHub.invoke("UpdatePhaseRankings", $routeParams.phaseId);
         }
-    }
+    };
 });
 
 app.controller("ListMatchesController", function ($scope, $http) {
     $http.get("api/Match/All")
-        .then(function (response) { $scope.matches = response.data; });
+        .then(function (response) { $scope.matches = response.data; }, $scope.$parent.handleHttpResponse);
 });
 
 app.controller("LoginController", function ($scope, $location, $http) {
@@ -665,7 +682,7 @@ app.controller("LoginController", function ($scope, $location, $http) {
                 $scope.$parent.reconnectSignalR();
                 $location.path("Welcome");
             }
-        });
+        }, $scope.$parent.handleHttpResponse);
     };
 });
 
@@ -681,19 +698,19 @@ app.controller("MatchController", function ($scope, $http, $routeParams, $interv
             $scope.matchResult = response.data.Result;
             $scope.round = response.data.Round;
             $scope.editTime = new Date(1970, 1, 1, 0, 0, response.data.LiveTime);
-        });
+        }, $scope.$parent.handleHttpResponse);
         $http.get("api/Match/GetRules/" + $routeParams.matchId).then(function (response) {
             $scope.rules = response.data;
             $scope.newMatchRules = $scope.rules.Id;
-        });
+        }, $scope.$parent.handleHttpResponse);
         $http.get("api/Match/GetNext/" + $routeParams.matchId).then(function (response) {
             $scope.nextMatch = response.data;
-        });
+        }, $scope.$parent.handleHttpResponse);
     }
     if ($location.path().substring(0, 10) === '/EditMatch') {
         $http.get("api/MatchRules/All").then(function (response) {
             $scope.matchRules = response.data;
-        });
+        }, $scope.$parent.handleHttpResponse);
     }
     $scope.$on('updateMatch', function (event, args) {
         if ($scope.matchId && $scope.matchId === args.Id) {
@@ -723,7 +740,7 @@ app.controller("MatchController", function ($scope, $http, $routeParams, $interv
         } else if ($scope.nextMatch && $scope.nextMatch.Id === args.Id) {
             $http.get("api/Match/GetNext/" + $scope.matchId).then(function (response) {
                 $scope.nextMatch = response.data;
-            });
+            }, $scope.$parent.handleHttpResponse);
         }
     });
     if ($location.path().length < 12 || $location.path().substring(0, 12) !== '/ScoreKeeper') {
@@ -821,10 +838,10 @@ app.controller("MatchController", function ($scope, $http, $routeParams, $interv
 app.controller("ListRulesController", function ($scope, $http) {
     $http.get("api/MatchRules/All").then(function (response) {
         $scope.matchRules = response.data;
-    });
+    }, $scope.$parent.handleHttpResponse);
     $http.get("api/RankingRules/All").then(function (response) {
         $scope.rankingRules = response.data;
-    });
+    }, $scope.$parent.handleHttpResponse);
 });
 
 app.controller("EditMatchRulesController", function ($scope, $http, $routeParams) {
@@ -834,15 +851,16 @@ app.controller("EditMatchRulesController", function ($scope, $http, $routeParams
         $scope.rules = response.data;
         delete $scope.rules.TimeMax;
         $scope.editTimeMax = new Date(1970, 1, 1, 0, 0, response.data.TimeMaxSeconds);
-    });
+    }, $scope.$parent.handleHttpResponse);
     $scope.saveMatchRules = function () {
         $scope.rules.TimeMaxSeconds = ($scope.editTimeMax - new Date(1970, 1, 1, 0, 0, 0)) / 1000.0;
         $http.post("api/MatchRules/Save", $scope.rules)
             .then(function (response) {
+                $scope.$parent.ochsHub.client.displayMessage("Saved","success");
                 $scope.rules = response.data;
                 delete $scope.rules.TimeMax;
                 $scope.editTimeMax = new Date(1970, 1, 1, 0, 0, response.data.TimeMaxSeconds);
-            });
+            }, $scope.$parent.handleHttpResponse);
     };
 });
 
@@ -851,12 +869,13 @@ app.controller("EditRankingRulesController", function ($scope, $http, $routePara
     $scope.rankingStats = ['Match Points','Hit Ratio','Double Hits','Win Ratio','Penalties','Warnings'];
     $http.get("api/RankingRules/Get" + ($scope.rankingRulesId ? "/" + $routeParams.rankingRulesId : "")).then(function (response) {
         $scope.rules = response.data;
-    });
+    }, $scope.$parent.handleHttpResponse);
     $scope.saveRankingRules = function () {
         $http.post("api/RankingRules/Save", $scope.rules)
             .then(function (response) {
+                $scope.$parent.ochsHub.client.displayMessage("Saved","success");
                 $scope.rules = response.data;
-            });
+            }, $scope.$parent.handleHttpResponse);
     };
     $scope.moveUp = function(index) {
         var old = $scope.rules.Sorting[index];

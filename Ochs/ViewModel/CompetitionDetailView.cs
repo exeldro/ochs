@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Ochs
@@ -23,7 +24,9 @@ namespace Ochs
         public virtual int FightersTotal => _competition.Fighters.Count;
         public virtual int PhasesTotal => _competition.Phases.Count;
         public virtual string MatchRules => _competition.MatchRules?.Name;
+        public virtual Guid? MatchRulesId => _competition.MatchRules?.Id;
         public virtual string RankingRules => _competition.RankingRules?.Name;
+        public virtual Guid? RankingRulesId => _competition.RankingRules?.Id;
 
         public virtual IList<OrganizationView> FighterOrganizations => _competition.Fighters.Select(x=>x.Fighter).SelectMany(x => x.Organizations)
             .Distinct().Select(x => new OrganizationView(x)).ToList();

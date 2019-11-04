@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Http.Formatting;
 using System.Net.Sockets;
 using System.Runtime.Remoting.Contexts;
+using System.Web;
 using System.Web.Http;
 using System.Web.Routing;
 using Microsoft.AspNet.SignalR;
@@ -67,12 +68,23 @@ namespace Ochs
                 }
             });*/
             appBuilder.SetDefaultSignInAsAuthenticationType(CookieAuthenticationDefaults.AuthenticationType);
+            var provider = new CookieAuthenticationProvider();
+            var originalHandler = provider.OnApplyRedirect;
+            provider.OnApplyRedirect = context =>
+            {
+                
+                if (!context.Request.Context.Request.Path.ToString().StartsWith("/api/"))
+                {
+                    context.RedirectUri = new Uri(context.RedirectUri).PathAndQuery;
+                    originalHandler.Invoke(context);
+                }
+            };
 
             appBuilder.UseCookieAuthentication(new CookieAuthenticationOptions
             {
                 AuthenticationType = "ApplicationCookie",
                 LoginPath = new PathString("/Home/Login"),
-                Provider = new CookieAuthenticationProvider(),
+                Provider = provider,
                 CookieName = "ApplicationCookie",
                 CookieHttpOnly = true,
                 ExpireTimeSpan = TimeSpan.FromDays(1),

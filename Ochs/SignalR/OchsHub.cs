@@ -457,7 +457,7 @@ namespace Ochs
         {
             var rankings = session.QueryOver<PhaseRanking>().Where(x => x.Phase == phase).List().Cast<Ranking>().ToList();
             UpdateRankingsInternal(session, rankings, phase.Matches, () => new PhaseRanking { Phase = phase },
-                Service.GetPhaseTypeHandler(phase.PhaseType));
+                Service.GetPhaseTypeHandler(phase.PhaseType), phase.Competition.RankingRules);
             Clients.All.updateRankings(phase.Id);
         }
 
@@ -485,7 +485,7 @@ namespace Ochs
         private void UpdatePoolRankingsInternal(ISession session, Pool pool)
         {
             var rankings = session.QueryOver<PoolRanking>().Where(x => x.Pool == pool).List().Cast<Ranking>().ToList();
-            UpdateRankingsInternal(session, rankings, pool.Matches, () => new PoolRanking { Pool = pool }, Service.GetPhaseTypeHandler(pool.Phase.PhaseType));
+            UpdateRankingsInternal(session, rankings, pool.Matches, () => new PoolRanking { Pool = pool }, Service.GetPhaseTypeHandler(pool.Phase.PhaseType), pool.Phase.Competition.RankingRules);
             Clients.All.updateRankings(pool.Id);
         }
 
@@ -511,9 +511,10 @@ namespace Ochs
         }
 
 
-        private void UpdateRankingsInternal(ISession session, IList<Ranking> oldRankings, IList<Match> matches, Func<Ranking> createRanking, IPhaseTypeHandler phaseTypeHandler)
+        private void UpdateRankingsInternal(ISession session, IList<Ranking> oldRankings, IList<Match> matches, Func<Ranking> createRanking, IPhaseTypeHandler phaseTypeHandler, RankingRules rankingRules)
         {
-            var rankingRules = new RankingRules();
+            if (rankingRules == null)
+                rankingRules = new RankingRules{Sorting = RankingRules.DefaultSorting};
             IList<Ranking> rankings = new List<Ranking>();
 
             //calc forfeited and disqualified
@@ -1570,6 +1571,38 @@ namespace Ochs
                 Clients.All.updateCompetition(new CompetitionDetailView(competition));
             }
         }
+
+        public void CompetitionSetRankingRules(Guid competiotionId, Guid rankingRuleId)
+        {
+            using (var session = NHibernateHelper.OpenSession())
+            using (var transaction = session.BeginTransaction())
+            {
+                var competition = session.Get<Competition>(competiotionId);
+                if (competition == null)
+                {
+                    Clients.Caller.displayMessage("Competition not found", "warning");
+                    return;
+                }
+
+                if (!HasOrganizationRights(session, competition.Organization, UserRoles.Admin))
+                {
+                    Clients.Caller.displayMessage("Not logged in as administrator", "warning");
+                    return;
+                }
+
+                var rankingRules = session.Get<RankingRules>(rankingRuleId);
+                if (rankingRules == null)
+                {
+                    Clients.Caller.displayMessage("Ranking Rules not found", "warning");
+                    return;
+                }
+                competition.RankingRules = rankingRules;
+                session.Update(competition);
+                transaction.Commit();
+                Clients.All.updateCompetition(new CompetitionDetailView(competition));
+            }
+        }
+
         public void CompetitionAddFight(Guid competiotionId, string matchName, DateTime? plannedDateTime, Guid blueFighterId, Guid redFighterId)
         {
             using (var session = NHibernateHelper.OpenSession())

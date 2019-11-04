@@ -1,4 +1,4 @@
-﻿<h2>Rules</h2>
+﻿<h2>Match Rules</h2>
 <table>
     <tr ng-repeat="matchRule in matchRules">
         <td>{{ matchRule.Name }}</td>
@@ -6,3 +6,11 @@
     </tr>
 </table>
 <a href="#!EditMatchRules"><i class="fa fa-plus" aria-hidden="true"></i></a>
+<h2>Ranking Rules</h2>
+<table>
+    <tr ng-repeat="rankingRule in rankingRules">
+        <td>{{ rankingRule.Name }}</td>
+        <td><a href="#!EditRankingRules/{{rankingRule.Id}}"><i class="fa fa-pencil" aria-hidden="true"></i></a></td>
+    </tr>
+</table>
+<a href="#!EditRankingRules"><i class="fa fa-plus" aria-hidden="true"></i></a>

@@ -11,7 +11,7 @@ namespace Ochs
             Map(x => x.Start);
             Map(x => x.Stop);
             References(x => x.MatchRules);
-            //References(x => x.RankingRules);
+            References(x => x.RankingRules);
             HasMany(x => x.Phases).Cascade.DeleteOrphan().Inverse().OrderBy(nameof(Phase.PhaseOrder));
             HasMany(x => x.Matches).Inverse();
             References(x => x.Organization);

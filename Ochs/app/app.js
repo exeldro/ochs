@@ -136,6 +136,10 @@ app.config(['$routeProvider', '$locationProvider',
                 templateUrl: 'templates/EditMatchRules.html',
                 controller: 'EditMatchRulesController'
             }).
+            when('/EditRankingRules', {
+                templateUrl: 'templates/EditRankingRules.html',
+                controller: 'EditRankingRulesController'
+            }).
             when('/ListRules', {
                 templateUrl: 'templates/ListRules.html',
                 controller: 'ListRulesController'
@@ -143,6 +147,10 @@ app.config(['$routeProvider', '$locationProvider',
             when('/EditMatchRules/:matchRulesId', {
                 templateUrl: 'templates/EditMatchRules.html',
                 controller: 'EditMatchRulesController'
+            }).
+            when('/EditRankingRules/:rankingRulesId', {
+                templateUrl: 'templates/EditRankingRules.html',
+                controller: 'EditRankingRulesController'
             }).
             otherwise({
                 redirectTo: '/Welcome'

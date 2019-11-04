@@ -201,6 +201,9 @@ app.controller("CompetitionController", function ($scope, $http, $routeParams) {
     $http.get("api/MatchRules/All").then(function (response) {
         $scope.matchRules = response.data;
     });
+    $http.get("api/RankingRules/All").then(function (response) {
+        $scope.rankingRules = response.data;
+    });
     $scope.$on('updateCompetition', function (event, args) {
         if ($scope.competitionId === args.Id) {
             $scope.currentCompetition = args;
@@ -304,6 +307,11 @@ app.controller("CompetitionController", function ($scope, $http, $routeParams) {
     $scope.competitionSaveMatchRules = function () {
         if ($scope.newMatchRules) {
             $scope.$parent.ochsHub.invoke("CompetitionSetMatchRules", $scope.competitionId, $scope.newMatchRules);
+        }
+    };
+    $scope.competitionSaveRankingRules = function () {
+        if ($scope.newRankingRules) {
+            $scope.$parent.ochsHub.invoke("CompetitionSetRankingRules", $scope.competitionId, $scope.newRankingRules);
         }
     };
 });
@@ -804,15 +812,18 @@ app.controller("MatchController", function ($scope, $http, $routeParams, $interv
         if ($scope.round)
             $scope.$parent.ochsHub.invoke("UpdateMatchRound", $scope.matchId, $scope.round);
     };
-    $scope.showMatchOnLocation = function () {
+    $scope.showMatchOnLocation = function() {
         if ($scope.matchId && $cookies.get('location'))
             $scope.$parent.ochsHub.invoke("ShowMatchOnLocation", $scope.matchId, $cookies.get('location'));
-    }
+    };
 });
 
 app.controller("ListRulesController", function ($scope, $http) {
     $http.get("api/MatchRules/All").then(function (response) {
         $scope.matchRules = response.data;
+    });
+    $http.get("api/RankingRules/All").then(function (response) {
+        $scope.rankingRules = response.data;
     });
 });
 
@@ -832,5 +843,29 @@ app.controller("EditMatchRulesController", function ($scope, $http, $routeParams
                 delete $scope.rules.TimeMax;
                 $scope.editTimeMax = new Date(1970, 1, 1, 0, 0, response.data.TimeMaxSeconds);
             });
+    };
+});
+
+app.controller("EditRankingRulesController", function ($scope, $http, $routeParams) {
+    $scope.rankingRulesId = $routeParams.rankingRulesId;
+    $scope.rankingStats = ['Match Points','Hit Ratio','Double Hits','Win Ratio','Penalties','Warnings'];
+    $http.get("api/RankingRules/Get" + ($scope.rankingRulesId ? "/" + $routeParams.rankingRulesId : "")).then(function (response) {
+        $scope.rules = response.data;
+    });
+    $scope.saveRankingRules = function () {
+        $http.post("api/RankingRules/Save", $scope.rules)
+            .then(function (response) {
+                $scope.rules = response.data;
+            });
+    };
+    $scope.moveUp = function(index) {
+        var old = $scope.rules.Sorting[index];
+        $scope.rules.Sorting[index] = $scope.rules.Sorting[index - 1];
+        $scope.rules.Sorting[index - 1] = old;
+    };
+    $scope.moveDown = function(index) {
+        var old = $scope.rules.Sorting[index];
+        $scope.rules.Sorting[index] = $scope.rules.Sorting[index + 1];
+        $scope.rules.Sorting[index + 1] = old;
     };
 });

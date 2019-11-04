@@ -57,6 +57,7 @@ namespace Ochs
                 NHibernateUtil.Initialize(competition.Matches);
                 NHibernateUtil.Initialize(competition.Phases);
                 NHibernateUtil.Initialize(competition.MatchRules);
+                NHibernateUtil.Initialize(competition.RankingRules);
                 return new CompetitionDetailView(competition);
             }
         }
@@ -402,6 +403,7 @@ namespace Ochs
                 NHibernateUtil.Initialize(competition.Matches);
                 NHibernateUtil.Initialize(competition.Phases);
                 NHibernateUtil.Initialize(competition.MatchRules);
+                NHibernateUtil.Initialize(competition.RankingRules);
                 return new CompetitionDetailView(competition);
             }
         }

@@ -1,0 +1,52 @@
+﻿<h2>Ranking rules</h2>
+
+<label for="Name">Name</label>
+<input type="text" id="Name" ng-model="rules.Name" />
+
+<div class="form-row">
+    <div class="col-lg-6">
+        <div class="form-group row">
+            <div class="col-auto col-sm-2 text-sm-right"><input type="number" class="text-right" min="0" max="99" id="WinPoints" ng-model="rules.WinPoints" /></div>
+            <label class="col col-sm-10 p-sm-0" for="WinPoints">Number of points for <strong>win</strong></label>
+        </div>
+        <div class="form-group row">
+            <div class="col-auto col-sm-2 text-sm-right"><input type="number" class="text-right" min="0" max="99" id="DrawPoints" ng-model="rules.DrawPoints" /></div>
+            <label class="col col-sm-10 p-sm-0" for="DrawPoints">Number of points for <strong>draw</strong></label>
+        </div>
+        <div class="form-group row">
+            <div class="col-auto col-sm-2 text-sm-right"><input type="number" class="text-right" min="0" max="99" id="LossPoints" ng-model="rules.LossPoints" /></div>
+            <label class="col col-sm-10 p-sm-0" for="LossPoints">Number of points for <strong>loss</strong></label>
+        </div>
+        <div class="form-group row">
+            <div class="col-auto col-sm-2 text-sm-right">
+                <input type="checkbox" id="RemoveForfeitedFromRanking" ng-model="rules.RemoveForfeitedFromRanking" />
+            </div>
+            <label class="col col-sm-10 p-sm-0" for="RemoveForfeitedFromRanking"><strong>Remove forfeited</strong> fighters from rankings</label>
+        </div>
+        <div class="form-group row">
+            <div class="col-auto col-sm-3 text-sm-right"><input type="number" class="text-right" min="0" max="99" id="ForfeitPoints" ng-model="rules.ForfeitPoints"  ng-disabled="rules.RemoveForfeitedFromRanking"/></div>
+            <label class="col col-sm-9 p-sm-0" for="ForfeitPoints">Number of points for <strong>forfeit</strong> of other fighter</label>
+        </div>
+        <div class="form-group row">
+            <div class="col-auto col-sm-2 text-sm-right">
+                <input type="checkbox" id="RemoveDisqualifiedFromRanking" ng-model="rules.RemoveDisqualifiedFromRanking" />
+            </div>
+            <label class="col col-sm-10 p-sm-0" for="RemoveForfeitedFromRanking"><strong>Remove disqualified</strong> fighters from rankings</label>
+        </div>
+        <div class="form-group row">
+            <div class="col-auto col-sm-3 text-sm-right"><input type="number" class="text-right" min="0" max="99" id="DisqualificationPoints" ng-model="rules.DisqualificationPoints"  ng-disabled="rules.RemoveDisqualifiedFromRanking"/></div>
+            <label class="col col-sm-9 p-sm-0" for="DisqualificationPoints">Number of points for <strong>disqualification</strong> of other fighter</label>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <h3>Sorting</h3>
+        <table>
+            <tr ng-repeat="sorting in rules.Sorting track by $index">
+                <td>{{$index+1}}</td><td>{{rankingStats[sorting]}}</td><td><button type="button" class="btn" ng-click="moveDown($index)"  ng-show="!$last"><i class="fa fa-chevron-down" aria-hidden="true"></i></button></td><td><button type="button" class="btn" ng-click="moveUp($index)" ng-show="!$first"><i class="fa fa-chevron-up" aria-hidden="true"></i></button></td>
+            </tr>
+        </table>
+    </div>
+</div>
+<button type="button" class="btn" ng-click="saveRankingRules()">Submit</button>
+
+

@@ -103,4 +103,9 @@ Match: {{currentCompetition.MatchRules}}
 <select ng-model="newMatchRules">
     <option ng-repeat="matchRule in matchRules" value="{{matchRule.Id}}">{{matchRule.Name}}</option>
 </select>
-<button ng-click="competitionSaveMatchRules()">Switch</button>
+<button ng-click="competitionSaveMatchRules()">Switch</button><br />
+Ranking: {{currentCompetition.RankingRules}}
+<select ng-model="newRankingRules">
+    <option ng-repeat="rankingRule in rankingRules" value="{{rankingRule.Id}}">{{rankingRule.Name}}</option>
+</select>
+<button ng-click="competitionSaveRankingRules()">Switch</button>

@@ -172,6 +172,9 @@ app.controller("ListOrganizationsController", function ($scope, $http) {
     $http.get("api/Organization/AllWithDetails").then(function (response) {
         $scope.organizations = response.data;
     }, $scope.$parent.handleHttpResponse);
+    $http.get("api/Country/All").then(function (response) {
+        $scope.countries = response.data;
+    }, $scope.$parent.handleHttpResponse);
     $scope.uploadOrganizations = function (organizationFile) {
         $http.post("api/Organization/UploadOrganizations", organizationFile)
             .then(function (response) {
@@ -185,6 +188,21 @@ app.controller("ListOrganizationsController", function ($scope, $http) {
             .then(function (response) {
                 $scope.organizations = response.data;
             }, $scope.$parent.handleHttpResponse);
+    };
+    $scope.updateCountry = function () {
+        var organizationIds = [];
+        angular.forEach($scope.organizations,
+            function (obj) {
+                if (obj.Selected) {
+                    organizationIds.push(obj.Id);
+                }
+            });
+        if (organizationIds.length > 0) {
+            $http.post("api/Organization/ChangeCountry", { OrganizationIds: organizationIds, CountryCode: $scope.countryCode })
+                .then(function (response) {
+                    $scope.organizations = response.data;
+                }, $scope.$parent.handleHttpResponse);
+        }
     };
 });
 

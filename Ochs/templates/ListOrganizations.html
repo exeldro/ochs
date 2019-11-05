@@ -1,14 +1,19 @@
 ﻿<h2>Organizations</h2>
 <label>Search: <input type="text" ng-model="searchOrganizationText"></label>
 <table>
-    <tr><th colspan="2">Merge</th><th><a ng-click="sortType = 'Name'; sortReverse=!sortReverse">Organization</a></th><th>Country</th><th>Aliases</th></tr>
+    <tr><th><input type="checkbox" ng-model="select" ng-click="checkAll()" /></th><th colspan="2">Merge</th><th><a ng-click="sortType = 'Name'; sortReverse=!sortReverse">Organization</a></th><th>Country</th><th>Aliases</th></tr>
     <tr ng-repeat="organization in organizations  | filter:searchOrganizationText | orderBy:sortType:sortReverse">
+        <td><input type="checkbox" name="organizationsSelected[]" ng-model="organization.Selected" value="{{organization.Id}}" /></td>
         <td><input type="radio" name="mergeOrganizationToId" ng-model="$parent.mergeOrganizationToId" value="{{organization.Id}}" /></td>
         <td><input type="radio" name="mergeOrganizationFromId" ng-model="$parent.mergeOrganizationFromId" value="{{organization.Id}}" /></td>
         <td>{{ organization.Name }}</td>
-        <td align="center"><img alt="{{organization.CountryCode}}" title="{{organization.CountryName}}" ng-src="Content/flags/{{organization.CountryCode?organization.CountryCode:'none'}}.svg" height="20" width="30"/> </td>
-        <td ng-repeat="alias in organization.Aliases">{{ alias }}</td>
+        <td align="center"><img alt="{{organization.CountryCode}}" title="{{organization.CountryName}}" ng-src="Content/flags/{{organization.CountryCode?organization.CountryCode:'none'}}.svg" height="20" width="30" /> </td>
+        <td ng-repeat="alias in organization.Aliases track by $index">{{ alias }}</td>
     </tr>
 </table>
 <button ng-click="mergeOrganizations()">Merge</button><br />
+Country: <select ng-model="countryCode">
+    <option ng-repeat="(countryCode,country) in countries" data-image="Content/flags/{{countryCode}}.svg" value="{{countryCode}}">{{country}}</option>
+</select>
+<button ng-click="updateCountry()">Update</button><br />
 <input type="file" onchange="angular.element(this).scope().uploadOrganizations( this.files[0] )" />

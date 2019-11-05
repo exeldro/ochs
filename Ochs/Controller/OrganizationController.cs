@@ -159,11 +159,45 @@ namespace Ochs
                     .ToList();
             }
         }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public IList<OrganizationDetailView> ChangeCountry([FromBody] OrganizationCountryRequest request)
+        {
+            using (var session = NHibernateHelper.OpenSession())
+            using (var transaction = session.BeginTransaction())
+            {
+                if (string.IsNullOrWhiteSpace(request.CountryCode) ||
+                    Country.Countries.ContainsKey(request.CountryCode))
+                {
+                    foreach (var organizationId in request.OrganizationIds)
+                    {
+                        var organization = session.QueryOver<Organization>().Where(x => x.Id == organizationId).SingleOrDefault();
+                        if (organization != null && organization.CountryCode != request.CountryCode)
+                        {
+                            organization.CountryCode = request.CountryCode;
+                            session.Update(organization);
+                        }
+                    }
+                    transaction.Commit();
+                }
+                return session.QueryOver<Organization>().Fetch(x => x.Aliases).Eager
+                    .TransformUsing(Transformers.DistinctRootEntity).List().Select(x => new OrganizationDetailView(x))
+                    .ToList();
+            }
+        }
+
+        
     }
 
     public class OrganizationMergeRequest
     {
         public virtual Guid FromId { get; set; }
         public virtual Guid ToId { get; set; }
+    }
+    public class OrganizationCountryRequest
+    {
+        public virtual IList<Guid> OrganizationIds { get; set; }
+        public virtual string CountryCode { get; set; }
     }
 }

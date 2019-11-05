@@ -861,7 +861,7 @@ app.controller("ListRulesController", function ($scope, $http) {
     }, $scope.$parent.handleHttpResponse);
 });
 
-app.controller("EditMatchRulesController", function ($scope, $http, $routeParams) {
+app.controller("EditMatchRulesController", function ($scope, $http, $routeParams, $location) {
     $scope.matchRulesId = $routeParams.matchRulesId;
 
     $http.get("api/MatchRules/Get" + ($scope.matchRulesId ? "/" + $routeParams.matchRulesId : "")).then(function (response) {
@@ -873,15 +873,18 @@ app.controller("EditMatchRulesController", function ($scope, $http, $routeParams
         $scope.rules.TimeMaxSeconds = ($scope.editTimeMax - new Date(1970, 1, 1, 0, 0, 0)) / 1000.0;
         $http.post("api/MatchRules/Save", $scope.rules)
             .then(function (response) {
-                $scope.$parent.ochsHub.client.displayMessage("Saved","success");
+                $scope.$parent.ochsHub.client.displayMessage("Saved", "success");
                 $scope.rules = response.data;
                 delete $scope.rules.TimeMax;
                 $scope.editTimeMax = new Date(1970, 1, 1, 0, 0, response.data.TimeMaxSeconds);
+                if (!$scope.matchRulesId) {
+                    $location.path("EditMatchRules/" + response.data.Id);
+                }
             }, $scope.$parent.handleHttpResponse);
     };
 });
 
-app.controller("EditRankingRulesController", function ($scope, $http, $routeParams) {
+app.controller("EditRankingRulesController", function ($scope, $http, $routeParams, $location) {
     $scope.rankingRulesId = $routeParams.rankingRulesId;
     $scope.rankingStats = ['Match Points','Hit Ratio','Double Hits','Win Ratio','Penalties','Warnings'];
     $http.get("api/RankingRules/Get" + ($scope.rankingRulesId ? "/" + $routeParams.rankingRulesId : "")).then(function (response) {
@@ -890,8 +893,11 @@ app.controller("EditRankingRulesController", function ($scope, $http, $routePara
     $scope.saveRankingRules = function () {
         $http.post("api/RankingRules/Save", $scope.rules)
             .then(function (response) {
-                $scope.$parent.ochsHub.client.displayMessage("Saved","success");
+                $scope.$parent.ochsHub.client.displayMessage("Saved", "success");
                 $scope.rules = response.data;
+                if (!$scope.rankingRulesId) {
+                    $location.path("EditRankingRules/" + response.data.Id);
+                }
             }, $scope.$parent.handleHttpResponse);
     };
     $scope.moveUp = function(index) {

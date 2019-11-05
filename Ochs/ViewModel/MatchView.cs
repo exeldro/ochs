@@ -49,6 +49,9 @@ namespace Ochs
         public virtual double Time => _match.Time.TotalSeconds;
         public virtual double LiveTime => _match.LiveTime.TotalSeconds;
         public virtual DateTime? TimeRunningSince => _match.TimeRunningSince;
+        public virtual bool TimeOutRunning => _match.TimeOutSince.HasValue;
+        public virtual double LiveTimeOut => _match.LiveTimeOut?.TotalSeconds ?? 0;
+        public virtual DateTime? TimeOutSince => _match.TimeOutSince;
         public virtual DateTime? PlannedDateTime => _match.PlannedDateTime;
         public virtual bool Planned => _match.Planned;
         public virtual DateTime? StartedDateTime => _match.StartedDateTime;

@@ -6,6 +6,16 @@
     z-index: 9999;
 }
 
+#timeOutPopup {
+    position: absolute;
+    top: 120%;
+    left: 38%;
+    width: 24%;
+    z-index: 9999;
+    color: #000;
+    padding: 0;
+}
+
 .bg-blue {
     background-color: #6FF;
 }

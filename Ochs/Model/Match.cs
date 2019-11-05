@@ -23,6 +23,7 @@ namespace Ochs
         public virtual MatchResult Result { get; set; } = MatchResult.None;
         public virtual TimeSpan Time { get; set; }
         public virtual DateTime? TimeRunningSince { get; set; }
+        public virtual DateTime? TimeOutSince { get; set; }
         public virtual DateTime? PlannedDateTime { get; set; }
         public virtual bool Planned => PlannedDateTime.HasValue;
         public virtual DateTime? StartedDateTime { get; set; }
@@ -36,6 +37,7 @@ namespace Ochs
         public virtual Phase Phase { get; set; }
         public virtual Pool Pool { get; set; }
         public virtual TimeSpan LiveTime => Time + (TimeRunningSince.HasValue ? DateTime.Now.Subtract(TimeRunningSince.Value) : TimeSpan.Zero);
+        public virtual TimeSpan? LiveTimeOut => TimeOutSince.HasValue?DateTime.Now.Subtract(TimeOutSince.Value):(TimeSpan?)null;
 
         public virtual MatchRules Rules { get; set; }
         public virtual MatchRules GetRules() => Rules ?? Phase?.MatchRules ?? Competition.MatchRules;

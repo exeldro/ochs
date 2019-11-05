@@ -749,6 +749,16 @@ app.controller("MatchController", function ($scope, $http, $routeParams, $interv
                 if ($cookies.get('location') && location === $cookies.get('location'))
                     $location.path("ShowMatch/" + matchId);
             });
+        $scope.$watch('currentMatch.TimeOutRunning', function() {
+            var popup = $('#timeOutPopup');
+            if (popup) {
+                if ($scope.currentMatch.TimeOutRunning) {
+                    popup.fadeIn(800);
+                } else {
+                    popup.fadeOut(0);
+                }
+            }
+        }, true);
     }
     $interval(function () {
         if ($scope.currentMatch && $scope.currentMatch.TimeRunning) {
@@ -760,6 +770,9 @@ app.controller("MatchController", function ($scope, $http, $routeParams, $interv
             }
             $scope.currentMatch.LiveTime += 0.01;
             $scope.editingTime = false;
+        }
+        if ($scope.currentMatch && $scope.currentMatch.TimeOutRunning) {
+            $scope.currentMatch.LiveTimeOut += 0.01;
         }
     }, 10);
     $scope.addMatchEvent = function ($pointsBlue, $pointsRed, $eventType, $note) {

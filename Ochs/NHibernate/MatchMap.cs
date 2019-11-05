@@ -22,6 +22,7 @@ namespace Ochs
             Map(x => x.Result);
             Map(x => x.Time);
             Map(x => x.TimeRunningSince);
+            Map(x => x.TimeOutSince);
             Map(x => x.PlannedDateTime).Index("index_PlannedDateTime");
             Map(x => x.StartedDateTime).Index("index_StartedDateTime");
             Map(x => x.FinishedDateTime).Index("index_FinishedDateTime");

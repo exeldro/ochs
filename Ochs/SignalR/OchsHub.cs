@@ -284,6 +284,7 @@ namespace Ochs
 
                     match.Time = match.LiveTime;
                     match.TimeRunningSince = null;
+                    match.TimeOutSince = DateTime.Now;
                     session.Update(match);
                     transaction.Commit();
                     Clients.All.updateMatch(new MatchDetailView(match));
@@ -312,6 +313,7 @@ namespace Ochs
                         return;
                     }
 
+                    match.TimeOutSince = null;
                     match.TimeRunningSince = DateTime.Now;
                     if (!match.StartedDateTime.HasValue)
                     {
@@ -408,6 +410,7 @@ namespace Ochs
                         match.Time = match.LiveTime;
                         match.TimeRunningSince = null;
                     }
+                    match.TimeOutSince = null;
                 }
                 using (var transaction = session.BeginTransaction())
                 {

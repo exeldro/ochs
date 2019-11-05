@@ -31,7 +31,7 @@
             <br ng-show="editingTime" />
             <button type="button" class="btn" ng-click="startTime()"><i class="fa fa-play" aria-hidden="true"></i></button>
             <button type="button" class="btn" ng-click="changeEditTime()"><i class="fa fa-pencil" aria-hidden="true"></i></button>
-            <button type="button" class="btn" ng-click="stopTime()"><i class="fa fa-pause" aria-hidden="true"></i></button>
+            <button type="button" class="btn" ng-click="stopTime()"><i class="fa fa-pause" aria-hidden="true"></i> {{currentMatch.TimeOutRunning?(currentMatch.LiveTimeOut | timespan):''}}</button>
         </div>
     </div>
     <div class="d-flex justify-content-center">

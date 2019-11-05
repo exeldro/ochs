@@ -24,6 +24,7 @@
     <div class="row">
         <div class="col-12" align="center">
             <h2>{{currentMatch.LiveTime | timespan}}</h2>
+            <div class="alert alert-warning" id="timeOutPopup" align="center"><h4>{{currentMatch.LiveTimeOut | timespan}}</h4></div>
         </div>
     </div>
     <div class="row" ng-show="rules.Rounds > 1 && rules.SplitRounds">

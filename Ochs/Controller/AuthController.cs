@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection;
 using System.Security.Claims;
 using System.Web.Http;
 using Microsoft.Owin.Security;
@@ -199,6 +200,12 @@ namespace Ochs
                     return nameof(UserRoles.Scorekeeper);
             }
             return null;
+        }
+
+        [HttpGet]
+        public string Version()
+        {
+            return Assembly.GetExecutingAssembly().GetName().Version.ToString();
         }
     }
     public class LoginRequest

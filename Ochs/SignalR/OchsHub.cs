@@ -1132,6 +1132,7 @@ namespace Ochs
                 foreach (var fighter in fighters)
                 {
                     var pool = phase.Pools.OrderBy(x => x.Fighters.Sum(y => y.Organizations.Count(z => fighter.Organizations.Any(a => a.Id == z.Id))))
+                        .ThenBy(x => x.Fighters.Sum(y => y.Organizations.Count(z => fighter.Organizations.Any(a => !string.IsNullOrWhiteSpace(a.CountryCode) && a.CountryCode == z.CountryCode))))
                         .ThenBy(x => x.Fighters.Count(y => y.CountryCode == fighter.CountryCode))
                         .ThenBy(x => x.Fighters.Count)
                         .FirstOrDefault();
@@ -1147,6 +1148,7 @@ namespace Ochs
                     var fromPool = phase.Pools.OrderBy(x => x.Fighters.Count).Last();
                     var fighter = fromPool.Fighters
                         .OrderBy(x => x.Organizations.Sum(y => toPool.Fighters.Sum(z => z.Organizations.Count(a => a.Id == z.Id))))
+                        .ThenBy(x => x.Organizations.Sum(y => toPool.Fighters.Sum(z => z.Organizations.Count(a => !string.IsNullOrWhiteSpace(a.CountryCode) && a.CountryCode == z.CountryCode))))
                         .ThenBy(x => toPool.Fighters.Count(y => y.CountryCode == x.CountryCode))
                         .First();
 

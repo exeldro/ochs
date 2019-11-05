@@ -78,6 +78,9 @@ app.controller('OchsController',
         $http.get("api/Auth/CurrentUser").then(function (response) {
             $scope.username = response.data;
         }, $scope.handleHttpResponse);
+        $http.get("api/Auth/Version").then(function (response) {
+            $scope.version = response.data;
+        }, $scope.handleHttpResponse);
         $scope.reconnectSignalR = function () {
             $.connection.hub.stop();
             $.connection.hub.start().done(function () {
@@ -89,6 +92,7 @@ app.controller('OchsController',
 );
 
 app.controller("WelcomeController", function ($scope, $http) {
+
 });
 
 app.controller("ViewSettingsController", function ($scope, $cookies) {

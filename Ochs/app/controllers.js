@@ -718,11 +718,19 @@ app.controller("MatchController", function ($scope, $http, $routeParams, $interv
         $http.get("api/Match/Get/" + $routeParams.matchId).then(function (response) {
             $scope.currentMatch = response.data;
             $scope.matchResult = response.data.Result;
+            if (!$scope.currentMatch.Started && $scope.rules && $scope.rules.CountDownScore) {
+                $scope.currentMatch.ScoreRed = $scope.rules.PointsMax;
+                $scope.currentMatch.ScoreBlue = $scope.rules.PointsMax;
+            }
             $scope.round = response.data.Round;
             $scope.editTime = new Date(1970, 1, 1, 0, 0, response.data.LiveTime);
         }, $scope.$parent.handleHttpResponse);
         $http.get("api/Match/GetRules/" + $routeParams.matchId).then(function (response) {
             $scope.rules = response.data;
+            if ($scope.currentMatch && !$scope.currentMatch.Started && $scope.rules.CountDownScore) {
+                $scope.currentMatch.ScoreRed = $scope.rules.PointsMax;
+                $scope.currentMatch.ScoreBlue = $scope.rules.PointsMax;
+            }
             $scope.newMatchRules = $scope.rules.Id;
         }, $scope.$parent.handleHttpResponse);
         $http.get("api/Match/GetNext/" + $routeParams.matchId).then(function (response) {
@@ -756,6 +764,10 @@ app.controller("MatchController", function ($scope, $http, $routeParams, $interv
                 }
             }
             $scope.currentMatch = args;
+            if (!$scope.currentMatch.Started && $scope.rules && $scope.rules.CountDownScore) {
+                $scope.currentMatch.ScoreRed = $scope.rules.PointsMax;
+                $scope.currentMatch.ScoreBlue = $scope.rules.PointsMax;
+            }
             $scope.editTime = new Date(1970, 1, 1, 0, 0, args.LiveTime);
         } else if ((!$scope.currentMatch || !$scope.currentMatch.Started || $scope.currentMatch.Finished) && args.Started && !args.Finished && $cookies.get('location') && $cookies.get('location') === args.Location && $location.path().length >= 12 && $location.path().substring(0, 12) !== '/ScoreKeeper') {
             $location.path("ShowMatch/" + args.Id);

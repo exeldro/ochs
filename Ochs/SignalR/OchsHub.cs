@@ -285,6 +285,7 @@ namespace Ochs
                     match.Time = match.LiveTime;
                     match.TimeRunningSince = null;
                     match.TimeOutSince = DateTime.Now;
+                    match.UpdateMatchData();
                     session.Update(match);
                     transaction.Commit();
                     Clients.All.updateMatch(new MatchDetailView(match));
@@ -324,6 +325,7 @@ namespace Ochs
                             match.Location = Context.Request.Cookies["location"].Value;
                         }
                     }
+                    match.UpdateMatchData();
                     session.Update(match);
                     transaction.Commit();
                     Clients.All.updateMatch(new MatchDetailView(match));

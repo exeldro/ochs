@@ -51,7 +51,7 @@ namespace Ochs
         public virtual void UpdateMatchData()
         {
             var rules = GetRules();
-            if (rules != null && rules.SplitRounds)
+            if (rules != null && rules.SplitRounds && rules.Rounds > 1)
             {
                 RoundsBlue = 0;
                 RoundsRed = 0;
@@ -59,15 +59,30 @@ namespace Ochs
                 DoubleCount = Events.Count(x => x.Round == Round && x.Type == MatchEventType.DoubleHit);
                 for (int round = 1; round <= Round; round++)
                 {
-                    if (rules.SubtractPoints)
+                    if (rules.CountDownScore && rules.PointsMax > 0)
                     {
-                        ScoreRed = Events.Where(x => x.Round == round && x.Type != MatchEventType.MatchPointDeduction).Sum(x => (x.PointsRed < 0 || x.PointsBlue < 0) ? x.PointsRed : (x.PointsRed > x.PointsBlue ? x.PointsRed - x.PointsBlue : 0));
-                        ScoreBlue = Events.Where(x => x.Round == round && x.Type != MatchEventType.MatchPointDeduction).Sum(x => (x.PointsBlue < 0 || x.PointsRed < 0) ? x.PointsBlue : (x.PointsBlue > x.PointsRed ? x.PointsBlue - x.PointsRed : 0));
-                    }
-                    else
-                    {
-                        ScoreRed = Events.Where(x => x.Round == round && x.Type != MatchEventType.MatchPointDeduction).Sum(x => x.PointsRed);
-                        ScoreBlue = Events.Where(x => x.Round == round && x.Type != MatchEventType.MatchPointDeduction).Sum(x => x.PointsBlue);
+                        if (rules.SubtractPoints)
+                        {
+                            ScoreRed = Math.Max(rules.PointsMax - Events.Where(x => x.Round == round && x.Type != MatchEventType.MatchPointDeduction).Sum(x => (x.PointsRed < 0 || x.PointsBlue < 0) ? x.PointsRed : (x.PointsRed > x.PointsBlue ? x.PointsRed - x.PointsBlue : 0)),0);
+                            ScoreBlue = Math.Max(rules.PointsMax - Events.Where(x => x.Round == round && x.Type != MatchEventType.MatchPointDeduction).Sum(x => (x.PointsBlue < 0 || x.PointsRed < 0) ? x.PointsBlue : (x.PointsBlue > x.PointsRed ? x.PointsBlue - x.PointsRed : 0)),0);
+                        }
+                        else
+                        {
+                            ScoreRed = Math.Max(rules.PointsMax - Events.Where(x => x.Round == round && x.Type != MatchEventType.MatchPointDeduction).Sum(x => x.PointsRed),0);
+                            ScoreBlue = Math.Max(rules.PointsMax - Events.Where(x => x.Round == round && x.Type != MatchEventType.MatchPointDeduction).Sum(x => x.PointsBlue),0);
+                        }
+
+                    }else{
+                        if (rules.SubtractPoints)
+                        {
+                            ScoreRed = Events.Where(x => x.Round == round && x.Type != MatchEventType.MatchPointDeduction).Sum(x => (x.PointsRed < 0 || x.PointsBlue < 0) ? x.PointsRed : (x.PointsRed > x.PointsBlue ? x.PointsRed - x.PointsBlue : 0));
+                            ScoreBlue = Events.Where(x => x.Round == round && x.Type != MatchEventType.MatchPointDeduction).Sum(x => (x.PointsBlue < 0 || x.PointsRed < 0) ? x.PointsBlue : (x.PointsBlue > x.PointsRed ? x.PointsBlue - x.PointsRed : 0));
+                        }
+                        else
+                        {
+                            ScoreRed = Events.Where(x => x.Round == round && x.Type != MatchEventType.MatchPointDeduction).Sum(x => x.PointsRed);
+                            ScoreBlue = Events.Where(x => x.Round == round && x.Type != MatchEventType.MatchPointDeduction).Sum(x => x.PointsBlue);
+                        }
                     }
                     if (round < Round || Finished)
                     {
@@ -93,15 +108,31 @@ namespace Ochs
                 RoundsRed = 0;
                 ExchangeCount = Events.Count(x => x.IsExchange);
                 DoubleCount = Events.Count(x => x.Type == MatchEventType.DoubleHit);
-                if (rules != null && rules.SubtractPoints)
+                if (rules != null && rules.CountDownScore && rules.PointsMax > 0)
                 {
-                    ScoreRed = Events.Where(x => x.Type != MatchEventType.MatchPointDeduction).Sum(x => (x.PointsRed < 0 || x.PointsBlue < 0) ? x.PointsRed : (x.PointsRed > x.PointsBlue ? x.PointsRed - x.PointsBlue : 0));
-                    ScoreBlue = Events.Where(x => x.Type != MatchEventType.MatchPointDeduction).Sum(x => (x.PointsBlue < 0 || x.PointsRed < 0) ? x.PointsBlue : (x.PointsBlue > x.PointsRed ? x.PointsBlue - x.PointsRed : 0));
+                    if (rules.SubtractPoints)
+                    {
+                        ScoreRed = Math.Max(rules.PointsMax - Events.Where(x => x.Type != MatchEventType.MatchPointDeduction).Sum(x => (x.PointsRed < 0 || x.PointsBlue < 0) ? x.PointsRed : (x.PointsRed > x.PointsBlue ? x.PointsRed - x.PointsBlue : 0)), 0);
+                        ScoreBlue = Math.Max(rules.PointsMax - Events.Where(x => x.Type != MatchEventType.MatchPointDeduction).Sum(x => (x.PointsBlue < 0 || x.PointsRed < 0) ? x.PointsBlue : (x.PointsBlue > x.PointsRed ? x.PointsBlue - x.PointsRed : 0)), 0);
+                    }
+                    else
+                    {
+                        ScoreRed = Math.Max(rules.PointsMax - Events.Where(x => x.Type != MatchEventType.MatchPointDeduction).Sum(x => x.PointsRed), 0);
+                        ScoreBlue = Math.Max(rules.PointsMax - Events.Where(x => x.Type != MatchEventType.MatchPointDeduction).Sum(x => x.PointsBlue), 0);
+                    }
                 }
                 else
                 {
-                    ScoreRed = Events.Where(x => x.Type != MatchEventType.MatchPointDeduction).Sum(x => x.PointsRed);
-                    ScoreBlue = Events.Where(x => x.Type != MatchEventType.MatchPointDeduction).Sum(x => x.PointsBlue);
+                    if (rules != null && rules.SubtractPoints)
+                    {
+                        ScoreRed = Events.Where(x => x.Type != MatchEventType.MatchPointDeduction).Sum(x => (x.PointsRed < 0 || x.PointsBlue < 0) ? x.PointsRed : (x.PointsRed > x.PointsBlue ? x.PointsRed - x.PointsBlue : 0));
+                        ScoreBlue = Events.Where(x => x.Type != MatchEventType.MatchPointDeduction).Sum(x => (x.PointsBlue < 0 || x.PointsRed < 0) ? x.PointsBlue : (x.PointsBlue > x.PointsRed ? x.PointsBlue - x.PointsRed : 0));
+                    }
+                    else
+                    {
+                        ScoreRed = Events.Where(x => x.Type != MatchEventType.MatchPointDeduction).Sum(x => x.PointsRed);
+                        ScoreBlue = Events.Where(x => x.Type != MatchEventType.MatchPointDeduction).Sum(x => x.PointsBlue);
+                    }
                 }
             }
         }

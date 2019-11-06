@@ -28,6 +28,12 @@
         </div>
         <div class="form-group row">
             <div class="col-auto col-sm-3 text-sm-right">
+                <input type="checkbox" id="CountDownScore" ng-model="rules.CountDownScore" ng-disabled="rules.PointsMax <= 0"/>
+            </div>
+            <label class="col col-sm-9 p-sm-0" for="RecordProtests"><strong>Count down</strong> points per round</label>
+        </div>
+        <div class="form-group row">
+            <div class="col-auto col-sm-3 text-sm-right">
                 <input type="number" class="text-right" min="0" max="99" id="ExchangesMax" ng-model="rules.ExchangesMax" />
             </div>
             <label class="col col-sm-9 p-sm-0" for="ExchangesMax">Maximum number of <strong>exchanges</strong> per round<br /><small>(0 for no maximum)</small></label>

@@ -11,6 +11,7 @@ namespace Ochs
             Map(x => x.Rounds);
             Map(x => x.SplitRounds);
             Map(x => x.PointsMax);
+            Map(x => x.CountDownScore);
             Map(x => x.ExchangePointsMax);
             Map(x => x.TimeMax);
             Map(x => x.ExchangesMax);

@@ -805,20 +805,38 @@ namespace Ochs
                 ranking.MatchPoints -= (match.DoubleCount - rankingRules.DoubleReductionThreshold) / rankingRules.DoubleReductionFactor;
             }
 
+            var matchRules = match.GetRules();
             foreach (var matchEvent in match.Events)
             {
                 if (matchEvent.Type == MatchEventType.Score)
                 {
-                    if (blue)
+                    if (matchRules == null || !matchRules.CountDownScore)
                     {
-                        ranking.HitsGiven += matchEvent.PointsBlue;
-                        ranking.HitsReceived += matchEvent.PointsRed;
+                        if (blue)
+                        {
+                            ranking.HitsGiven += matchEvent.PointsBlue;
+                            ranking.HitsReceived += matchEvent.PointsRed;
+                        }
+                        else
+                        {
+                            ranking.HitsGiven += matchEvent.PointsRed;
+                            ranking.HitsReceived += matchEvent.PointsBlue;
+                        }
                     }
                     else
                     {
-                        ranking.HitsGiven += matchEvent.PointsRed;
-                        ranking.HitsReceived += matchEvent.PointsBlue;
+                        if (!blue)
+                        {
+                            ranking.HitsGiven += matchEvent.PointsBlue;
+                            ranking.HitsReceived += matchEvent.PointsRed;
+                        }
+                        else
+                        {
+                            ranking.HitsGiven += matchEvent.PointsRed;
+                            ranking.HitsReceived += matchEvent.PointsBlue;
+                        }
                     }
+
                     if (!string.IsNullOrWhiteSpace(matchEvent.Note))
                         ranking.Notes++;
                     ranking.Exchanges++;

@@ -186,8 +186,6 @@ namespace Ochs
                     .ToList();
             }
         }
-
-        
     }
 
     public class OrganizationMergeRequest

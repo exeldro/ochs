@@ -11,6 +11,7 @@ namespace Ochs
         public virtual int Rounds { get; set; } = 1;
         public virtual bool SplitRounds { get; set; } = true;
         public virtual int PointsMax { get; set; } = 0;
+        public virtual bool CountDownScore { get; set; }
         public virtual int ExchangePointsMax { get; set; } = 3;
 
         public virtual TimeSpan TimeMax { get; set; } = new TimeSpan(0, 3, 0);

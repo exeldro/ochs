@@ -12,6 +12,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -20,11 +21,11 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AngularJS.Cookies" Version="1.7.8" />
-    <PackageReference Include="AngularJS.Core" Version="1.7.8" />
-    <PackageReference Include="AngularJS.Route" Version="1.7.8" />
+    <PackageReference Include="AngularJS.Cookies" Version="1.7.9" />
+    <PackageReference Include="AngularJS.Core" Version="1.7.9" />
+    <PackageReference Include="AngularJS.Route" Version="1.7.9" />
     <PackageReference Include="Antlr3.Runtime" Version="3.5.1" />
-    <PackageReference Include="bootstrap" Version="4.3.1" />
+    <PackageReference Include="bootstrap" Version="4.4.1" />
     <PackageReference Include="FluentNHibernate" Version="2.1.2" />
     <PackageReference Include="FontAwesome" Version="4.7.0" />
     <PackageReference Include="Iesi.Collections" Version="4.0.4" />
@@ -37,23 +38,23 @@
     <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.7" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Owin" Version="5.2.7" />
     <PackageReference Include="Microsoft.AspNet.WebApi.OwinSelfHost" Version="5.2.7" />
-    <PackageReference Include="Microsoft.Owin" Version="4.0.1" />
-    <PackageReference Include="Microsoft.Owin.Cors" Version="4.0.1" />
-    <PackageReference Include="Microsoft.Owin.Diagnostics" Version="4.0.1" />
-    <PackageReference Include="Microsoft.Owin.FileSystems" Version="4.0.1" />
-    <PackageReference Include="Microsoft.Owin.Host.HttpListener" Version="4.0.1" />
-    <PackageReference Include="Microsoft.Owin.Hosting" Version="4.0.1" />
-    <PackageReference Include="Microsoft.Owin.Security" Version="4.0.1" />
-    <PackageReference Include="Microsoft.Owin.Security.Cookies" Version="4.0.1" />
-    <PackageReference Include="Microsoft.Owin.SelfHost" Version="4.0.1" />
-    <PackageReference Include="Microsoft.Owin.StaticFiles" Version="4.0.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-    <PackageReference Include="NHibernate" Version="5.2.5" />
+    <PackageReference Include="Microsoft.Owin" Version="4.1.0" />
+    <PackageReference Include="Microsoft.Owin.Cors" Version="4.1.0" />
+    <PackageReference Include="Microsoft.Owin.Diagnostics" Version="4.1.0" />
+    <PackageReference Include="Microsoft.Owin.FileSystems" Version="4.1.0" />
+    <PackageReference Include="Microsoft.Owin.Host.HttpListener" Version="4.1.0" />
+    <PackageReference Include="Microsoft.Owin.Hosting" Version="4.1.0" />
+    <PackageReference Include="Microsoft.Owin.Security" Version="4.1.0" />
+    <PackageReference Include="Microsoft.Owin.Security.Cookies" Version="4.1.0" />
+    <PackageReference Include="Microsoft.Owin.SelfHost" Version="4.1.0" />
+    <PackageReference Include="Microsoft.Owin.StaticFiles" Version="4.1.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="NHibernate" Version="5.2.7" />
     <PackageReference Include="Owin" Version="1.0" />
-    <PackageReference Include="popper.js" Version="1.14.3" />
+    <PackageReference Include="popper.js" Version="1.16.1" />
     <PackageReference Include="Remotion.Linq" Version="2.2.0" />
     <PackageReference Include="Remotion.Linq.EagerFetching" Version="2.2.0" />
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.111" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.112" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualBasic" />

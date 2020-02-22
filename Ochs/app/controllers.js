@@ -5,6 +5,28 @@ app.controller('OchsController',
         console.log('trying to connect to service');
         $scope.highcontrast = ($cookies.get('highcontrast') === 'true');
         $scope.mirror = ($cookies.get('mirror') === 'true');
+        $scope.autoscroll = ($cookies.get('autoscroll') === 'true');
+        if ($scope.autoscroll) {
+            $scope.scrollingUp = false;
+            $scope.scrollFunction = function (duration) {
+                setTimeout(function () {
+                    var scrollHeight = $(document).height() - $(window).height();
+                    if (scrollHeight <= 0) {
+                        $scope.scrollFunction(1000);
+                        return;
+                    }
+                    var scrollDuration = scrollHeight * 25;
+                    if ($scope.scrollingUp) {
+                        $('html, body').animate({ scrollTop: 0 }, scrollDuration);
+                    } else {
+                        $("html, body").animate({ scrollTop: scrollHeight }, scrollDuration);
+                    }
+                    $scope.scrollingUp = !$scope.scrollingUp;
+                    $scope.scrollFunction(scrollDuration + 2000);
+                }, duration);
+            };
+            $scope.scrollFunction(2000);
+        }
         $scope.ochsHub = $.connection.ochsHub;
         $scope.ochsHub.client.updateMatch = function (data) {
             $scope.$broadcast('updateMatch', data);
@@ -58,7 +80,7 @@ app.controller('OchsController',
         $.connection.hub.error(function (error) {
             console.log('SignalR error: ' + error);
         });
-        $scope.handleHttpResponse = function(response) {
+        $scope.handleHttpResponse = function (response) {
             if (response) {
                 if (response.data) {
                     if (response.data.Message) {
@@ -66,7 +88,7 @@ app.controller('OchsController',
                     } else {
                         $scope.ochsHub.client.displayMessage("Error: " + response.data, "danger");
                     }
-                } else if(response.statusText) {
+                } else if (response.statusText) {
                     $scope.ochsHub.client.displayMessage("Error: " + response.statusText, "danger");
                 } else {
                     $scope.ochsHub.client.displayMessage("Unknown error from server", "danger");
@@ -105,6 +127,8 @@ app.controller("ViewSettingsController", function ($scope, $cookies) {
         $scope.$parent.highcontrast = $scope.highcontrast;
         $cookies.put('mirror', $scope.mirror ? 'true' : 'false');
         $scope.$parent.mirror = $scope.mirror;
+        $cookies.put('autoscroll', $scope.autoscroll ? 'true' : 'false');
+        $scope.$parent.autoscroll = $scope.autoscroll;
     };
 });
 
@@ -181,7 +205,7 @@ app.controller("ListOrganizationsController", function ($scope, $http) {
                 $scope.organizations = response.data;
             }, $scope.$parent.handleHttpResponse);
     };
-    $scope.mergeOrganizations = function() {
+    $scope.mergeOrganizations = function () {
         if (!$scope.mergeOrganizationToId || !$scope.mergeOrganizationFromId || $scope.mergeOrganizationToId === $scope.mergeOrganizationFromId)
             return;
         $http.post("api/Organization/MergeOrganizations", { FromId: $scope.mergeOrganizationFromId, ToId: $scope.mergeOrganizationToId })
@@ -642,9 +666,9 @@ app.controller("EliminationController", function ($scope, $http, $routeParams, $
                             return;
                     }
                 },
-                renderMatch: function(container, data) {
+                renderMatch: function (container, data) {
                     if (data && !data.Finished && data.Location) {
-                        container.append("<div class='matchLocation'>"+data.Location +"</div>");
+                        container.append("<div class='matchLocation'>" + data.Location + "</div>");
                     }
                 }
             },
@@ -687,7 +711,7 @@ app.controller("RankingController", function ($scope, $http, $routeParams) {
             });
         }
     });
-    $scope.updateRankings = function() {
+    $scope.updateRankings = function () {
         if ($routeParams.poolId) {
             $scope.$parent.ochsHub.invoke("UpdatePoolRankings", $routeParams.poolId);
         } else if ($routeParams.phaseId) {
@@ -788,7 +812,7 @@ app.controller("MatchController", function ($scope, $http, $routeParams, $interv
                 if ($cookies.get('location') && location === $cookies.get('location'))
                     $location.path("ShowMatch/" + matchId);
             });
-        $scope.$watch('currentMatch.TimeOutRunning', function() {
+        $scope.$watch('currentMatch.TimeOutRunning', function () {
             var popup = $('#timeOutPopup');
             if (popup) {
                 if ($scope.currentMatch.TimeOutRunning) {
@@ -881,7 +905,7 @@ app.controller("MatchController", function ($scope, $http, $routeParams, $interv
         if ($scope.round)
             $scope.$parent.ochsHub.invoke("UpdateMatchRound", $scope.matchId, $scope.round);
     };
-    $scope.showMatchOnLocation = function() {
+    $scope.showMatchOnLocation = function () {
         if ($scope.matchId && $cookies.get('location'))
             $scope.$parent.ochsHub.invoke("ShowMatchOnLocation", $scope.matchId, $cookies.get('location'));
     };
@@ -921,7 +945,7 @@ app.controller("EditMatchRulesController", function ($scope, $http, $routeParams
 
 app.controller("EditRankingRulesController", function ($scope, $http, $routeParams, $location) {
     $scope.rankingRulesId = $routeParams.rankingRulesId;
-    $scope.rankingStats = ['Match Points','Hit Ratio','Double Hits','Win Ratio','Penalties','Warnings'];
+    $scope.rankingStats = ['Match Points', 'Hit Ratio', 'Double Hits', 'Win Ratio', 'Penalties', 'Warnings'];
     $http.get("api/RankingRules/Get" + ($scope.rankingRulesId ? "/" + $routeParams.rankingRulesId : "")).then(function (response) {
         $scope.rules = response.data;
     }, $scope.$parent.handleHttpResponse);
@@ -935,12 +959,12 @@ app.controller("EditRankingRulesController", function ($scope, $http, $routePara
                 }
             }, $scope.$parent.handleHttpResponse);
     };
-    $scope.moveUp = function(index) {
+    $scope.moveUp = function (index) {
         var old = $scope.rules.Sorting[index];
         $scope.rules.Sorting[index] = $scope.rules.Sorting[index - 1];
         $scope.rules.Sorting[index - 1] = old;
     };
-    $scope.moveDown = function(index) {
+    $scope.moveDown = function (index) {
         var old = $scope.rules.Sorting[index];
         $scope.rules.Sorting[index] = $scope.rules.Sorting[index + 1];
         $scope.rules.Sorting[index + 1] = old;

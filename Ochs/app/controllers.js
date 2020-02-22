@@ -641,6 +641,11 @@ app.controller("EliminationController", function ($scope, $http, $routeParams, $
                             //container.append(data);
                             return;
                     }
+                },
+                renderMatch: function(container, data) {
+                    if (data && !data.Finished && data.Location) {
+                        container.append("<div class='matchLocation'>"+data.Location +"</div>");
+                    }
                 }
             },
             teamWidth: 200

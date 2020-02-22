@@ -169,3 +169,13 @@ tr:nth-child(even) .bg-red {
 .total {
     font-weight: bold;
 }
+
+.matchLocation {
+    position: absolute;
+    z-index: 2;
+    right: 0px;
+    background-color: rgba(255, 255, 255, 0.8);
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+}

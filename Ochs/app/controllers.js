@@ -130,6 +130,11 @@ app.controller("ViewSettingsController", function ($scope, $cookies) {
         $cookies.put('autoscroll', $scope.autoscroll ? 'true' : 'false');
         $scope.$parent.autoscroll = $scope.autoscroll;
     };
+    $scope.fullscreen = function () {
+        if (screenfull.isEnabled) {
+            screenfull.toggle();
+        }
+    };
 });
 
 app.controller("ListUsersController", function ($scope, $http) {

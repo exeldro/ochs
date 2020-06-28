@@ -712,6 +712,19 @@ app.controller("RankingController", function ($scope, $http, $routeParams) {
     $scope.$on('updateRankings', function (event, args) {
         if (args && (args === $routeParams.poolId || args === $routeParams.phaseId)) {
             $http.get(url).then(function (response) {
+                $scope.totalMatches = 0;
+                $scope.totalWins = 0;
+                $scope.totalDraws = 0;
+                $scope.totalLosses = 0;
+                $scope.totalMatchPoints = 0;
+                $scope.totalDoubleHits = 0;
+                $scope.totalPenalties = 0;
+                $scope.totalWarnings = 0;
+                $scope.totalExchanges = 0;
+                $scope.totalHitsGiven = 0;
+                $scope.totalHitsReceived = 0;
+                $scope.totalSportsmanshipPoints = 0;
+                $scope.totalNotes = 0;
                 $scope.rankings = response.data;
             });
         }

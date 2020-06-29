@@ -24,7 +24,7 @@
     </tr>
 </table>
 <button ng-show="rights == 'Admin'" ng-click="poolRemoveFighters()">Remove selected</button>
-<h3>Matches {{currentPool.MatchesTotal}}</h3>
+<h3>Matches {{currentPool.MatchesTotal}} <button type="button" class="btn" ng-click="showMatchesOnLocation()"><i class="fa fa-desktop" aria-hidden="true"></i></button></h3>
 <matches-table context="currentPool"></matches-table>
 <button ng-show="rights == 'Admin'" ng-click="generateMatches()">Generate Matches</button>
 

@@ -519,7 +519,7 @@ namespace Ochs
         private void UpdateRankingsInternal(ISession session, IList<Ranking> oldRankings, IList<Match> matches, Func<Ranking> createRanking, IPhaseTypeHandler phaseTypeHandler, RankingRules rankingRules)
         {
             if (rankingRules == null)
-                rankingRules = new RankingRules{Sorting = RankingRules.DefaultSorting};
+                rankingRules = new RankingRules { Sorting = RankingRules.DefaultSorting };
             IList<Ranking> rankings = new List<Ranking>();
 
             //calc forfeited and disqualified
@@ -1003,7 +1003,7 @@ namespace Ochs
                     if (phase.Fighters.Any(x => x.Id == fighterId))
                         continue;
 
-                    var fighter = phase.Competition.Fighters.Select(x=>x.Fighter).SingleOrDefault(x => x.Id == fighterId);
+                    var fighter = phase.Competition.Fighters.Select(x => x.Fighter).SingleOrDefault(x => x.Id == fighterId);
                     if (fighter == null)
                         continue;
 
@@ -1081,7 +1081,7 @@ namespace Ochs
                     return;
                 }
 
-                phase.Fighters = phase.Competition.Fighters.Select(x=>x.Fighter).ToList();
+                phase.Fighters = phase.Competition.Fighters.Select(x => x.Fighter).ToList();
                 session.Update(phase);
                 transaction.Commit();
                 Clients.All.updatePhase(new PhaseDetailView(phase));
@@ -1534,10 +1534,11 @@ namespace Ochs
                     var fighter = competition.Fighters.SingleOrDefault(x => x.Fighter.Id == person.Id);
                     if (fighter == null)
                     {
-                        fighter = new CompetitionFighter {Competition = competition, Fighter = person, Seed = seed};
+                        fighter = new CompetitionFighter { Competition = competition, Fighter = person, Seed = seed };
                         session.Save(fighter);
                         competition.Fighters.Add(fighter);
-                    }else if (fighter.Seed != seed)
+                    }
+                    else if (fighter.Seed != seed)
                     {
                         fighter.Seed = seed;
                         session.Update(fighter);
@@ -1994,6 +1995,139 @@ namespace Ochs
                 }
             }
             Clients.All.showMatchOnLocation(matchId, location);
+        }
+
+        public void ShowPoolRankingOnLocation(Guid poolId, string location)
+        {
+            using (var session = NHibernateHelper.OpenSession())
+            {
+                var pool = session.Get<Pool>(poolId);
+                if (pool == null)
+                {
+                    Clients.Caller.displayMessage("Pool not found", "warning");
+                    return;
+                }
+                if (!HasOrganizationRights(session, pool.Phase.Competition.Organization, UserRoles.Scorekeeper))
+                {
+                    Clients.Caller.displayMessage("Not logged in as score keeper", "warning");
+                    return;
+                }
+            }
+            Clients.All.showPoolRankingOnLocation(poolId, location);
+        }
+
+        public void ShowPhaseRankingOnLocation(Guid phaseId, string location)
+        {
+            using (var session = NHibernateHelper.OpenSession())
+            {
+                var phase = session.Get<Phase>(phaseId);
+                if (phase == null)
+                {
+                    Clients.Caller.displayMessage("Phase not found", "warning");
+                    return;
+                }
+                if (!HasOrganizationRights(session, phase.Competition.Organization, UserRoles.Scorekeeper))
+                {
+                    Clients.Caller.displayMessage("Not logged in as score keeper", "warning");
+                    return;
+                }
+            }
+            Clients.All.showPhaseRankingOnLocation(phaseId, location);
+        }
+
+        public void ShowPoolEliminationOnLocation(Guid poolId, string location)
+        {
+            using (var session = NHibernateHelper.OpenSession())
+            {
+                var pool = session.Get<Pool>(poolId);
+                if (pool == null)
+                {
+                    Clients.Caller.displayMessage("Pool not found", "warning");
+                    return;
+                }
+                if (!HasOrganizationRights(session, pool.Phase.Competition.Organization, UserRoles.Scorekeeper))
+                {
+                    Clients.Caller.displayMessage("Not logged in as score keeper", "warning");
+                    return;
+                }
+            }
+            Clients.All.showPoolEliminationOnLocation(poolId, location);
+        }
+
+        public void ShowPhaseEliminationOnLocation(Guid phaseId, string location)
+        {
+            using (var session = NHibernateHelper.OpenSession())
+            {
+                var phase = session.Get<Phase>(phaseId);
+                if (phase == null)
+                {
+                    Clients.Caller.displayMessage("Phase not found", "warning");
+                    return;
+                }
+                if (!HasOrganizationRights(session, phase.Competition.Organization, UserRoles.Scorekeeper))
+                {
+                    Clients.Caller.displayMessage("Not logged in as score keeper", "warning");
+                    return;
+                }
+            }
+            Clients.All.showPhaseEliminationOnLocation(phaseId, location);
+        }
+
+        public void ShowPoolMatchesOnLocation(Guid poolId, string location)
+        {
+            using (var session = NHibernateHelper.OpenSession())
+            {
+                var pool = session.Get<Pool>(poolId);
+                if (pool == null)
+                {
+                    Clients.Caller.displayMessage("Pool not found", "warning");
+                    return;
+                }
+                if (!HasOrganizationRights(session, pool.Phase.Competition.Organization, UserRoles.Scorekeeper))
+                {
+                    Clients.Caller.displayMessage("Not logged in as score keeper", "warning");
+                    return;
+                }
+            }
+            Clients.All.showPoolMatchesOnLocation(poolId, location);
+        }
+
+        public void ShowPhaseMatchesOnLocation(Guid phaseId, string location)
+        {
+            using (var session = NHibernateHelper.OpenSession())
+            {
+                var phase = session.Get<Phase>(phaseId);
+                if (phase == null)
+                {
+                    Clients.Caller.displayMessage("Phase not found", "warning");
+                    return;
+                }
+                if (!HasOrganizationRights(session, phase.Competition.Organization, UserRoles.Scorekeeper))
+                {
+                    Clients.Caller.displayMessage("Not logged in as score keeper", "warning");
+                    return;
+                }
+            }
+            Clients.All.showPhaseMatchesOnLocation(phaseId, location);
+        }
+
+        public void ShowCompetitionMatchesOnLocation(Guid competitionId, string location)
+        {
+            using (var session = NHibernateHelper.OpenSession())
+            {
+                var competition = session.Get<Competition>(competitionId);
+                if (competition == null)
+                {
+                    Clients.Caller.displayMessage("Competition not found", "warning");
+                    return;
+                }
+                if (!HasOrganizationRights(session, competition.Organization, UserRoles.Scorekeeper))
+                {
+                    Clients.Caller.displayMessage("Not logged in as score keeper", "warning");
+                    return;
+                }
+            }
+            Clients.All.showCompetitionMatchesOnLocation(competitionId, location);
         }
     }
 }

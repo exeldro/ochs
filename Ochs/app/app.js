@@ -92,6 +92,18 @@ app.config(['$routeProvider', '$locationProvider',
                 templateUrl: 'templates/ListMatches.html',
                 controller: 'ListMatchesController'
             }).
+            when('/ShowCompetitionMatches/:competitionId', {
+	            templateUrl: 'templates/ShowCompetitionMatches.html',
+	            controller: 'CompetitionController'
+            }).
+            when('/ShowPhaseMatches/:phaseId', {
+	            templateUrl: 'templates/ShowPhaseMatches.html',
+	            controller: 'PhaseController'
+            }).
+            when('/ShowPoolMatches/:poolId', {
+	            templateUrl: 'templates/ShowPoolMatches.html',
+	            controller: 'PoolController'
+            }).
             when('/ShowMatch/:matchId', {
                 templateUrl: 'templates/ShowMatch.html',
                 controller: 'MatchController'

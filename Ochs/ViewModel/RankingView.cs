@@ -12,8 +12,7 @@ namespace Ochs
         }
 
         public virtual Guid Id => _ranking.Id;
-        public virtual PersonView Fighter => new PersonView(_ranking.Person);
-
+        public virtual PersonView Fighter => _ranking.Person == null ? null : new PersonView(_ranking.Person);
         public virtual int? Rank => _ranking.Rank;
         public virtual bool Disqualified => _ranking.Disqualified;
         public virtual int MatchPoints => _ranking.MatchPoints;

@@ -85,7 +85,7 @@
 
 <input ng-show="rights == 'Admin'" type="file" onchange="angular.element(this).scope().uploadFighters( this.files[0] )" />
 
-<h3>Matches {{currentCompetition.MatchesTotal}}</h3>
+<h3>Matches {{currentCompetition.MatchesTotal}} <button type="button" class="btn" ng-click="showMatchesOnLocation()"><i class="fa fa-desktop" aria-hidden="true"></i></button></h3>
 <matches-table context="currentCompetition"></matches-table>
 <table ng-show="rights == 'Admin'">
     <tr>

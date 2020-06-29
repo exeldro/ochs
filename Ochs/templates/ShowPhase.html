@@ -65,7 +65,7 @@
     <button ng-show="currentPhase.PhaseOrder <= 1" ng-click="addAllFighters()">Add all fighters from competition</button><br />
     <div ng-show="currentPhase.PhaseOrder > 1"><input type="number" min="2" ng-model="topfighters" max="128" /><button ng-click="addTopFighters()">Add top from previous phase</button></div>
 </div>
-<h3>Matches {{currentPhase.MatchesTotal}}</h3>
+<h3>Matches {{currentPhase.MatchesTotal}} <button type="button" class="btn" ng-click="showMatchesOnLocation()"><i class="fa fa-desktop" aria-hidden="true"></i></button></h3>
 <matches-table context="currentPhase"></matches-table>
 <button ng-show="rights == 'Admin' && currentPhase.PoolsTotal == 0 && currentPhase.FightersTotal > 1" ng-click="generateMatches()">Generate Matches</button>
 <button ng-show="rights == 'Admin' && currentPhase.MatchesTotal > 0 && currentPhase.FightersTotal > 1" ng-click="fillMatches()">Fill Matches</button>

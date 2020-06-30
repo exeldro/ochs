@@ -20,7 +20,8 @@
         <td>{{ match.Name }}</td>
         <td ng-show="!context.CompetitionId">{{ match.Phase }}</td>
         <td ng-show="!context.PhaseId">{{ match.Pool }}</td>
-        <td>{{ match.Location }}</td>
+        <td ng-show="location == match.Location"><b>{{ match.Location }}</b></td>
+        <td ng-show="location != match.Location">{{ match.Location }}</td>
         <td ng-show="!match.Started && !match.Finished && !match.Planned"></td>
         <td ng-show="!match.Started && !match.Finished && match.Planned"><i class="fa fa-calendar" aria-hidden="true"></i> <time>{{ match.PlannedDateTime | date:'yyyy-MM-dd HH:mm:ss' }}</time></td>
         <td ng-show="match.Started && !match.Finished"><i class="fa fa-play" aria-hidden="true"></i> <time>{{ match.StartedDateTime | date:'yyyy-MM-dd HH:mm:ss' }}</time></td>

@@ -842,14 +842,64 @@ app.controller("RankingController", function ($scope, $http, $routeParams, $loca
 
 app.controller("ListMatchesController",
 	function($scope, $http, $cookies) {
-		$http.get("api/Match/All")
-			.then(function(response) {
-					$scope.currentMatches = {
-						Matches: response.data,
-                        viewer: ($cookies.get('viewer') === 'true')
-					};
-				},
-				$scope.$parent.handleHttpResponse);
+		if ($cookies.get('location')) {
+			$scope.location = $cookies.get('location');
+			$http.get("api/Match/Location/" + $cookies.get('location'))
+				.then(function(response) {
+						$scope.currentMatches = {
+							Matches: response.data,
+							viewer: ($cookies.get('viewer') === 'true'),
+						};
+					},
+					$scope.$parent.handleHttpResponse);
+		} else {
+			$http.get("api/Match/All")
+				.then(function(response) {
+						$scope.currentMatches = {
+							Matches: response.data,
+							viewer: ($cookies.get('viewer') === 'true')
+						};
+					},
+					$scope.$parent.handleHttpResponse);
+		}
+		$scope.$on('updateMatch',
+			function(event, args) {
+				var found = false;
+				for (var i = 0; i < $scope.currentMatches.Matches.length; i++) {
+					if ($scope.currentMatches.Matches[i].Id === args.Id) {
+						found = true;
+						if ($cookies.get('location') && args.Location !== $cookies.get('location')) {
+							$scope.currentMatches.Matches.splice(i, 1);
+						} else {
+							$scope.currentMatches.Matches[i] = args;
+						}
+						$scope.$apply();
+					}
+				}
+				if (!found && (!$cookies.get('location') || args.Location === $cookies.get('location'))) {
+					$scope.currentMatches.Matches.push(args);
+				}
+			});
+		$scope.$on('addMatch',
+			function(event, args) {
+				if ($scope.currentMatches &&
+					$scope.currentMatches.Matches &&
+					(!$cookies.get('location') || args.Location === $cookies.get('location'))) {
+					$scope.currentMatches.Matches.push(args);
+					$scope.$apply();
+				}
+			});
+		$scope.$on('removeMatch',
+			function(event, args) {
+				if ($scope.currentMatches && $scope.currentMatches.Matches) {
+					for (var i = 0; i < $scope.currentMatches.Matches.length; i++) {
+						if ($scope.currentMatches.Matches[i].Id === args) {
+							$scope.currentMatches.Matches.splice(i, 1);
+							$scope.$apply();
+						}
+					}
+				}
+			});
 	});
 
 app.controller("LoginController", function ($scope, $location, $http) {

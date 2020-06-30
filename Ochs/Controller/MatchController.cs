@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Web.Http;
 using NHibernate;
 using NHibernate.Transform;
@@ -37,6 +38,50 @@ namespace Ochs
                     return null;
                 InitializeMatch(match);
                 return new MatchDetailView(match);
+            }
+        }
+
+
+        [HttpGet]
+        public IList<MatchView> Location(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                return null;
+            var i = Request.GetOwinContext().Authentication?.User?.Identity as ClaimsIdentity;
+            var idString = i?.Claims.SingleOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            using (var session = NHibernateHelper.OpenSession())
+            {
+                IList<Guid> organizationIds = null;
+                if (!string.IsNullOrWhiteSpace(idString))
+                {
+                    var userId = new Guid(idString);
+                    organizationIds = session.QueryOver<UserRole>().Where(x => x.User.Id == userId && x.Organization != null)
+                        .Select(x => x.Organization.Id).List<Guid>().Distinct().ToList();
+                }
+                if (organizationIds?.Any()??false)
+                {
+                    return session.QueryOver<Match>().Where(x => x.Location == id).JoinQueryOver(x => x.Competition)
+                        .JoinQueryOver(x => x.Organization).AndRestrictionOn(x => x.Id).IsIn(organizationIds.ToArray())
+                        .List().Select(x =>
+                        {
+                            NHibernateUtil.Initialize(x.FighterBlue?.Organizations);
+                            NHibernateUtil.Initialize(x.FighterRed?.Organizations);
+                            NHibernateUtil.Initialize(x.Competition?.Organization);
+                            NHibernateUtil.Initialize(x.Phase);
+                            NHibernateUtil.Initialize(x.Pool);
+                            return new MatchView(x);
+                        }).ToList();
+                }
+
+                return session.QueryOver<Match>().Where(x => x.Location == id).List().Select(x =>
+                {
+                    NHibernateUtil.Initialize(x.FighterBlue?.Organizations);
+                    NHibernateUtil.Initialize(x.FighterRed?.Organizations);
+                    NHibernateUtil.Initialize(x.Competition?.Organization);
+                    NHibernateUtil.Initialize(x.Phase);
+                    NHibernateUtil.Initialize(x.Pool);
+                    return new MatchView(x);
+                }).ToList();
             }
         }
 

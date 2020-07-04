@@ -7,6 +7,7 @@ app.controller('OchsController',
         $scope.highcontrast = ($cookies.get('highcontrast') === 'true');
         $scope.mirror = ($cookies.get('mirror') === 'true');
         $scope.autoscroll = ($cookies.get('autoscroll') === 'true');
+        $scope.location = $cookies.get('location');
         if ($scope.autoscroll) {
             $scope.scrollingUp = false;
             $scope.scrollFunction = function (duration) {
@@ -104,6 +105,12 @@ app.controller('OchsController',
 		        $scope.$apply();
 	        }
         };
+        $scope.ochsHub.client.showOrganizationMatchesOnLocation = function (organizationId, location) {
+	        if ($cookies.get('location') && location === $cookies.get('location') && $cookies.get('viewer') === 'true'){
+		        $location.path("ShowOrganizationMatches/" + organizationId);
+		        $scope.$apply();
+	        }
+        };
         $scope.ochsHub.client.authorizationException = function (gotsession) {
             //$scope.
             $('#authorizationExceptionModal').modal('show');
@@ -170,7 +177,9 @@ app.controller("ViewSettingsController", function ($scope, $cookies) {
     $scope.mirror = ($cookies.get('mirror') === 'true');
     $scope.apply = function () {
         $cookies.put('location', $scope.location);
+        $scope.$parent.location = $scope.location;
         $cookies.put('viewer', $scope.viewer ? 'true' : 'false');
+        $scope.$parent.viewer = $scope.viewer;
         $cookies.put('highcontrast', $scope.highcontrast ? 'true' : 'false');
         $scope.$parent.highcontrast = $scope.highcontrast;
         $cookies.put('mirror', $scope.mirror ? 'true' : 'false');
@@ -282,6 +291,74 @@ app.controller("ListOrganizationsController", function ($scope, $http) {
         }
     };
 });
+
+app.controller("OrganizationController",
+	function($scope, $http, $routeParams, $cookies) {
+		$scope.organizationId = $routeParams.organizationId;
+		$http.get("api/Organization/Get/" + $routeParams.organizationId).then(function(response) {
+				$scope.organization = response.data;
+				if ($scope.currentOrganization) {
+					$scope.currentOrganization.Name = $scope.organization;
+				}
+			},
+			$scope.$parent.handleHttpResponse);
+		$http.get("api/Match/Organization/" + $routeParams.organizationId).then(function(response) {
+				$scope.currentOrganization = {
+					Matches: response.data,
+					viewer: ($cookies.get('viewer') === 'true')
+				};
+				if ($scope.rights) {
+					$scope.currentOrganization.Rights = $scope.rights;
+				}
+				if ($scope.organization) {
+					$scope.currentOrganization.Name = $scope.organization;
+				}
+			},
+			$scope.$parent.handleHttpResponse);
+		$http.get("api/Auth/OrganizationRights/" + $routeParams.organizationId).then(function(response) {
+				$scope.rights = response.data;
+				if ($scope.currentOrganization) {
+					$scope.currentOrganization.Rights = response.data;
+				}
+			},
+			$scope.$parent.handleHttpResponse);
+
+		$scope.$on('updateMatch', function (event, args) {
+			if ($scope.currentOrganization && $scope.currentOrganization.Matches) {
+				for (var i = 0; i < $scope.currentOrganization.Matches.length; i++) {
+					if ($scope.currentOrganization.Matches[i].Id === args.Id) {
+						$scope.currentOrganization.Matches[i] = args;
+						$scope.$apply();
+					}
+				}
+			}
+		});
+		$scope.$on('addMatch', function (event, args) {
+			if ($scope.currentOrganization && $scope.organizationId === args.OrganizationId) {
+				$scope.currentOrganization.Matches.push(args);
+				$scope.currentOrganization.MatchesTotal++;
+				$scope.$apply();
+			}
+		});
+		$scope.$on('removeMatch', function (event, args) {
+			if ($scope.currentOrganization && $scope.currentOrganization.Matches) {
+				for (var i = 0; i < $scope.currentOrganization.Matches.length; i++) {
+					if ($scope.currentOrganization.Matches[i].Id === args) {
+						$scope.currentOrganization.Matches.splice(i, 1);
+						$scope.currentOrganization.MatchesTotal--;
+						$scope.$apply();
+					}
+				}
+			}
+		});
+		$scope.showMatchesOnLocation = function () {
+			if (!$cookies.get('location'))
+				return;
+			$scope.$parent.ochsHub.invoke("ShowOrganizationMatchesOnLocation",
+				$routeParams.organizationId,
+				$cookies.get('location'));
+		};
+	});
 
 app.controller("ListCompetitionsController", function ($scope, $http) {
     $http.get("api/Competition/All")

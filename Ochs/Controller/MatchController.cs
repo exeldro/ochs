@@ -41,6 +41,81 @@ namespace Ochs
             }
         }
 
+        [HttpGet]
+        public IList<MatchView> Organization(Guid id)
+        {
+            using (var session = NHibernateHelper.OpenSession())
+            {
+                return session.QueryOver<Match>().JoinQueryOver(x => x.Competition)
+                    .JoinQueryOver(x => x.Organization).Where(x => x.Id == id)
+                    .List().Select(x =>
+                    {
+                        NHibernateUtil.Initialize(x.FighterBlue?.Organizations);
+                        NHibernateUtil.Initialize(x.FighterRed?.Organizations);
+                        NHibernateUtil.Initialize(x.Competition?.Organization);
+                        NHibernateUtil.Initialize(x.Phase);
+                        NHibernateUtil.Initialize(x.Pool);
+                        return new MatchView(x);
+                    }).ToList();
+            }
+        }
+
+        [HttpGet]
+        public IList<MatchView> Competition(Guid id)
+        {
+            using (var session = NHibernateHelper.OpenSession())
+            {
+                return session.QueryOver<Match>().JoinQueryOver(x => x.Competition)
+                    .Where(x => x.Id == id)
+                    .List().Select(x =>
+                    {
+                        NHibernateUtil.Initialize(x.FighterBlue?.Organizations);
+                        NHibernateUtil.Initialize(x.FighterRed?.Organizations);
+                        NHibernateUtil.Initialize(x.Competition?.Organization);
+                        NHibernateUtil.Initialize(x.Phase);
+                        NHibernateUtil.Initialize(x.Pool);
+                        return new MatchView(x);
+                    }).ToList();
+            }
+        }
+
+        [HttpGet]
+        public IList<MatchView> Phase(Guid id)
+        {
+            using (var session = NHibernateHelper.OpenSession())
+            {
+                return session.QueryOver<Match>().JoinQueryOver(x => x.Phase)
+                    .Where(x => x.Id == id)
+                    .List().Select(x =>
+                    {
+                        NHibernateUtil.Initialize(x.FighterBlue?.Organizations);
+                        NHibernateUtil.Initialize(x.FighterRed?.Organizations);
+                        NHibernateUtil.Initialize(x.Competition?.Organization);
+                        NHibernateUtil.Initialize(x.Phase);
+                        NHibernateUtil.Initialize(x.Pool);
+                        return new MatchView(x);
+                    }).ToList();
+            }
+        }
+
+        [HttpGet]
+        public IList<MatchView> Pool(Guid id)
+        {
+            using (var session = NHibernateHelper.OpenSession())
+            {
+                return session.QueryOver<Match>().JoinQueryOver(x => x.Pool)
+                    .Where(x => x.Id == id)
+                    .List().Select(x =>
+                    {
+                        NHibernateUtil.Initialize(x.FighterBlue?.Organizations);
+                        NHibernateUtil.Initialize(x.FighterRed?.Organizations);
+                        NHibernateUtil.Initialize(x.Competition?.Organization);
+                        NHibernateUtil.Initialize(x.Phase);
+                        NHibernateUtil.Initialize(x.Pool);
+                        return new MatchView(x);
+                    }).ToList();
+            }
+        }
 
         [HttpGet]
         public IList<MatchView> Location(string id)

@@ -9,6 +9,7 @@ app.directive('matchesTable',
             },
             templateUrl: 'templates/MatchesTable.html',
             link: function ($scope, element, attrs) {
+	            $scope.location = $scope.$parent.$parent.location;
                 $scope.checkAll = function () {
                     angular.forEach($scope.context.Matches, function (obj) {
                         obj.Selected = $scope.select;

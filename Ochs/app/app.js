@@ -68,6 +68,10 @@ app.config(['$routeProvider', '$locationProvider',
                 templateUrl: 'templates/ListOrganizations.html',
                 controller: 'ListOrganizationsController'
             }).
+            when('/ShowOrganization/:organizationId', {
+	            templateUrl: 'templates/ShowOrganization.html',
+	            controller: 'OrganizationController'
+            }).
             when('/ListCompetitions', {
                 templateUrl: 'templates/ListCompetitions.html',
                 controller: 'ListCompetitionsController'
@@ -95,6 +99,10 @@ app.config(['$routeProvider', '$locationProvider',
             when('/ShowCompetitionMatches/:competitionId', {
 	            templateUrl: 'templates/ShowCompetitionMatches.html',
 	            controller: 'CompetitionController'
+            }).
+            when('/ShowOrganizationMatches/:organizationId', {
+	            templateUrl: 'templates/ShowOrganizationMatches.html',
+	            controller: 'OrganizationController'
             }).
             when('/ShowPhaseMatches/:phaseId', {
 	            templateUrl: 'templates/ShowPhaseMatches.html',

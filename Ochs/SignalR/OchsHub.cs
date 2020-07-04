@@ -2129,5 +2129,24 @@ namespace Ochs
             }
             Clients.All.showCompetitionMatchesOnLocation(competitionId, location);
         }
+
+        public void ShowOrganizationMatchesOnLocation(Guid organizationId, string location)
+        {
+            using (var session = NHibernateHelper.OpenSession())
+            {
+                var organization = session.Get<Organization>(organizationId);
+                if (organization == null)
+                {
+                    Clients.Caller.displayMessage("Organization not found", "warning");
+                    return;
+                }
+                if (!HasOrganizationRights(session, organization, UserRoles.Scorekeeper))
+                {
+                    Clients.Caller.displayMessage("Not logged in as score keeper", "warning");
+                    return;
+                }
+            }
+            Clients.All.showOrganizationMatchesOnLocation(organizationId, location);
+        }
     }
 }

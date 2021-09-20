@@ -8,7 +8,7 @@ namespace Ochs
     {
         public PhaseType PhaseType => PhaseType.SingleRoundRobin;
 
-        public IList<Match> GenerateMatches(int fighterCount, Phase phase, Pool pool)
+        public IList<Match> GenerateMatches(int fighterCount, Phase phase, Pool pool = null, IList<Match> oldMatches = null)
         {
             var matches = new List<Match>();
             var matchCounter = 1;
@@ -31,7 +31,7 @@ namespace Ochs
             return matches;
         }
 
-        public void AssignFightersToMatches(IList<Match> matches, IList<Person> fighters)
+        public void AssignFightersToMatches(IList<Match> matches, IList<Person> fighters, IList<Match> oldMatches = null)
         {
             matches = matches.OrderByDescending(y => y.Name).ToList();
 
@@ -88,5 +88,7 @@ namespace Ochs
         {
             return new List<Match>();
         }
+
+        public bool AllowedToGenerateMatches(IList<Match> matches, int fighterCount, Phase phase, Pool pool) => !matches.Any();
     }
 }

@@ -21,9 +21,9 @@ namespace OchsTest
         {
             var fighters = Enumerable.Range(0, 8).Select(x => new Person{Id = Guid.NewGuid()}).ToList();
             Assert.AreEqual(8, fighters.Count);
-            var matches = _singleEliminationPhaseHandler.GenerateMatches(fighters.Count, null, null);
+            var matches = _singleEliminationPhaseHandler.GenerateMatches(fighters.Count, null, null, null);
             Assert.AreEqual(8, matches.Count);
-            _singleEliminationPhaseHandler.AssignFightersToMatches(matches,fighters);
+            _singleEliminationPhaseHandler.AssignFightersToMatches(matches,fighters, null);
             var matchesPart = matches.Take(4).ToList();
             foreach (var match in matchesPart)
             {
@@ -67,9 +67,9 @@ namespace OchsTest
         {
             var fighters = Enumerable.Range(0, 16).Select(x => new Person{Id = Guid.NewGuid()}).ToList();
             Assert.AreEqual(16, fighters.Count);
-            var matches = _singleEliminationPhaseHandler.GenerateMatches(fighters.Count, null, null);
+            var matches = _singleEliminationPhaseHandler.GenerateMatches(fighters.Count, null, null, null);
             Assert.AreEqual(16, matches.Count);
-            _singleEliminationPhaseHandler.AssignFightersToMatches(matches,fighters);
+            _singleEliminationPhaseHandler.AssignFightersToMatches(matches,fighters, null);
             var matchesPart = matches.Take(8).ToList();
             foreach (var match in matchesPart)
             {
@@ -109,9 +109,9 @@ namespace OchsTest
         {
             var fighters = Enumerable.Range(0, 32).Select(x => new Person{Id = Guid.NewGuid()}).ToList();
             Assert.AreEqual(32, fighters.Count);
-            var matches = _singleEliminationPhaseHandler.GenerateMatches(fighters.Count, null, null);
+            var matches = _singleEliminationPhaseHandler.GenerateMatches(fighters.Count, null, null, null);
             Assert.AreEqual(32, matches.Count);
-            _singleEliminationPhaseHandler.AssignFightersToMatches(matches,fighters);
+            _singleEliminationPhaseHandler.AssignFightersToMatches(matches,fighters, null);
             var matchesPart = matches.Take(16).ToList();
             foreach (var match in matchesPart)
             {
@@ -151,9 +151,9 @@ namespace OchsTest
         {
             var fighters = Enumerable.Range(0, 17).Select(x => new Person{Id = Guid.NewGuid()}).ToList();
             Assert.AreEqual(17, fighters.Count);
-            var matches = _singleEliminationPhaseHandler.GenerateMatches(fighters.Count, null, null);
+            var matches = _singleEliminationPhaseHandler.GenerateMatches(fighters.Count, null, null, null);
             Assert.AreEqual(32, matches.Count);
-            _singleEliminationPhaseHandler.AssignFightersToMatches(matches,fighters);
+            _singleEliminationPhaseHandler.AssignFightersToMatches(matches,fighters, null);
             var matchesPart = matches.Take(16).ToList();
             foreach (var match in matchesPart)
             {

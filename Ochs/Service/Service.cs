@@ -7,7 +7,13 @@ namespace Ochs
 {
     public static class Service
     {
-        private static readonly Dictionary<PhaseType,IPhaseTypeHandler> phaseTypeHandlers = new Dictionary<PhaseType, IPhaseTypeHandler>{{PhaseType.SingleRoundRobin, new SingleRoundRobinPhaseHandler()},{PhaseType.SingleElimination,new SingleEliminationPhaseHandler()}};
+        private static readonly Dictionary<PhaseType, IPhaseTypeHandler> phaseTypeHandlers =
+            new Dictionary<PhaseType, IPhaseTypeHandler>
+            {
+                { PhaseType.SingleRoundRobin, new SingleRoundRobinPhaseHandler() },
+                { PhaseType.SingleElimination, new SingleEliminationPhaseHandler() },
+                { PhaseType.Swiss, new SwissPhaseHandler()},
+            };
         public static IPhaseTypeHandler GetPhaseTypeHandler(PhaseType phaseType)
         {
             return phaseTypeHandlers.ContainsKey(phaseType) ? phaseTypeHandlers[phaseType] : null;

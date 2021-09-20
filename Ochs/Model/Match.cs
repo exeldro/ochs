@@ -42,6 +42,9 @@ namespace Ochs
         public virtual MatchRules Rules { get; set; }
         public virtual MatchRules GetRules() => Rules ?? Phase?.MatchRules ?? Competition.MatchRules;
 
+        public override string ToString() => Phase?.Name+" - " + Pool?.Name+" - " + Name + " (" + FighterRed?.DisplayName + " vs " +
+                                             FighterBlue?.DisplayName + ")";
+
         public virtual string GetLocation()
         {
             return !string.IsNullOrWhiteSpace(Location) ? Location

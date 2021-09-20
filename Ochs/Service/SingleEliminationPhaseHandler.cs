@@ -9,7 +9,7 @@ namespace Ochs
     {
         public PhaseType PhaseType => PhaseType.SingleElimination;
 
-        public IList<Match> GenerateMatches(int fighterCount, Phase phase, Pool pool)
+        public IList<Match> GenerateMatches(int fighterCount, Phase phase, Pool pool, IList<Match> oldMatches)
         {
             var matches = new List<Match>();
             var roundCount = 0;
@@ -50,7 +50,7 @@ namespace Ochs
             return matches;
         }
 
-        public void AssignFightersToMatches(IList<Match> matches, IList<Person> sortedByRankFighters)
+        public void AssignFightersToMatches(IList<Match> matches, IList<Person> sortedByRankFighters, IList<Match> oldMatches)
         {
             var matchedFighters = SingleEliminationMatchedFighters(sortedByRankFighters);
             
@@ -271,5 +271,7 @@ namespace Ochs
             }
             return matchedFighters;
         }
+
+        public bool AllowedToGenerateMatches(IList<Match> matches, int fighterCount, Phase phase, Pool pool) => !matches.Any();
     }
 }

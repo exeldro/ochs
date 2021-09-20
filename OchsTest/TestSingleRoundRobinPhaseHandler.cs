@@ -21,7 +21,7 @@ namespace OchsTest
             var fighters = new List<Person>
                 {new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}};
             Assert.AreEqual(4, fighters.Count);
-            var matches = _singleRoundRobinPhaseHandler.GenerateMatches(fighters.Count, null, null);
+            var matches = _singleRoundRobinPhaseHandler.GenerateMatches(fighters.Count, null);
             Assert.AreEqual(6, matches.Count);
             _singleRoundRobinPhaseHandler.AssignFightersToMatches(matches,fighters);
 
@@ -38,7 +38,7 @@ namespace OchsTest
             var fighters = new List<Person>
                 {new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}};
             Assert.AreEqual(5, fighters.Count);
-            var matches = _singleRoundRobinPhaseHandler.GenerateMatches(fighters.Count, null, null);
+            var matches = _singleRoundRobinPhaseHandler.GenerateMatches(fighters.Count, null);
             Assert.AreEqual(10, matches.Count);
             _singleRoundRobinPhaseHandler.AssignFightersToMatches(matches,fighters);
             AssertFighterTwiceInARow(matches);
@@ -51,7 +51,7 @@ namespace OchsTest
             var fighters = new List<Person>
                 {new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}};
             Assert.AreEqual(6, fighters.Count);
-            var matches = _singleRoundRobinPhaseHandler.GenerateMatches(fighters.Count, null, null);
+            var matches = _singleRoundRobinPhaseHandler.GenerateMatches(fighters.Count, null);
             Assert.AreEqual(15, matches.Count);
             _singleRoundRobinPhaseHandler.AssignFightersToMatches(matches,fighters);
             AssertFighterTwiceInARow(matches);
@@ -64,7 +64,7 @@ namespace OchsTest
             var fighters = new List<Person>
                 {new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}};
             Assert.AreEqual(7, fighters.Count);
-            var matches = _singleRoundRobinPhaseHandler.GenerateMatches(fighters.Count, null, null);
+            var matches = _singleRoundRobinPhaseHandler.GenerateMatches(fighters.Count, null);
             Assert.AreEqual(21, matches.Count);
             _singleRoundRobinPhaseHandler.AssignFightersToMatches(matches,fighters);
             AssertFighterTwiceInARow(matches);
@@ -77,7 +77,7 @@ namespace OchsTest
             var fighters = new List<Person>
                 {new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}, new Person{Id = Guid.NewGuid()}};
             Assert.AreEqual(8, fighters.Count);
-            var matches = _singleRoundRobinPhaseHandler.GenerateMatches(fighters.Count, null, null);
+            var matches = _singleRoundRobinPhaseHandler.GenerateMatches(fighters.Count, null);
             Assert.AreEqual(28, matches.Count);
             _singleRoundRobinPhaseHandler.AssignFightersToMatches(matches,fighters);
             AssertFighterTwiceInARow(matches);
@@ -89,7 +89,7 @@ namespace OchsTest
         {
             var fighters = Enumerable.Range(0, 9).Select(x => new Person{Id = Guid.NewGuid()}).ToList();
             Assert.AreEqual(9, fighters.Count);
-            var matches = _singleRoundRobinPhaseHandler.GenerateMatches(fighters.Count, null, null);
+            var matches = _singleRoundRobinPhaseHandler.GenerateMatches(fighters.Count, null);
             Assert.AreEqual(36, matches.Count);
             _singleRoundRobinPhaseHandler.AssignFightersToMatches(matches,fighters);
             AssertFighterTwiceInARow(matches);
@@ -101,7 +101,7 @@ namespace OchsTest
         {
             var fighters = Enumerable.Range(0, 10).Select(x => new Person{Id = Guid.NewGuid()}).ToList();
             Assert.AreEqual(10, fighters.Count);
-            var matches = _singleRoundRobinPhaseHandler.GenerateMatches(fighters.Count, null, null);
+            var matches = _singleRoundRobinPhaseHandler.GenerateMatches(fighters.Count, null);
             Assert.AreEqual(45, matches.Count);
             _singleRoundRobinPhaseHandler.AssignFightersToMatches(matches,fighters);
             AssertFighterTwiceInARow(matches);

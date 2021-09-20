@@ -8,10 +8,10 @@ namespace Ochs
     {
         PhaseType PhaseType { get; }
 
-        IList<Match> GenerateMatches(int fighterCount, Phase phase, Pool pool);
-        void AssignFightersToMatches(IList<Match> matches, IList<Person> sortedByRankFighters);
+        IList<Match> GenerateMatches(int fighterCount, Phase phase, Pool pool = null, IList<Match> oldMatches = null);
+        void AssignFightersToMatches(IList<Match> newMatches, IList<Person> sortedByRankFighters, IList<Match> oldMatches = null);
         IList<IList<Match>> GetMatchesPerRound(IList<Match> matches);
         IList<Match> UpdateMatchesAfterFinishedMatch(Match match, IList<Match> matches);
-
+        bool AllowedToGenerateMatches(IList<Match> matches, int fighterCount, Phase phase, Pool pool = null);
     }
 }

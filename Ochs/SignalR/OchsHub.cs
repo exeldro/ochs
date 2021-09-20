@@ -590,6 +590,7 @@ namespace Ochs
                     rankingBlue.Person = match.FighterBlue;
                     rankings.Add(rankingBlue);
                 }
+                
                 if (rankingRed == null)
                 {
                     rankingRed = createRanking();
@@ -1761,6 +1762,10 @@ namespace Ochs
                 return;
             }
 
+            var phaseTypeHandler = Service.GetPhaseTypeHandler(phaseType);
+            if (phaseTypeHandler == null)
+                return;
+
             if (!matches.Any(x => x.Started && x.Result != MatchResult.Skipped))
             {
                 while (matches.Count > 0)
@@ -1775,20 +1780,18 @@ namespace Ochs
                     }
                 }
             }
-            else if (matches.Any())
+            else if (!phaseTypeHandler.AllowedToGenerateMatches(matches, fighters.Count, phase, pool))
             {
+                Clients.Caller.displayMessage("Not allowed to generate matches", "warning");
                 return;
             }
 
-
-            var phaseTypeHandler = Service.GetPhaseTypeHandler(phaseType);
-            if (phaseTypeHandler == null)
-                return;
-            matches = phaseTypeHandler.GenerateMatches(fighters.Count, phase, pool);
-            var sortedFighters = Service.SortFightersByRanking(session, fighters, Service.GetPreviousPhase(phase), phase.Competition.Fighters);
-            phaseTypeHandler.AssignFightersToMatches(matches, sortedFighters);
+            var rankingPhase = matches.Any(x => x.Finished && x.Result != MatchResult.Skipped) ? phase : Service.GetPreviousPhase(phase);
+            var newMatches = phaseTypeHandler.GenerateMatches(fighters.Count, phase, pool, matches);
+            var sortedFighters = Service.SortFightersByRanking(session, fighters, rankingPhase, phase.Competition.Fighters);
+            phaseTypeHandler.AssignFightersToMatches(newMatches, sortedFighters, matches);
             var plannedDateTime = pool?.PlannedDateTime;
-            foreach (var match in matches)
+            foreach (var match in newMatches)
             {
                 match.PlannedDateTime = plannedDateTime;
                 using (var transaction = session.BeginTransaction())

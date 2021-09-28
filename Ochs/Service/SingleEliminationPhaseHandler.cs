@@ -101,7 +101,7 @@ namespace Ochs
             var matchesPerRound = new List<IList<Match>>();
             var matches = new List<Match>();
             var round = -1;
-            foreach (var match in allMatches)
+            foreach (var match in allMatches.OrderBy(x=>x.Name))
             {
                 var matchRound = EliminationRoundNames.GetRound(match.Name);
                 if (matchRound != -1 && matchRound != round)

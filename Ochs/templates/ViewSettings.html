@@ -1,8 +1,12 @@
 ﻿Location:
 <input type="text" placeholder="Location" ng-model="location" />
 <br />
-Location viewer:
-<input type="checkbox" ng-model="viewer" />
+View mode:
+<select ng-model="viewmode">
+	<option value="0">Normal</option>
+	<option value="1">Viewer</option>
+	<option value="2">Score Overlay</option>
+</select>
 <br />
 High contrast mode:
 <input type="checkbox" ng-model="highcontrast" />

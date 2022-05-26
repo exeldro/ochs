@@ -25,7 +25,7 @@
     <title>OCHS</title>
 </head>
 <body ng-app="angularOchsApp" ng-controller="OchsController" class="container" ng-class="{highcontrast: highcontrast}">
-    <a href="#!Welcome" class="pull-right"><img class="img-responsive" src="Content/ochs.jpg" height="40" style="margin:3px"></a>
+    <a href="#!Welcome" class="pull-right" ng-show="viewmode!=2"><img class="img-responsive" src="Content/ochs.jpg" height="40" style="margin:3px"></a>
     <div ng-view></div>
     <div id="authorizationExceptionModal" class="modal fade" role="dialog" aria-labelledby="authorizationExceptionLabel" aria-hidden="true">
         <div class="modal-dialog">

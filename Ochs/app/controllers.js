@@ -3,7 +3,8 @@
 app.controller('OchsController',
     function ($scope, $http, $location, $cookies) {
         console.log('trying to connect to service');
-        $scope.viewer = ($cookies.get('viewer') === 'true');
+        $scope.viewer = ($cookies.get('viewmode') === '1' || $cookies.get('viewmode') === 'viewer');
+        $scope.viewmode = $cookies.get('viewmode');
         $scope.highcontrast = ($cookies.get('highcontrast') === 'true');
         $scope.mirror = ($cookies.get('mirror') === 'true');
         $scope.autoscroll = ($cookies.get('autoscroll') === 'true');
@@ -58,55 +59,60 @@ app.controller('OchsController',
             $scope.$broadcast('updateRankings', data);
         };
         $scope.ochsHub.client.showMatchOnLocation = function (matchId, location) {
-	        if ($cookies.get('location') && location === $cookies.get('location') && $cookies.get('viewer') === 'true') {
-		        $location.path("ShowMatch/" + matchId);
-		        $scope.$apply();
-	        }
+            if ($cookies.get('location') && location === $cookies.get('location')) {
+                if (($cookies.get('viewmode') === '1' || $cookies.get('viewmode') === 'viewer')) {
+                    $location.path("ShowMatch/" + matchId);
+                    $scope.$apply();
+                } else if (($cookies.get('viewmode') === '2' || $cookies.get('viewmode') === 'scoreOverlay')) {
+                    $location.path("ShowMatchOverlay/" + matchId);
+                    $scope.$apply();
+                }
+            }
         };
         $scope.ochsHub.client.showPoolRankingOnLocation = function (poolId, location) {
-	        if ($cookies.get('location') && location === $cookies.get('location') && $cookies.get('viewer') === 'true'){
+            if ($cookies.get('location') && location === $cookies.get('location') && ($cookies.get('viewmode') === '1' || $cookies.get('viewmode') === 'viewer')){
 		        $location.path("ShowPoolRanking/" + poolId);
 		        $scope.$apply();
 	        }
         };
         $scope.ochsHub.client.showPhaseRankingOnLocation = function (phaseId, location) {
-	        if ($cookies.get('location') && location === $cookies.get('location') && $cookies.get('viewer') === 'true'){
+            if ($cookies.get('location') && location === $cookies.get('location') && ($cookies.get('viewmode') === '1' || $cookies.get('viewmode') === 'viewer')){
 		        $location.path("ShowPhaseRanking/" + phaseId);
 		        $scope.$apply();
 	        }
         };
         $scope.ochsHub.client.showPoolEliminationOnLocation = function (poolId, location) {
-	        if ($cookies.get('location') && location === $cookies.get('location') && $cookies.get('viewer') === 'true'){
+            if ($cookies.get('location') && location === $cookies.get('location') && ($cookies.get('viewmode') === '1' || $cookies.get('viewmode') === 'viewer')){
 		        $location.path("ShowPoolElimination/" + poolId);
 		        $scope.$apply();
 	        }
         };
         $scope.ochsHub.client.showPhaseEliminationOnLocation = function (phaseId, location) {
-	        if ($cookies.get('location') && location === $cookies.get('location') && $cookies.get('viewer') === 'true'){
+            if ($cookies.get('location') && location === $cookies.get('location') && ($cookies.get('viewmode') === '1' || $cookies.get('viewmode') === 'viewer')){
 		        $location.path("ShowPhaseElimination/" + phaseId);
 		        $scope.$apply();
 	        }
         };
         $scope.ochsHub.client.showPoolMatchesOnLocation = function (poolId, location) {
-	        if ($cookies.get('location') && location === $cookies.get('location') && $cookies.get('viewer') === 'true'){
+            if ($cookies.get('location') && location === $cookies.get('location') && ($cookies.get('viewmode') === '1' || $cookies.get('viewmode') === 'viewer')){
 		        $location.path("ShowPoolMatches/" + poolId);
 		        $scope.$apply();
 	        }
         };
         $scope.ochsHub.client.showPhaseMatchesOnLocation = function (phaseId, location) {
-	        if ($cookies.get('location') && location === $cookies.get('location') && $cookies.get('viewer') === 'true'){
+            if ($cookies.get('location') && location === $cookies.get('location') && ($cookies.get('viewmode') === '1' || $cookies.get('viewmode') === 'viewer')){
 		        $location.path("ShowPhaseMatches/" + phaseId);
 		        $scope.$apply();
 	        }
         };
         $scope.ochsHub.client.showCompetitionMatchesOnLocation = function (competitionId, location) {
-	        if ($cookies.get('location') && location === $cookies.get('location') && $cookies.get('viewer') === 'true'){
+            if ($cookies.get('location') && location === $cookies.get('location') && ($cookies.get('viewmode') === '1' || $cookies.get('viewmode') === 'viewer')){
 		        $location.path("ShowCompetitionMatches/" + competitionId);
 		        $scope.$apply();
 	        }
         };
         $scope.ochsHub.client.showOrganizationMatchesOnLocation = function (organizationId, location) {
-	        if ($cookies.get('location') && location === $cookies.get('location') && $cookies.get('viewer') === 'true'){
+            if ($cookies.get('location') && location === $cookies.get('location') && ($cookies.get('viewmode') === '1' || $cookies.get('viewmode') === 'viewer')){
 		        $location.path("ShowOrganizationMatches/" + organizationId);
 		        $scope.$apply();
 	        }
@@ -172,14 +178,15 @@ app.controller("WelcomeController", function ($scope, $http) {
 
 app.controller("ViewSettingsController", function ($scope, $cookies) {
     $scope.location = $cookies.get('location');
-    $scope.viewer = ($cookies.get('viewer') === 'true');
+    $scope.viewer = ($cookies.get('viewmode') === '1' || $cookies.get('viewmode') === 'viewer');
+    $scope.viewmode = $cookies.get('viewmode');
     $scope.highcontrast = ($cookies.get('highcontrast') === 'true');
     $scope.mirror = ($cookies.get('mirror') === 'true');
     $scope.apply = function () {
         $cookies.put('location', $scope.location);
         $scope.$parent.location = $scope.location;
-        $cookies.put('viewer', $scope.viewer ? 'true' : 'false');
-        $scope.$parent.viewer = $scope.viewer;
+        $cookies.put('viewmode', $scope.viewmode);
+        $scope.$parent.viewmode = $scope.viewmode;
         $cookies.put('highcontrast', $scope.highcontrast ? 'true' : 'false');
         $scope.$parent.highcontrast = $scope.highcontrast;
         $cookies.put('mirror', $scope.mirror ? 'true' : 'false');
@@ -305,8 +312,8 @@ app.controller("OrganizationController",
 		$http.get("api/Match/Organization/" + $routeParams.organizationId).then(function(response) {
 				$scope.currentOrganization = {
 					Matches: response.data,
-					viewer: ($cookies.get('viewer') === 'true')
-				};
+                    viewer: ($cookies.get('viewmode') === '1' || $cookies.get('viewmode') === 'viewer'),
+                };
 				if ($scope.rights) {
 					$scope.currentOrganization.Rights = $scope.rights;
 				}
@@ -378,7 +385,7 @@ app.controller("CompetitionController", function ($scope, $http, $routeParams, $
         if ($scope.rights) {
             $scope.currentCompetition.Rights = $scope.rights;
         }
-        $scope.currentCompetition.viewer = ($cookies.get('viewer') === 'true');
+        $scope.currentCompetition.viewer = ($cookies.get('viewmode') === '1' || $cookies.get('viewmode') === 'viewer');
     }, $scope.$parent.handleHttpResponse);
     $http.get("api/Auth/CompetitionRights/" + $routeParams.competitionId).then(function (response) {
         $scope.rights = response.data;
@@ -404,7 +411,7 @@ app.controller("CompetitionController", function ($scope, $http, $routeParams, $
             if ($scope.rights) {
                 $scope.currentCompetition.Rights = $scope.rights;
             }
-            $scope.currentCompetition.viewer = ($cookies.get('viewer') === 'true');
+            $scope.currentCompetition.viewer = ($cookies.get('viewmode') === '1' || $cookies.get('viewmode') === 'viewer');
             $scope.$apply();
         }
     });
@@ -525,7 +532,7 @@ app.controller("PhaseController", function ($scope, $http, $routeParams, $cookie
         $http.get("api/Auth/CompetitionRights/" + $scope.currentPhase.CompetitionId).then(function (response) {
             $scope.rights = response.data;
             $scope.currentPhase.Rights = $scope.rights;
-            $scope.currentPhase.viewer = ($cookies.get('viewer') === 'true');
+            $scope.currentPhase.viewer = ($cookies.get('viewmode') === '1' || $cookies.get('viewmode') === 'viewer');
         });
     }, $scope.$parent.handleHttpResponse);
     $http.get("api/MatchRules/All").then(function (response) {
@@ -538,7 +545,7 @@ app.controller("PhaseController", function ($scope, $http, $routeParams, $cookie
             if ($scope.rights) {
                 $scope.currentPhase.Rights = $scope.rights;
             }
-            $scope.currentPhase.viewer = ($cookies.get('viewer') === 'true');
+            $scope.currentPhase.viewer = ($cookies.get('viewmode') === '1' || $cookies.get('viewmode') === 'viewer');
             $scope.$apply();
         }
     });
@@ -653,7 +660,7 @@ app.controller("PoolController", function ($scope, $http, $routeParams, $cookies
         $http.get("api/Auth/CompetitionRights/" + $scope.currentPool.CompetitionId).then(function (response) {
             $scope.rights = response.data;
             $scope.currentPool.Rights = $scope.rights;
-            $scope.currentPool.viewer = ($cookies.get('viewer') === 'true');
+            $scope.currentPool.viewer = ($cookies.get('viewmode') === '1' || $cookies.get('viewmode') === 'viewer');
         });
     }, $scope.$parent.handleHttpResponse);
     $scope.$on('updatePool', function (event, args) {
@@ -662,7 +669,7 @@ app.controller("PoolController", function ($scope, $http, $routeParams, $cookies
             if ($scope.rights) {
                 $scope.currentPool.Rights = $scope.rights;
             }
-            $scope.currentPool.viewer = ($cookies.get('viewer') === 'true');
+            $scope.currentPool.viewer = ($cookies.get('viewmode') === '1' || $cookies.get('viewmode') === 'viewer');
             $scope.$apply();
         }
     });
@@ -925,7 +932,7 @@ app.controller("ListMatchesController",
 				.then(function(response) {
 						$scope.currentMatches = {
 							Matches: response.data,
-							viewer: ($cookies.get('viewer') === 'true'),
+                            viewer: ($cookies.get('viewmode') === '1' || $cookies.get('viewmode') === 'viewer'),
 						};
 					},
 					$scope.$parent.handleHttpResponse);
@@ -934,7 +941,7 @@ app.controller("ListMatchesController",
 				.then(function(response) {
 						$scope.currentMatches = {
 							Matches: response.data,
-							viewer: ($cookies.get('viewer') === 'true')
+                            viewer: ($cookies.get('viewmode') === '1' || $cookies.get('viewmode') === 'viewer')
 						};
 					},
 					$scope.$parent.handleHttpResponse);
@@ -1031,9 +1038,13 @@ app.controller("MatchController", function ($scope, $http, $routeParams, $interv
                 if ($scope.nextMatch && ($location.path().length < 10 || $location.path().substring(0, 10) !== '/EditMatch')) {
                     if ($location.path().length >= 12 && $location.path().substring(0, 12) === '/ScoreKeeper') {
                         $location.path("ScoreKeeper/" + $scope.nextMatch.Id);
+                    } else if ($location.path().length >= 17 && $location.path().substring(0, 17) === '/ShowMatchOverlay') {
+                        $location.path("ShowMatchOverlay/" + args.Id);
                     } else {
                         $location.path("ShowMatch/" + $scope.nextMatch.Id);
                     }
+                } else if ($location.path().length >= 17 && $location.path().substring(0, 17) === '/ShowMatchOverlay') {
+                    $location.path("ShowEmptyOverlay");
                 } else if ($cookies.get('location') && $location.path().length >= 10 && $location.path().substring(0, 10) === '/ShowMatch') {
                     $location.path("ShowLocation");
                 } else if (args.PoolId) {
@@ -1052,8 +1063,15 @@ app.controller("MatchController", function ($scope, $http, $routeParams, $interv
                 $scope.currentMatch.ScoreBlue = $scope.rules.PointsMax;
             }
             $scope.editTime = new Date(1970, 1, 1, 0, 0, args.LiveTime);
-        } else if ((!$scope.currentMatch || !$scope.currentMatch.Started || $scope.currentMatch.Finished) && args.Started && !args.Finished && $cookies.get('location') && $cookies.get('location') === args.Location && $location.path().length >= 12 && $location.path().substring(0, 12) !== '/ScoreKeeper') {
-            $location.path("ShowMatch/" + args.Id);
+        } else if ((!$scope.currentMatch || !$scope.currentMatch.Started || $scope.currentMatch.Finished) && args.Started && !args.Finished && $cookies.get('location') && $cookies.get('location') === args.Location) {
+            if ($location.path().length >= 12 && $location.path().substring(0, 12) === '/ScoreKeeper') {
+
+            } else if ($location.path().length >= 17 && $location.path().substring(0, 17) === '/ShowMatchOverlay') {
+                $location.path("ShowMatchOverlay/" + args.Id);
+            } else {
+                $location.path("ShowMatch/" + args.Id);
+            }
+            
         } else if ($scope.nextMatch && $scope.nextMatch.Id === args.Id) {
             $http.get("api/Match/GetNext/" + $scope.matchId).then(function (response) {
                 $scope.nextMatch = response.data;

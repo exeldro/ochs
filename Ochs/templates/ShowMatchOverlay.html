@@ -1,0 +1,27 @@
+﻿<div class="container">
+    <div class="row">
+        <div class="col-3 col-sm-4 bg-blue text-nowrap" style="overflow:hidden;" ng-class="{'order-5':mirror,'text-left':!mirror,'text-right':mirror}">
+            <img class="d-none d-md-block flag" ng-show="currentMatch" ng-class="{'pull-left':!mirror,'pull-right':mirror}" alt="{{currentMatch.FighterBlueCountryCode}}" title="{{currentMatch.FighterBlueCountryName}}" ng-src="Content/flags/{{currentMatch.FighterBlueCountryCode?currentMatch.FighterBlueCountryCode:'none'}}.svg" />
+            <strong>{{currentMatch.FighterBlue}}</strong>
+            <span class="d-none d-sm-block" ng-show="currentMatch" style="overflow:hidden;">{{currentMatch.FighterBlueOrganization || '-'}}</span>
+        </div>
+        <div class="col-2 col-sm-1 bg-blue" style="padding: 0" align="center" ng-class="{'order-4':mirror}">
+	        <span style="font-size: 2.5em; font-weight: bold; ">{{currentMatch.ScoreBlue}}</span>
+            <span style="font-size: 1.5em; font-weight: bold; " ng-show="rules.Rounds > 1 && rules.SplitRounds">&nbsp;&nbsp;{{currentMatch.RoundsBlue}}</span>
+	    </div>
+        <div class="col-2 bg-white" align="center" ng-class="{'order-3':mirror}">
+	        <h2 style="margin-block-end:0">{{currentMatch.LiveTime | timespan}}</h2>
+	        <div ng-show="!currentMatch.TimeOutRunning" align="center" style="font-size: x-small"><span class="d-none d-md-inline">powered by</span> OCHS</div>
+	        <div ng-show="currentMatch.TimeOutRunning" class="alert-warning" align="center">{{currentMatch.LiveTimeOut | timespan}}</div>
+        </div>
+        <div class="col-2 col-sm-1 bg-red" style="padding: 0" align="center" ng-class="{'order-2':mirror}">
+            <span style="font-size: 1.5em; font-weight: bold; " ng-show="rules.Rounds > 1 && rules.SplitRounds">{{currentMatch.RoundsRed}}&nbsp;&nbsp;</span>
+            <span style="font-size: 2.5em; font-weight: bold; ">{{currentMatch.ScoreRed}}</span>
+        </div>
+        <div class="col-3 col-sm-4 bg-red text-nowrap" style="overflow:hidden;" ng-class="{'order-1':mirror,'text-left':mirror,'text-right':!mirror}">
+            <img class="d-none d-md-block flag" ng-show="currentMatch" ng-class="{'pull-left':mirror,'pull-right':!mirror}" alt="{{currentMatch.FighterRedCountryCode}}" title="{{currentMatch.FighterRedCountryName}}" ng-src="Content/flags/{{currentMatch.FighterRedCountryCode?currentMatch.FighterRedCountryCode:'none'}}.svg" />
+            <strong>{{currentMatch.FighterRed}}</strong>
+            <span class="d-none d-sm-block" ng-show="currentMatch" style="overflow:hidden;">{{currentMatch.FighterRedOrganization || '-'}}</span>
+        </div>
+    </div>
+</div>

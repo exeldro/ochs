@@ -116,6 +116,14 @@ app.config(['$routeProvider', '$locationProvider',
                 templateUrl: 'templates/ShowMatch.html',
                 controller: 'MatchController'
             }).
+            when('/ShowMatchOverlay/:matchId', {
+                templateUrl: 'templates/ShowMatchOverlay.html',
+                controller: 'MatchController'
+            }).
+            when('/ShowEmptyOverlay', {
+                templateUrl: 'templates/ShowMatchOverlay.html',
+                controller: 'MatchController'
+            }).
             when('/ScoreKeeper/:matchId', {
                 templateUrl: 'templates/ScoreKeeper.html',
                 controller: 'MatchController'

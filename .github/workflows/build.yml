@@ -1,0 +1,29 @@
+name: build ochs
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  windows-build:
+    name: 'Windows Build'
+    runs-on: [windows-latest]
+    steps:
+      - name: Checkout plugin
+        uses: actions/checkout@v3.1.0
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.1.3
+      - name: Build the application
+        run: msbuild Ochs.sln /t:restore,build /p:Configuration=Release
+        env:
+          Configuration: Release
+      - name: Run tests
+        run: dotnet test
+      - name: Publish Installer Files
+        if: success()
+        uses: actions/upload-artifact@v3.1.1
+        with:
+          name: 'ochs'
+          path: Ochs\bin\Release\net47\*

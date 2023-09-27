@@ -16,6 +16,7 @@ namespace Ochs
         public virtual bool RemoveDisqualifiedFromRanking { get; set; } = true;
         public virtual int DoubleReductionThreshold { get; set; } = 0;
         public virtual int DoubleReductionFactor { get; set; } = 2;
+        public virtual int DoubleNegativeHitRatioFactor { get; set; } = 1;
         public virtual IList<RankingStat> Sorting { get; set; }
         public static IList<RankingStat> DefaultSorting { get; } = new List<RankingStat> { RankingStat.MatchPoints, RankingStat.Penalties, RankingStat.WinRatio, RankingStat.Warnings, RankingStat.HitRatio, RankingStat.DoubleHits };
     }

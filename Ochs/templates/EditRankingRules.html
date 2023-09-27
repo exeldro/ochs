@@ -24,7 +24,7 @@
             <label class="col col-sm-10 p-sm-0" for="RemoveForfeitedFromRanking"><strong>Remove forfeited</strong> fighters from rankings</label>
         </div>
         <div class="form-group row">
-            <div class="col-auto col-sm-3 text-sm-right"><input type="number" class="text-right" min="0" max="99" id="ForfeitPoints" ng-model="rules.ForfeitPoints"  ng-disabled="rules.RemoveForfeitedFromRanking"/></div>
+            <div class="col-auto col-sm-3 text-sm-right"><input type="number" class="text-right" min="0" max="99" id="ForfeitPoints" ng-model="rules.ForfeitPoints" ng-disabled="rules.RemoveForfeitedFromRanking" /></div>
             <label class="col col-sm-9 p-sm-0" for="ForfeitPoints">Number of points for <strong>forfeit</strong> of other fighter</label>
         </div>
         <div class="form-group row">
@@ -34,8 +34,20 @@
             <label class="col col-sm-10 p-sm-0" for="RemoveForfeitedFromRanking"><strong>Remove disqualified</strong> fighters from rankings</label>
         </div>
         <div class="form-group row">
-            <div class="col-auto col-sm-3 text-sm-right"><input type="number" class="text-right" min="0" max="99" id="DisqualificationPoints" ng-model="rules.DisqualificationPoints"  ng-disabled="rules.RemoveDisqualifiedFromRanking"/></div>
+            <div class="col-auto col-sm-3 text-sm-right"><input type="number" class="text-right" min="0" max="99" id="DisqualificationPoints" ng-model="rules.DisqualificationPoints" ng-disabled="rules.RemoveDisqualifiedFromRanking" /></div>
             <label class="col col-sm-9 p-sm-0" for="DisqualificationPoints">Number of points for <strong>disqualification</strong> of other fighter</label>
+        </div>
+        <div class="form-group row">
+            <div class="col-auto col-sm-2 text-sm-right"><input type="number" class="text-right" min="0" max="99" id="DoubleReductionFactor" ng-model="rules.DoubleReductionFactor" /></div>
+            <label class="col col-sm-10 p-sm-0" for="DoubleReductionFactor">Points <strong>reduction</strong> for a each number of <strong>doubles</strong> over the threshold<br /><small>(0 for no reduction)</small></label>
+        </div>
+        <div class="form-group row">
+            <div class="col-auto col-sm-3 text-sm-right"><input type="number" class="text-right" min="0" max="99" id="DoubleReductionThreshold" ng-model="rules.DoubleReductionThreshold"  ng-disabled="rules.DoubleReductionFactor==0" /></div>
+            <label class="col col-sm-9 p-sm-0" for="DoubleReductionThreshold"><strong>Threshold</strong> number of <strong>doubles</strong></label>
+        </div>
+        <div class="form-group row">
+            <div class="col-auto col-sm-2 text-sm-right"><input type="number" class="text-right" min="1" max="99" id="DoubleNegativeHitRatioFactor" ng-model="rules.DoubleNegativeHitRatioFactor" /></div>
+            <label class="col col-sm-10 p-sm-0" for="DoubleNegativeHitRatioFactor">Number of times the scored <strong>double</strong> gets <strong>hits received</strong>, resulting in worse hit ratio<br /><small>(1 for no effect on hit ratio)</small></label>
         </div>
     </div>
     <div class="col-lg-6">

@@ -17,6 +17,7 @@ namespace Ochs
             Map(x => x.RemoveDisqualifiedFromRanking);
             Map(x => x.DoubleReductionThreshold);
             Map(x => x.DoubleReductionFactor);
+            Map(x => x.DoubleNegativeHitRatioFactor);
             HasMany(x => x.Sorting).Table("RankingRulesSorting").Element("RankingStat").AsList(part => part.Column("RankingStatOrder"));
         }
     }

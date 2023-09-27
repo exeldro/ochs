@@ -590,7 +590,7 @@ namespace Ochs
                     rankingBlue.Person = match.FighterBlue;
                     rankings.Add(rankingBlue);
                 }
-                
+
                 if (rankingRed == null)
                 {
                     rankingRed = createRanking();
@@ -803,12 +803,9 @@ namespace Ochs
                 }
             }
 
-            if (rankingRules.DoubleReductionFactor > 0 && match.DoubleCount > rankingRules.DoubleReductionThreshold)
-            {
-                ranking.MatchPoints -= (match.DoubleCount - rankingRules.DoubleReductionThreshold) / rankingRules.DoubleReductionFactor;
-            }
-
+            var doubleCount = 0;
             var matchRules = match.GetRules();
+
             foreach (var matchEvent in match.Events)
             {
                 if (matchEvent.Type == MatchEventType.Score)
@@ -918,8 +915,38 @@ namespace Ochs
                 }
                 else if (matchEvent.Type == MatchEventType.DoubleHit)
                 {
+                    doubleCount++;
                     ranking.DoubleHits++;
                     ranking.Exchanges++;
+                    if (matchRules != null && matchRules.DoubleHitScores)
+                    {
+                        if (!matchRules.CountDownScore)
+                        {
+                            if (blue)
+                            {
+                                ranking.HitsGiven += matchEvent.PointsBlue;
+                                ranking.HitsReceived += matchEvent.PointsRed * rankingRules.DoubleNegativeHitRatioFactor;
+                            }
+                            else
+                            {
+                                ranking.HitsGiven += matchEvent.PointsRed;
+                                ranking.HitsReceived += matchEvent.PointsBlue * rankingRules.DoubleNegativeHitRatioFactor;
+                            }
+                        }
+                        else
+                        {
+                            if (!blue)
+                            {
+                                ranking.HitsGiven += matchEvent.PointsBlue;
+                                ranking.HitsReceived += matchEvent.PointsRed * rankingRules.DoubleNegativeHitRatioFactor;
+                            }
+                            else
+                            {
+                                ranking.HitsGiven += matchEvent.PointsRed;
+                                ranking.HitsReceived += matchEvent.PointsBlue * rankingRules.DoubleNegativeHitRatioFactor;
+                            }
+                        }
+                    }
                     if (!string.IsNullOrWhiteSpace(matchEvent.Note))
                         ranking.Notes++;
                 }
@@ -929,6 +956,10 @@ namespace Ochs
                     if (!string.IsNullOrWhiteSpace(matchEvent.Note))
                         ranking.Notes++;
                 }
+            }
+            if (rankingRules.DoubleReductionFactor > 0 && doubleCount > rankingRules.DoubleReductionThreshold)
+            {
+                ranking.MatchPoints -= (doubleCount - rankingRules.DoubleReductionThreshold) / rankingRules.DoubleReductionFactor;
             }
         }
 
